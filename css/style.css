@@ -251,7 +251,7 @@ svg.eye-icon {
 }
 
 /* ==========================================================================
-   3. TEMA CLARO - TELA DE PERFIL (PASSO1)
+   3. TEMA CLARO - TELA DE PERFIL E CONFIGURAÇÕES
    ========================================================================== */
 body.light-theme {
     background-color: #ffffff;
@@ -383,6 +383,13 @@ body.light-theme {
     justify-content: space-around;
     align-items: center;
     flex-grow: 1;
+}
+
+/* Grid das estatísticas (Minhas Atividades) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
 }
 
 .stat-item {
