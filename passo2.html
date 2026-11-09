@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Vídeos Virais</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body.dark-video-theme {
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .reels-feed-container {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+
+        .reels-feed-container::-webkit-scrollbar { display: none; }
+
+        .video-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out;
+        }
+
+        .video-header.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .video-header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .header-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn-top {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ffffff;
+            padding: 4px;
+        }
+
+        .empty-feed-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8e8e93;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .reel-card {
+            width: 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            position: relative;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel-video-element {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        /* Botão de Som Flutuante no Topo Direito do Card */
+        .btn-toggle-sound {
+            position: absolute;
+            top: 72px;
+            right: 16px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Ícone Central de Play/Pause ao Clicar no Vídeo */
+        .play-pause-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 64px;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 25;
+        }
+
+        .play-pause-indicator.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Barra de Progresso Cinza do Vídeo na Base */
+        .video-progress-bar-container {
+            position: absolute;
+            bottom: 62px;
+            left: 0;
+            right: 0;
+            height: 2.5px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 20;
+        }
+
+        .video-progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #d1d1d6;
+            transition: width 0.1s linear;
+        }
+
+        .video-footer-info {
+            position: absolute;
+            bottom: 80px;
+            left: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .creator-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .creator-avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111111;
+        }
+
+        .creator-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .btn-follow {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: #ffffff;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+
+        .video-actions-sidebar {
+            position: absolute;
+            right: 16px;
+            bottom: 85px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            z-index: 10;
+        }
+
+        .action-item {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ffffff;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .action-item svg {
+            width: 26px;
+            height: 26px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .action-item.liked svg { fill: #e74c3c; stroke: #e74c3c; }
+        .action-item.saved svg { fill: #ffffff; stroke: #ffffff; }
+        .action-item.reposted svg { stroke: #00ff88; }
+
+        .dropdown-menu-decisions {
+            position: fixed;
+            top: 50px; right: 16px;
+            background: #ffffff;
+            width: 200px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            padding: 8px 0;
+            z-index: 100;
+            color: #000000;
+        }
+
+        .dropdown-menu-decisions.show { display: flex; }
+
+        .decision-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; font-size: 14px; font-weight: 700;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .decision-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; font-size: 13px; font-weight: 600;
+            color: #333333; cursor: pointer;
+        }
+
+        .decision-footer {
+            padding: 8px 16px; font-size: 11px; color: #8e8e93;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .bottom-nav-fixed {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            width: 100%; height: 62px;
+            background: #121214;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 999;
+            box-sizing: border-box;
+            padding: 0 10px;
+        }
+
+        .nav-link {
+            background: none; border: none; cursor: pointer;
+            color: #8e8e93; display: flex; align-items: center;
+            justify-content: center; text-decoration: none;
+            width: 48px; height: 48px;
+        }
+
+        .nav-link.active-video .video-box-filled { fill: #ffffff; }
+        .nav-link.active-video .video-play-inner { fill: #121214; }
+    </style>
+</head>
+<body class="dark-video-theme">
+
+    <header class="video-header" id="mainHeader">
+        <h1 class="video-header-title">Virais start</h1>
+        <div class="header-actions-right">
+            <button type="button" class="icon-btn-top" aria-label="Buscar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            <button type="button" class="icon-btn-top" id="menuDecisionsBtn" aria-label="Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="dropdown-menu-decisions" id="dropdownDecisions">
+        <div class="decision-header">Decisões</div>
+        <div class="decision-item">Não tenho interesse</div>
+        <div class="decision-item">Denunciar</div>
+        <div class="decision-item" style="color: #e74c3c;">Bloquear</div>
+        <div class="decision-footer">Koneat start · 1.1.4</div>
+    </div>
+
+    <main class="reels-feed-container" id="reelsContainer"></main>
+
+    <!-- Nova Navegação Integrada Exatamente como Solicitado -->
+    <nav class="bottom-nav-fixed">
+        <!-- 1. Vai para o Passo 4 (Home / Feed) -->
+        <a href="./passo4.html" class="nav-link">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </a>
+
+        <!-- 2. Vai para o Passo 3 (Criar / Plus - Inativo com gradinha oca e sinal de + cinza) -->
+        <a href="./passo3.html" class="nav-link">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect>
+                <path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </a>
+
+        <!-- 3. Continua no Passo 2 (Vídeos - Ativo) -->
+        <a href="./passo2.html" class="nav-link active-video">
+            <svg width="24" height="24" viewBox="0 0 24 24"><rect class="video-box-filled" x="2" y="2" width="20" height="20" rx="5" fill="#ffffff"></rect><polygon class="video-play-inner" points="10,8 16,12 10,16" fill="#121214"></polygon></svg>
+        </a>
+
+        <!-- 4. Vai para o Passo 1 (Perfil) -->
+        <a href="./passo1.html" class="nav-link">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </a>
+    </nav>
+
+    <script>
+        const reelsContainer = document.getElementById('reelsContainer');
+        const mainHeader = document.getElementById('mainHeader');
+
+        reelsContainer.addEventListener('scroll', () => {
+            if (reelsContainer.scrollTop > 50) {
+                mainHeader.classList.add('hidden');
+            } else {
+                mainHeader.classList.remove('hidden');
+            }
+        });
+
+        function renderViraisFeed() {
+            let viraisFeed = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
+            const userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
+            
+            userPosts.forEach(p => {
+                if (p.type === 'video' && !viraisFeed.some(v => v.id === p.id)) {
+                    viraisFeed.push(p);
+                }
+            });
+
+            if (viraisFeed.length === 0) {
+                reelsContainer.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.</div>`;
+            } else {
+                reelsContainer.innerHTML = viraisFeed.map((item) => {
+                    const isLiked = localStorage.getItem(`koneat_like_${item.id}`) === 'true';
+                    const isReposted = localStorage.getItem(`koneat_repost_${item.id}`) === 'true';
+                    const isSaved = localStorage.getItem(`koneat_save_${item.id}`) === 'true';
+                    const authorName = item.author || 'Eributtler';
+
+                    return `
+                        <article class="reel-card" data-video-id="${item.id}">
+                            <video class="reel-video-element" src="${item.url}" autoplay loop muted playsinline preload="auto"></video>
+
+                            <div class="play-pause-indicator">
+                                <svg class="icon-play" width="28" height="28" viewBox="0 0 24 24" fill="#ffffff" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                <svg class="icon-pause" width="28" height="28" viewBox="0 0 24 24" fill="#ffffff"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                            </div>
+
+                            <button type="button" class="btn-toggle-sound" aria-label="Ativar som">
+                                <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                                <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            </button>
+
+                            <div class="video-progress-bar-container">
+                                <div class="video-progress-bar-fill"></div>
+                            </div>
+
+                            <div class="video-footer-info">
+                                <div class="creator-row">
+                                    <div class="creator-avatar-circle">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    </div>
+                                    <span class="creator-name">${authorName}</span>
+                                    <button type="button" class="btn-follow">Seguir</button>
+                                </div>
+                            </div>
+
+                            <div class="video-actions-sidebar">
+                                <button type="button" class="action-item btn-like ${isLiked ? 'liked' : ''}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                </button>
+                                <button type="button" class="action-item btn-comment">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                </button>
+                                <button type="button" class="action-item btn-repost ${isReposted ? 'reposted' : ''}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>
+                                </button>
+                                <button type="button" class="action-item btn-save ${isSaved ? 'saved' : ''}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                                </button>
+                                <button type="button" class="action-item btn-share">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v-1a7 7 0 0 1 7-7h9"></path><polyline points="16 8 20 4 16 0"></polyline></svg>
+                                </button>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.reel-card').forEach(card => {
+                    const video = card.querySelector('.reel-video-element');
+                    const progressFill = card.querySelector('.video-progress-bar-fill');
+                    const soundBtn = card.querySelector('.btn-toggle-sound');
+                    const soundOffIcon = card.querySelector('.sound-off-icon');
+                    const soundOnIcon = card.querySelector('.sound-on-icon');
+                    const playPauseIndicator = card.querySelector('.play-pause-indicator');
+                    const iconPlay = card.querySelector('.icon-play');
+                    const iconPause = card.querySelector('.icon-pause');
+
+                    video.play().catch(() => {});
+
+                    video?.addEventListener('timeupdate', () => {
+                        if (video.duration) {
+                            const percent = (video.currentTime / video.duration) * 100;
+                            if (progressFill) progressFill.style.width = `${percent}%`;
+                        }
+                    });
+
+                    soundBtn?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        video.muted = !video.muted;
+                        if (video.muted) {
+                            soundOffIcon.style.display = 'block';
+                            soundOnIcon.style.display = 'none';
+                        } else {
+                            soundOffIcon.style.display = 'none';
+                            soundOnIcon.style.display = 'block';
+                        }
+                    });
+
+                    video?.addEventListener('click', () => {
+                        if (video.paused) {
+                            video.play();
+                            iconPlay.style.display = 'none';
+                            iconPause.style.display = 'block';
+                        } else {
+                            video.pause();
+                            iconPlay.style.display = 'block';
+                            iconPause.style.display = 'none';
+                        }
+
+                        playPauseIndicator.classList.add('show');
+                        setTimeout(() => {
+                            playPauseIndicator.classList.remove('show');
+                        }, 600);
+                    });
+                });
+            }
+        }
+
+        renderViraisFeed();
+    </script>
+</body>
+      </html>
