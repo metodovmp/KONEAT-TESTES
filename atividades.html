@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Minhas Atividades</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .activity-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Grid de Resumo */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #6c5ce7;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666666;
+            font-weight: 600;
+        }
+
+        /* Seção do Histórico */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+
+        .history-list {
+            background: #ffffff;
+            border: 1px solid #f0f0f0;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f8f8f8;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .history-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111111;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .btn-clear-history {
+            width: 100%;
+            background: transparent;
+            border: 1px dashed #e74c3c;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-clear-history:active {
+            background: rgba(231, 76, 60, 0.05);
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="activity-header">
+            <a href="./configuracoes.html" class="icon-btn" aria-label="Voltar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
+            <h1 class="activity-title">Minhas atividades</h1>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="activity-container">
+            
+            <!-- Cards de Resumo -->
+            <div>
+                <h2 class="section-title">Resumo da conta</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="statPosts">0</span>
+                        <span class="stat-label">Publicações</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="statInteractions">0</span>
+                        <span class="stat-label">Interações</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="statLinks">0</span>
+                        <span class="stat-label">Links de atalhos</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="statDays">1</span>
+                        <span class="stat-label">Dia(s) ativo</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Ações -->
+            <div>
+                <h2 class="section-title">Histórico de ações</h2>
+                <div class="history-list" id="historyList">
+                    <div class="history-item">
+                        <div class="history-info">
+                            <span class="history-text">Configurações de perfil atualizadas</span>
+                            <span class="history-date">Hoje</span>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-info">
+                            <span class="history-text">Conta criada no Koneat</span>
+                            <span class="history-date">Recentemente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-clear-history" id="btnClearHistory">Limpar histórico de atividades</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+  </html>
