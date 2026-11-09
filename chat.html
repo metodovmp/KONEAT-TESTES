@@ -109,7 +109,7 @@ html, body {
     text-decoration: none;
 }
 
-/* ÁREA DAS MENSAGENS */
+/* ÁREA DAS MENSAGENS COM RESERVA PARA NÃO COBRIR */
 
 .chat-messages {
     flex: 1;
@@ -130,7 +130,7 @@ html, body {
     text-align: center;
 }
 
-/* RODAPÉ FIXO NA PARTE INFERIOR */
+/* RODAPÉ REALMENTE NO LIMITE INFERIOR DA TELA */
 
 .chat-input-bar {
     position: fixed;
@@ -145,17 +145,17 @@ html, body {
     justify-content: center;
     align-items: center;
 
-    padding: 8px 20px calc(8px + env(safe-area-inset-bottom));
+    padding: 0 20px;
+    margin: 0;
 
     background: #fff;
     z-index: 100;
 }
 
-/* CARD CINZA MAIS COMPACTO */
+/* CARD CINZA */
 
 .input-wrapper {
     width: 100%;
-    max-width: 100%;
     min-height: 68px;
 
     display: flex;
@@ -165,16 +165,16 @@ html, body {
     padding: 6px 12px;
     gap: 8px;
 
+    margin: 0;
     border-radius: 40px;
     background: #f1f1f3;
 }
 
-/* ÍCONES MENORES */
+/* ÍCONES */
 
 .btn-input-icon {
     width: 30px;
     height: 38px;
-
     flex-shrink: 0;
     padding: 0;
 
@@ -188,12 +188,9 @@ html, body {
     cursor: pointer;
 }
 
-/* SVG PADRÃO */
-
 .btn-input-icon svg {
     width: 20px;
     height: 30px;
-    max-width: 30px;
     display: block;
 }
 
@@ -230,7 +227,7 @@ html, body {
     opacity: 1;
 }
 
-/* ESPAÇAMENTO DOS TRÊS ÍCONES */
+/* ÍCONES DA DIREITA */
 
 .input-actions-right {
     display: flex;
@@ -251,7 +248,7 @@ html, body {
 
     .input-wrapper {
         gap: 7px;
-        padding: 7px 10px;
+        padding: 6px 10px;
         min-height: 66px;
     }
 
@@ -423,7 +420,7 @@ html, body {
 
         <div class="input-wrapper">
 
-            <!-- 1. CÂMERA PRETA -->
+            <!-- CÂMERA -->
 
             <button class="btn-input-icon camera-icon"
                     aria-label="Câmera">
@@ -448,7 +445,7 @@ html, body {
 
             </button>
 
-            <!-- 2. CAMPO DE MENSAGEM -->
+            <!-- CAMPO DE MENSAGEM -->
 
             <input
                 type="text"
@@ -457,11 +454,9 @@ html, body {
                 aria-label="Escrever mensagem"
             >
 
-            <!-- AÇÕES DA DIREITA -->
-
             <div class="input-actions-right">
 
-                <!-- 3. ENCAMINHAR -->
+                <!-- ENCAMINHAR -->
 
                 <button class="btn-input-icon"
                         aria-label="Encaminhar">
@@ -480,7 +475,7 @@ html, body {
 
                 </button>
 
-                <!-- 4. ÁUDIO -->
+                <!-- ÁUDIO -->
 
                 <button class="btn-input-icon"
                         aria-label="Gravar áudio">
@@ -503,7 +498,7 @@ html, body {
 
                 </button>
 
-                <!-- 5. GALERIA -->
+                <!-- GALERIA -->
 
                 <button class="btn-input-icon"
                         aria-label="Galeria">
