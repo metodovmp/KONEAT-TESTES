@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Editar Perfil</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .private-info-hint {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 4px;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container" style="padding-bottom: 20px;">
+        <!-- Header da Tela de Edição -->
+        <header class="edit-header">
+            <a href="./passo1.html" class="icon-btn" aria-label="Fechar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </a>
+            <h1 class="edit-title">Editar perfil</h1>
+            <button type="button" class="btn-save-top" id="saveProfileBtn">Salvar</button>
+        </header>
+
+        <!-- Formulário Principal -->
+        <form class="edit-profile-form" id="editProfileForm">
+            <!-- Avatar com Botão de Foto -->
+            <div class="edit-avatar-section">
+                <div class="edit-avatar-circle">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <div class="camera-overlay">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <p class="change-photo-text">Adicionar ou alterar foto</p>
+            </div>
+
+            <!-- Inputs em Cards com Bordas Arredondadas -->
+            <div class="edit-card-group">
+                <label for="editName">Nome</label>
+                <input type="text" id="editName" placeholder="Escreva seu nome...">
+            </div>
+
+            <div class="edit-card-group">
+                <label for="editUsername">Nome de usuário</label>
+                <input type="text" id="editUsername" placeholder="Escreva seu nome...">
+            </div>
+
+            <div class="edit-card-group">
+                <label for="editBio">Sobre mim</label>
+                <textarea id="editBio" rows="2" placeholder="Escreva algo sobre você..."></textarea>
+            </div>
+
+            <div class="edit-card-group">
+                <label for="editBirth">Data de nascimento</label>
+                <input type="text" id="editBirth" placeholder="DD/MM/AAAA">
+                <span class="private-info-hint">Somente você pode ver isso</span>
+            </div>
+
+            <div class="edit-card-group">
+                <label for="editGender">Gênero</label>
+                <input type="text" id="editGender" placeholder="Masculino ou feminino">
+                <span class="private-info-hint">Somente você pode ver isso</span>
+            </div>
+
+            <!-- Lista de Links Adicionais -->
+            <div class="edit-links-list">
+                <div class="edit-link-item" id="btnOpenContato">
+                    <span>Contato</span>
+                    <div class="link-right">
+                        <span class="link-count" id="countContato">0</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="edit-link-item" id="btnOpenLink">
+                    <span>Link</span>
+                    <div class="link-right">
+                        <span class="link-count" id="countLink">0</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="edit-link-item" id="btnOpenLocal">
+                    <span>Localização</span>
+                    <div class="link-right">
+                        <span class="link-count" id="countLocal">0</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="edit-link-item" id="btnOpenConfig">
+                    <span>Configurações de informações pessoais</span>
+                    <div class="link-right">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Modal Contato -->
+        <div class="modal-overlay" id="modalContato">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <h3>Contato</h3>
+                    <button type="button" class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-card-group">
+                        <label>WhatsApp / Telefone</label>
+                        <input type="text" id="inputWhatsapp" placeholder="+55 (11) 99999-9999">
+                    </div>
+                    <button type="button" class="btn-primary-sheet" id="btnSaveContato">Concluir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Link -->
+        <div class="modal-overlay" id="modalLink">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <h3>Link</h3>
+                    <button type="button" class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-card-group">
+                        <label>URL do Link</label>
+                        <input type="url" id="inputUrlLink" placeholder="https://seusite.com.br">
+                    </div>
+                    <div class="edit-card-group" style="margin-top: 10px;">
+                        <label>Título / Nome Personalizado</label>
+                        <input type="text" id="inputTitleLink" placeholder="Ex: Meu Site">
+                    </div>
+                    <button type="button" class="btn-primary-sheet" id="btnSaveLink">Concluir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Localização -->
+        <div class="modal-overlay" id="modalLocal">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <h3>Localização</h3>
+                    <button type="button" class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-card-group">
+                        <label>Cidade e Estado</label>
+                        <input type="text" id="inputLocalizacao" placeholder="Ex: São Paulo, SP">
+                    </div>
+                    <button type="button" class="btn-primary-sheet" id="btnSaveLocal">Concluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+    </html>
