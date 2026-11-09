@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Criar Publicação</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body.dark-create-theme {
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .create-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            z-index: 20;
+            background: #000000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .type-selector-tabs {
+            display: flex;
+            gap: 16px;
+        }
+
+        .type-tab {
+            background: none;
+            border: none;
+            color: #8e8e93;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .type-tab.active {
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .btn-advance-top {
+            background: #262626;
+            color: #8e8e93;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: not-allowed;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+
+        .btn-advance-top.active {
+            background: #ffffff;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .btn-advance-top.active:active {
+            transform: scale(0.95);
+        }
+
+        .gallery-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            z-index: 10;
+        }
+
+        .btn-gallery-dropdown {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-circle-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #262626;
+            border: none;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .create-preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: #8e8e93;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: #000000;
+        }
+
+        .preview-placeholder-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .create-preview-area video, 
+        .create-preview-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .caption-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .caption-modal.show { display: flex; }
+
+        .caption-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .caption-header h2 { font-size: 18px; margin: 0; font-weight: 700; }
+
+        .btn-back-caption, .btn-publish-final {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-publish-final { color: #00ff88; }
+
+        .caption-body {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .caption-thumbnail {
+            width: 84px;
+            height: 84px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #222222;
+        }
+
+        .caption-textarea {
+            flex: 1;
+            height: 120px;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 15px;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .caption-textarea::placeholder { color: #8e8e93; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.show { display: flex; }
+
+        .loading-box {
+            background: #18181b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px 28px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #00ff88;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="dark-create-theme">
+
+    <header class="create-header">
+        <a href="./passo1.html" class="btn-close" aria-label="Fechar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </a>
+
+        <div class="type-selector-tabs">
+            <button type="button" class="type-tab active" data-type="post">POST</button>
+            <button type="button" class="type-tab" data-type="video">VÍDEO</button>
+            <button type="button" class="type-tab" data-type="viral">VIRAL</button>
+        </div>
+
+        <button type="button" class="btn-advance-top" id="btnAdvance">Avançar</button>
+    </header>
+
+    <div class="gallery-controls-bar">
+        <button type="button" class="btn-gallery-dropdown">
+            Galeria
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <div class="right-controls">
+            <button type="button" class="icon-circle-btn" aria-label="Seleção Múltipla">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <main class="create-preview-area" id="previewContainer">
+        <div class="preview-placeholder-content" id="placeholderContent">
+            <!-- SVG da Câmera reduzido conforme solicitado -->
+            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            <span id="previewText">Capture o momento com um amigo</span>
+        </div>
+    </main>
+
+    <div class="caption-modal" id="captionModal">
+        <div class="caption-header">
+            <button type="button" class="btn-back-caption" id="closeModalBtn">Voltar</button>
+            <h2>Nova publicação</h2>
+            <button type="button" class="btn-publish-final" id="publishFinalBtn">Compartilhar</button>
+        </div>
+        <div class="caption-body">
+            <img id="modalThumbnail" class="caption-thumbnail" src="" alt="Thumbnail">
+            <textarea id="postCaptionInput" class="caption-textarea" placeholder="Escreva uma legenda..."></textarea>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <span class="loading-text">Sua publicação está sendo postada</span>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+
+    <script>
+        let selectedType = 'post';
+        let mediaDataUrl = null;
+        let mediaType = null;
+
+        const tabs = document.querySelectorAll('.type-tab');
+        const previewText = document.getElementById('previewText');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const placeholderContent = document.getElementById('placeholderContent');
+        const btnAdvance = document.getElementById('btnAdvance');
+
+        const captionModal = document.getElementById('captionModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const publishFinalBtn = document.getElementById('publishFinalBtn');
+        const modalThumbnail = document.getElementById('modalThumbnail');
+        const postCaptionInput = document.getElementById('postCaptionInput');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                selectedType = tab.getAttribute('data-type');
+                
+                if (selectedType === 'post') previewText.textContent = 'Capture o momento com um amigo';
+                if (selectedType === 'video') previewText.textContent = 'Selecione um vídeo (até 3 min)';
+                if (selectedType === 'viral') previewText.textContent = 'Crie um vídeo viral (até 1m30s)';
+            });
+        });
+
+        previewContainer.addEventListener('click', (e) => {
+            if (e.target === previewContainer || placeholderContent.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(uploadEvent) {
+                mediaDataUrl = uploadEvent.target.result;
+                const isVideo = file.type.startsWith('video');
+                mediaType = isVideo ? 'video' : 'image';
+
+                // Remove o placeholder e insere a mídia preenchendo a área
+                if (placeholderContent) placeholderContent.remove();
+
+                const existingMedia = previewContainer.querySelector('video, img');
+                if (existingMedia) existingMedia.remove();
+
+                if (isVideo) {
+                    const videoEl = document.createElement('video');
+                    videoEl.src = mediaDataUrl;
+                    videoEl.controls = true;
+                    videoEl.autoplay = true;
+                    videoEl.playsInline = true;
+                    previewContainer.appendChild(videoEl);
+                } else {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = mediaDataUrl;
+                    previewContainer.appendChild(imgEl);
+                }
+
+                modalThumbnail.src = mediaDataUrl;
+                btnAdvance.classList.add('active');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        btnAdvance.addEventListener('click', () => {
+            if (!mediaDataUrl) return;
+            captionModal.classList.add('show');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            captionModal.classList.remove('show');
+        });
+
+        publishFinalBtn.addEventListener('click', () => {
+            if (!mediaDataUrl) return;
+
+            loadingOverlay.classList.add('show');
+            const caption = postCaptionInput.value.trim();
+            const uniqueId = 'post_' + Date.now();
+
+            setTimeout(() => {
+                const postData = {
+                    id: uniqueId,
+                    url: mediaDataUrl,
+                    type: mediaType,
+                    author: 'Eributtler',
+                    caption: caption
+                };
+
+                const userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
+                userPosts.unshift(postData);
+                localStorage.setItem('koneat_user_posts', JSON.stringify(userPosts));
+
+                if (mediaType === 'video' || selectedType === 'viral') {
+                    const currentVirais = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
+                    currentVirais.unshift(postData);
+                    localStorage.setItem('koneat_virais_feed', JSON.stringify(currentVirais));
+                }
+
+                loadingOverlay.classList.remove('show');
+
+                if (mediaType === 'video' || selectedType === 'viral') {
+                    window.location.href = './passo2.html';
+                } else {
+                    window.location.href = './passo1.html';
+                }
+            }, 1200);
+        });
+    </script>
+</body>
+                </html>
