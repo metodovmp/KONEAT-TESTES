@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Informações da Conta</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .account-info-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .account-info-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .account-info-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-card {
+            background: #ffffff;
+            border: 1px solid #f0f0f0;
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000000;
+            word-break: break-all;
+        }
+
+        .info-divider {
+            height: 1px;
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="account-info-header">
+            <a href="./configuracoes.html" class="icon-btn" aria-label="Voltar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
+            <h1 class="account-info-title">Informações da conta</h1>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="account-info-container">
+
+            <div class="info-card">
+                <div class="info-item">
+                    <span class="info-label">Nome de usuário</span>
+                    <span class="info-value" id="infoUsername">@usuario</span>
+                </div>
+
+                <div class="info-divider"></div>
+
+                <div class="info-item">
+                    <span class="info-label">Nome da conta</span>
+                    <span class="info-value" id="infoName">Usuário Koneat</span>
+                </div>
+
+                <div class="info-divider"></div>
+
+                <div class="info-item">
+                    <span class="info-label">Privacidade da conta</span>
+                    <span class="info-value" id="infoPrivacy">Pública</span>
+                </div>
+
+                <div class="info-divider"></div>
+
+                <div class="info-item">
+                    <span class="info-label">Data de nascimento</span>
+                    <span class="info-value" id="infoBirth">Não informada</span>
+                </div>
+
+                <div class="info-divider"></div>
+
+                <div class="info-item">
+                    <span class="info-label">Gênero</span>
+                    <span class="info-value" id="infoGender">Não informado</span>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+  </html>
