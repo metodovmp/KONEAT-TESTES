@@ -106,6 +106,7 @@ html, body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    text-decoration: none;
 }
 
 /* ÁREA DAS MENSAGENS */
@@ -114,6 +115,7 @@ html, body {
     flex: 1;
     min-height: 0;
     padding: 16px;
+    padding-bottom: 100px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -128,56 +130,83 @@ html, body {
     text-align: center;
 }
 
-/* RODAPÉ PADRÃO KONEAT */
+/* RODAPÉ FIXO NA PARTE INFERIOR */
 
 .chat-input-bar {
-    flex-shrink: 0;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
     width: 100%;
+    max-width: 480px;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 12px 22px calc(18px + env(safe-area-inset-bottom));
+
+    padding: 8px 20px calc(8px + env(safe-area-inset-bottom));
+
     background: #fff;
+    z-index: 100;
 }
+
+/* CARD CINZA MAIS COMPACTO */
 
 .input-wrapper {
     width: 100%;
-    min-height: 76px;
+    max-width: 100%;
+    min-height: 68px;
+
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 15px;
-    border-radius: 45px;
+    justify-content: space-between;
+
+    padding: 6px 12px;
+    gap: 8px;
+
+    border-radius: 40px;
     background: #f1f1f3;
 }
 
-/* BOTÕES DOS ÍCONES */
+/* ÍCONES MENORES */
 
 .btn-input-icon {
+    width: 30px;
+    height: 38px;
+
     flex-shrink: 0;
-    width: 42px;
-    height: 48px;
     padding: 0;
-    border: none;
-    background: transparent;
-    color: #000;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border: none;
+    background: transparent;
+    color: #000;
     cursor: pointer;
 }
 
+/* SVG PADRÃO */
+
 .btn-input-icon svg {
-    width: 34px;
-    height: 34px;
+    width: 20px;
+    height: 30px;
+    max-width: 30px;
     display: block;
 }
 
 /* CÂMERA PRETA */
 
+.camera-icon {
+    width: 36px;
+    height: 38px;
+}
+
 .camera-icon svg {
-    width: 39px;
-    height: 39px;
+    width: 30px;
+    height: 30px;
 }
 
 /* CAMPO DE MENSAGEM */
@@ -185,33 +214,36 @@ html, body {
 .message-input {
     flex: 1;
     min-width: 0;
-    height: 48px;
+    height: 40px;
+
     border: none;
     outline: none;
     background: transparent;
+
+    font-size: 15px;
     color: #000;
-    font-size: 16px;
     padding: 0;
 }
 
 .message-input::placeholder {
     color: #898991;
     opacity: 1;
-    font-size: 16px;
 }
 
-/* AÇÕES DA DIREITA */
+/* ESPAÇAMENTO DOS TRÊS ÍCONES */
 
 .input-actions-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 9px;
     flex-shrink: 0;
 }
 
 /* TELAS PEQUENAS */
 
 @media (max-width: 360px) {
+
     .chat-input-bar {
         padding-left: 12px;
         padding-right: 12px;
@@ -228,19 +260,24 @@ html, body {
     }
 
     .btn-input-icon {
-        width: 34px;
+        width: 30px;
     }
 
     .btn-input-icon svg {
-        width: 29px;
-        height: 29px;
+        width: 20px;
+        height: 30px;
+    }
+
+    .camera-icon {
+        width: 36px;
     }
 
     .camera-icon svg {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
     }
 }
+
 </style>
 </head>
 
@@ -260,7 +297,8 @@ html, body {
 
                 <svg width="25" height="25"
                      viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor"
+                     fill="none"
+                     stroke="currentColor"
                      stroke-width="2.7"
                      stroke-linecap="round"
                      stroke-linejoin="round">
@@ -307,7 +345,8 @@ html, body {
 
                 <svg width="30" height="30"
                      viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor"
+                     fill="none"
+                     stroke="currentColor"
                      stroke-width="2"
                      stroke-linecap="round"
                      stroke-linejoin="round">
@@ -334,7 +373,8 @@ html, body {
 
                 <svg width="32" height="30"
                      viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor"
+                     fill="none"
+                     stroke="currentColor"
                      stroke-width="2"
                      stroke-linecap="round"
                      stroke-linejoin="round">
@@ -352,7 +392,8 @@ html, body {
 
                 <svg width="30" height="30"
                      viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor"
+                     fill="none"
+                     stroke="currentColor"
                      stroke-width="2"
                      stroke-linecap="round"
                      stroke-linejoin="round">
@@ -366,7 +407,7 @@ html, body {
         </div>
     </header>
 
-    <!-- CONVERSA -->
+    <!-- ÁREA DA CONVERSA -->
 
     <main class="chat-messages" id="chatMessages">
 
@@ -376,13 +417,13 @@ html, body {
 
     </main>
 
-    <!-- RODAPÉ PADRÃO -->
+    <!-- RODAPÉ PADRÃO KONEAT -->
 
     <footer class="chat-input-bar">
 
         <div class="input-wrapper">
 
-            <!-- 1. CÂMERA PREENCHIDA PRETA -->
+            <!-- 1. CÂMERA PRETA -->
 
             <button class="btn-input-icon camera-icon"
                     aria-label="Câmera">
@@ -407,7 +448,7 @@ html, body {
 
             </button>
 
-            <!-- 2. CAMPO DE TEXTO -->
+            <!-- 2. CAMPO DE MENSAGEM -->
 
             <input
                 type="text"
@@ -416,11 +457,11 @@ html, body {
                 aria-label="Escrever mensagem"
             >
 
-            <!-- 3, 4 E 5. AÇÕES DA DIREITA -->
+            <!-- AÇÕES DA DIREITA -->
 
             <div class="input-actions-right">
 
-                <!-- ENCAMINHAR -->
+                <!-- 3. ENCAMINHAR -->
 
                 <button class="btn-input-icon"
                         aria-label="Encaminhar">
@@ -439,7 +480,7 @@ html, body {
 
                 </button>
 
-                <!-- ÁUDIO -->
+                <!-- 4. ÁUDIO -->
 
                 <button class="btn-input-icon"
                         aria-label="Gravar áudio">
@@ -462,7 +503,7 @@ html, body {
 
                 </button>
 
-                <!-- GALERIA -->
+                <!-- 5. GALERIA -->
 
                 <button class="btn-input-icon"
                         aria-label="Galeria">
