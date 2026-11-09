@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Configurações</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para a tela de Configurações */
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #ffffff;
+        }
+
+        .config-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .config-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .config-list {
+            padding: 10px 20px 100px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .config-card {
+            background: #ffffff;
+            border: 1px solid #f0f0f0;
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .config-card-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .icon-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #ffffff;
+        }
+
+        /* Cores dos ícones */
+        .bg-blue { background-color: #4a6fa5; }
+        .bg-dark-blue { background-color: #3b5998; }
+        .bg-globe { background-color: #4a80e2; }
+        .bg-purple { background-color: #6c5ce7; }
+        .bg-deep-blue { background-color: #2b5283; }
+        .bg-violet { background-color: #7d5fff; }
+        .bg-cyan { background-color: #3a9ad9; }
+        .bg-red { background-color: #e74c3c; }
+        .bg-navy { background-color: #2c3e50; }
+
+        .config-card-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .config-card-title.danger {
+            color: #e74c3c;
+        }
+
+        .config-card-subtitle {
+            font-size: 12px;
+            color: #888888;
+            margin-top: 2px;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4a90e2;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .save-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .btn-save-blue {
+            background-color: #0066ff;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+        }
+
+        /* Estilos dos Modais Bottom Sheet */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-bottom-sheet {
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 16px 20px 36px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-bottom-sheet {
+            transform: translateY(0);
+        }
+
+        .modal-drag-handle {
+            width: 36px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin: 0 auto 16px auto;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            color: #000;
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: #8e8e93;
+            text-align: center;
+            margin-top: 4px;
+            margin-bottom: 20px;
+        }
+
+        .language-card {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 6px 16px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            cursor: pointer;
+        }
+
+        .lang-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flag-icon {
+            font-size: 22px;
+        }
+
+        .lang-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .lang-divider {
+            height: 1px;
+            background: #e5e5ea;
+            margin-left: 34px;
+        }
+
+        .language-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            position: relative;
+            transition: 0.2s;
+        }
+
+        .language-option input[type="radio"]:checked + .radio-custom {
+            border-color: #0066ff;
+            background-color: #0066ff;
+        }
+
+        .language-option input[type="radio"]:checked + .radio-custom::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: #ffffff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Estilos do Modal Deletar Conta */
+        .delete-input-group {
+            margin-bottom: 16px;
+        }
+
+        .delete-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 6px;
+        }
+
+        .delete-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            background: #f8f9fa;
+        }
+
+        .delete-input:focus {
+            border-color: #e74c3c;
+            background: #ffffff;
+        }
+
+        .delete-error {
+            display: none;
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-delete-confirm {
+            width: 100%;
+            background-color: #e74c3c;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            width: 100%;
+            background-color: #f0f0f0;
+            color: #333333;
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- Topo da Tela -->
+        <header class="config-header">
+            <h1 class="config-title">Configurações</h1>
+            <div class="config-header-right">
+                <a href="./passo1.html" class="icon-btn" aria-label="Voltar">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </a>
+            </div>
+        </header>
+
+        <!-- Lista de Opções -->
+        <main class="config-list">
+
+            <!-- 1. Notificações -->
+            <div class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-blue">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </div>
+                    <div class="config-card-info">
+                        <span class="config-card-title">Notificações</span>
+                        <span class="config-card-subtitle">Ativar • Desativar</span>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="toggleNotif">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- 2. Conta privada / pública -->
+            <div class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-dark-blue">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <div class="config-card-info">
+                        <span class="config-card-title">Conta privada • pública</span>
+                        <span class="config-card-subtitle" id="subtitlePrivate">Pública</span>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="togglePrivate">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- 3. Idioma -->
+            <div class="config-card" id="btnOpenIdioma">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-globe">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                    <div class="config-card-info">
+                        <span class="config-card-title">Idioma</span>
+                        <span class="config-card-subtitle" id="subtitleIdioma">Português (Brasil)</span>
+                    </div>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+
+            <!-- 4. Ver minhas atividades -->
+            <a href="./atividades.html" class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-purple">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    </div>
+                    <span class="config-card-title">Ver minhas atividades</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+
+            <!-- 5. Informações da conta -->
+            <a href="./informacoes-conta.html" class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-deep-blue">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </div>
+                    <span class="config-card-title">Informações da conta</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+
+            <!-- 6. Privacidade -->
+            <a href="./privacidade.html" class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-violet">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                    </div>
+                    <span class="config-card-title">Privacidade</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+
+            <!-- 7. Termos -->
+            <a href="./termos.html" class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-cyan">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    </div>
+                    <span class="config-card-title">Termos</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+
+            <!-- 8. Deletar conta -->
+            <div class="config-card" id="btnOpenDelete">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-red">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </div>
+                    <span class="config-card-title danger">Deletar conta</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+
+            <!-- 9. Ajuda -->
+            <a href="./ajuda.html" class="config-card">
+                <div class="config-card-left">
+                    <div class="icon-circle bg-navy">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <span class="config-card-title">Ajuda</span>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+
+        </main>
+
+        <!-- Botão Flutuante de Salvar -->
+        <div class="save-bar">
+            <button type="button" class="btn-save-blue" id="saveConfigBtn">Salvar alterações</button>
+        </div>
+    </div>
+
+    <!-- Modal de Idioma -->
+    <div class="modal-overlay" id="modalIdioma">
+        <div class="modal-bottom-sheet">
+            <div class="modal-drag-handle"></div>
+            <h2 class="modal-title">Idioma</h2>
+            <p class="modal-subtitle">Este é o idioma do aplicativo.</p>
+
+            <div class="language-card">
+                <label class="language-option">
+                    <div class="lang-info">
+                        <span class="flag-icon">🇧🇷</span>
+                        <span class="lang-name">Português (Brasil)</span>
+                    </div>
+                    <input type="radio" name="app_language" value="Português (Brasil)" checked>
+                    <span class="radio-custom"></span>
+                </label>
+
+                <div class="lang-divider"></div>
+
+                <label class="language-option">
+                    <div class="lang-info">
+                        <span class="flag-icon">🇬🇧</span>
+                        <span class="lang-name">English (UK)</span>
+                    </div>
+                    <input type="radio" name="app_language" value="English (UK)">
+                    <span class="radio-custom"></span>
+                </label>
+
+                <div class="lang-divider"></div>
+
+                <label class="language-option">
+                    <div class="lang-info">
+                        <span class="flag-icon">🇪🇸</span>
+                        <span class="lang-name">Español (España)</span>
+                    </div>
+                    <input type="radio" name="app_language" value="Español (España)">
+                    <span class="radio-custom"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+  
+  <!-- Modal Deletar Conta com Validação de Senha / PIN -->
+    <div class="modal-overlay" id="modalDelete">
+        <div class="modal-bottom-sheet">
+            <div class="modal-drag-handle"></div>
+            <h2 class="modal-title" style="color: #e74c3c;">Deletar conta</h2>
+            <p class="modal-subtitle">Para sua segurança, digite sua senha de acesso para confirmar a exclusão definitiva da conta.</p>
+
+            <div class="delete-input-group">
+                <label class="delete-label" for="deleteConfirmPassword">Digite sua senha / PIN</label>
+                <input type="password" id="deleteConfirmPassword" class="delete-input" placeholder="Sua senha atual">
+                <span id="deleteErrorMsg" class="delete-error">Senha incorreta. Tente novamente.</span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-delete-confirm" id="btnConfirmDelete">Confirmar Exclusão</button>
+                <button type="button" class="btn-cancel" id="btnCancelDelete">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
