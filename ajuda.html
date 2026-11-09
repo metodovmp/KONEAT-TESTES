@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Ajuda e Suporte</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .help-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .help-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .help-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .help-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 10px;
+        }
+
+        .faq-card {
+            background: #ffffff;
+            border: 1px solid #f0f0f0;
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .faq-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .faq-question {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111111;
+        }
+
+        .faq-answer {
+            font-size: 13px;
+            color: #666666;
+            line-height: 1.5;
+        }
+
+        .faq-divider {
+            height: 1px;
+            background: #f0f0f0;
+        }
+
+        .support-card {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 18px;
+            border: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .support-icon {
+            width: 48px;
+            height: 48px;
+            background: #2c3e50;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .support-text {
+            font-size: 14px;
+            color: #555555;
+            line-height: 1.4;
+        }
+
+        .btn-support-contact {
+            background: #0066ff;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="help-header">
+            <a href="./configuracoes.html" class="icon-btn" aria-label="Voltar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
+            <h1 class="help-title">Central de Ajuda</h1>
+        </header>
+
+        <!-- Conteúdo -->
+        <main class="help-container">
+
+            <!-- FAQ -->
+            <div>
+                <h2 class="help-section-title">Perguntas Frequentes</h2>
+                <div class="faq-card">
+                    <div class="faq-item">
+                        <span class="faq-question">Como editar as informações do meu perfil?</span>
+                        <span class="faq-answer">Acesse a aba do seu Perfil, clique no botão "Editar Perfil" e faça as alterações desejadas em seu nome, foto e bio.</span>
+                    </div>
+
+                    <div class="faq-divider"></div>
+
+                    <div class="faq-item">
+                        <span class="faq-question">Como ativar a Conta Privada?</span>
+                        <span class="faq-answer">Em Configurações, ative a chave "Conta privada • pública". Seu perfil exibirá o ícone 🔒 e ocultará suas publicações para quem não te segue.</span>
+                    </div>
+
+                    <div class="faq-divider"></div>
+
+                    <div class="faq-item">
+                        <span class="faq-question">Como adicionar um link de WhatsApp ou Site?</span>
+                        <span class="faq-answer">No rodapé do seu Perfil, utilize os atalhos de Contato, Link ou Localização para configurar suas conexões.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suporte -->
+            <div>
+                <h2 class="help-section-title">Precisa de mais ajuda?</h2>
+                <div class="support-card">
+                    <div class="support-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <span class="support-text">Nossa equipe de suporte está pronta para te ajudar com qualquer dúvida ou problema no Koneat.</span>
+                    <a href="mailto:suporte@koneat.com" class="btn-support-contact">Falar com o Suporte</a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+  </html>
