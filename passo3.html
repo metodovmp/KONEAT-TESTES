@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>Koneat - Criar publicação</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        button, a {
+            font: inherit;
+        }
+
+        /* CABEÇALHO OTIMIZADO */
+        .create-header {
+            width: 100%;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #1f1f1f;
+            position: relative;
+            background: #000000;
+        }
+
+        .close-link {
+            width: 50px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .close-link svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .create-tabs {
+            height: 100%;
+            flex: 1;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            padding-right: 50px;
+        }
+
+        .create-tab {
+            position: relative;
+            min-width: 33.33%;
+            height: 100%;
+            border: 0;
+            background: transparent;
+            color: #8e8e93;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .create-tab.active {
+            color: #ffffff;
+        }
+
+        .create-tab.active::after {
+            content: "";
+            position: absolute;
+            height: 2px;
+            background: #ffffff;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* GALERIA E FERRAMENTAS */
+        .gallery-toolbar {
+            height: 56px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .gallery-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .gallery-select svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .round-tool {
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .round-tool svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* ÁREA CENTRAL */
+        .media-area {
+            position: absolute;
+            top: 112px;
+            left: 0;
+            right: 0;
+            bottom: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: #8e8e93;
+            text-align: center;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .media-preview {
+            display: none;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* BOTÃO AVANÇAR */
+        .advance-button {
+            position: fixed;
+            left: 50%;
+            bottom: 78px;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 160px;
+            padding: 0 32px;
+            height: 44px;
+            border: 0;
+            border-radius: 22px;
+            background: #ffffff;
+            color: #000000;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 30;
+        }
+
+        /* NAVEGAÇÃO INFERIOR OTIMIZADA */
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 62px;
+            background: #121214;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 40;
+            padding: 0 10px;
+        }
+
+        .nav-link {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8e8e93;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .nav-link svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* ESTILO DO ITEM ATIVO (PLUS) */
+        .nav-link.active .nav-box-bg {
+            stroke: #ffffff;
+            fill: none;
+        }
+
+        .nav-link.active .nav-icon-inner {
+            stroke: #ffffff;
+            fill: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header class="create-header">
+        <a href="./passo4.html" class="close-link" aria-label="Fechar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </a>
+
+        <nav class="create-tabs">
+            <button class="create-tab active" data-type="post">POST</button>
+            <button class="create-tab" data-type="story">STORY</button>
+            <button class="create-tab" data-type="video">VÍDEO</button>
+        </nav>
+    </header>
+
+    <!-- GALERIA -->
+    <section class="gallery-toolbar">
+        <button class="gallery-select" id="openGallery">
+            Galeria
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+        </button>
+
+        <div class="toolbar-actions">
+            <button class="round-tool" id="openGalleryIcon" aria-label="Abrir galeria">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="15" height="15" rx="2"/>
+                    <path d="M8 7h11a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+                </svg>
+            </button>
+
+            <button class="round-tool" id="openCamera" aria-label="Abrir câmera">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 7h4l2-3h6l2 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- INPUTS -->
+    <input type="file" id="galleryInput" accept="image/*,video/*">
+    <input type="file" id="cameraInput" accept="image/*" capture="environment">
+
+    <!-- ÁREA CENTRAL -->
+    <main class="media-area">
+        <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <p>Selecione uma mídia para publicar</p>
+        </div>
+
+        <img id="imagePreview" class="media-preview" alt="Prévia">
+        <video id="videoPreview" class="media-preview" controls playsinline></video>
+    </main>
+
+    <!-- AVANÇAR -->
+    <button class="advance-button" id="advanceButton">Avançar</button>
+
+    <!-- NAVEGAÇÃO INFERIOR -->
+    <nav class="bottom-nav">
+        <!-- 1. Home (Passo 4) -->
+        <a href="./passo4.html" class="nav-link" aria-label="Home">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        </a>
+
+        <!-- 2. Criar / Plus (Passo 3 - Ativo) -->
+        <a href="./passo3.html" class="nav-link active" aria-label="Criar">
+            <svg viewBox="0 0 24 24">
+                <rect class="nav-box-bg" x="2" y="2" width="20" height="20" rx="5" stroke="#ffffff" stroke-width="2" fill="none"></rect>
+                <path class="nav-icon-inner" d="M12 7v10M7 12h10" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </a>
+
+        <!-- 3. Vídeos Virais (Passo 2) -->
+        <a href="./passo2.html" class="nav-link" aria-label="Vídeos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <polygon points="10,8 16,12 10,16"/>
+            </svg>
+        </a>
+
+        <!-- 4. Perfil (Inativo padronizado com ombros retos e linha horizontal) -->
+        <a href="./passo1.html" class="nav-link" aria-label="Perfil">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        const galleryInput = document.getElementById("galleryInput");
+        const cameraInput = document.getElementById("cameraInput");
+        const emptyState = document.getElementById("emptyState");
+        const imagePreview = document.getElementById("imagePreview");
+        const videoPreview = document.getElementById("videoPreview");
+
+        let selectedFile = null;
+        let currentMediaUrl = null;
+
+        document.getElementById("openGallery").addEventListener("click", () => galleryInput.click());
+        document.getElementById("openGalleryIcon").addEventListener("click", () => galleryInput.click());
+        document.getElementById("openCamera").addEventListener("click", () => cameraInput.click());
+
+        function showSelectedMedia(file) {
+            if (!file) return;
+            selectedFile = file;
+            if (currentMediaUrl) URL.revokeObjectURL(currentMediaUrl);
+            currentMediaUrl = URL.createObjectURL(file);
+
+            emptyState.style.display = "none";
+            imagePreview.style.display = "none";
+            videoPreview.style.display = "none";
+
+            if (file.type.startsWith("video/")) {
+                imagePreview.removeAttribute("src");
+                videoPreview.src = currentMediaUrl;
+                videoPreview.style.display = "block";
+            } else {
+                videoPreview.pause();
+                videoPreview.removeAttribute("src");
+                imagePreview.src = currentMediaUrl;
+                imagePreview.style.display = "block";
+            }
+        }
+
+        galleryInput.addEventListener("change", e => showSelectedMedia(e.target.files[0]));
+        cameraInput.addEventListener("change", e => showSelectedMedia(e.target.files[0]));
+
+        document.querySelectorAll(".create-tab").forEach(tab => {
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".create-tab").forEach(item => item.classList.remove("active"));
+                tab.classList.add("active");
+            });
+        });
+
+        document.getElementById("advanceButton").addEventListener("click", () => {
+            if (!selectedFile) {
+                galleryInput.click();
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const newPost = {
+                    id: 'post_' + Date.now(),
+                    url: event.target.result,
+                    type: selectedFile.type.startsWith('video/') ? 'video' : 'image',
+                    author: 'koneat_user'
+                };
+                let userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
+                userPosts.unshift(newPost);
+                localStorage.setItem('koneat_user_posts', JSON.stringify(userPosts));
+                window.location.href = "./passo4.html";
+            };
+            reader.readAsDataURL(selectedFile);
+        });
+    </script>
+</body>
+  </html>
