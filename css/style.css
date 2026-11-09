@@ -1,0 +1,776 @@
+/* ==========================================================================
+   1. RESET BÁSICO E ESTILOS COMPARTILHADOS
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   2. TEMA ESCURO (LOGIN - index.html)
+   ========================================================================== */
+body {
+    background-color: #050505;
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.03) 0%, transparent 40%);
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-area {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.logo-text {
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: -4px;
+}
+
+.brand-name {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.brand-name span {
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    margin-left: 2px;
+}
+
+.subtitle {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #888;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.input-wrapper svg,
+svg.input-icon {
+    position: absolute;
+    left: 16px;
+    width: 18px !important;
+    height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    stroke: #888888;
+    fill: none;
+    pointer-events: none;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.toggle-password svg,
+svg.eye-icon {
+    position: relative;
+    left: 0;
+    width: 18px !important;
+    height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    stroke: #888888;
+    fill: none;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    border-radius: 28px;
+    border: none;
+    background: #ffffff;
+    color: #000000;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    transition: opacity 0.2s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.divider {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    line-height: 0.1em;
+    margin: 22px 0;
+}
+
+.divider span {
+    background: #050505;
+    padding: 0 10px;
+    color: #666;
+    font-size: 12px;
+}
+
+.btn-google {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+
+.google-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 14px;
+}
+
+.google-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    margin-right: 16px;
+}
+
+.google-text {
+    flex-grow: 1;
+    text-align: center;
+    font-weight: 500;
+}
+
+.login-footer {
+    margin-top: 28px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: #777;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.login-footer a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   3. TEMA CLARO - TELA DE PERFIL (PASSO1)
+   ========================================================================== */
+body.light-theme {
+    background-color: #ffffff;
+    background-image: none;
+    color: #111111;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    background: #ffffff;
+    padding-bottom: 75px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.header-logo {
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.logo-bold {
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #000;
+}
+
+.dropdown-wrapper {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    width: 160px;
+    padding: 8px 0;
+    z-index: 100;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.dropdown-item:hover {
+    background: #f0f4f8;
+}
+
+.profile-top-layout {
+    display: flex;
+    align-items: center;
+    padding: 18px 20px 10px 20px;
+    gap: 24px;
+}
+
+.avatar-container {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar-circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #e8eef7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.camera-btn {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    background: #000;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.stats-bar-inline {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #222;
+}
+
+.user-details-block {
+    padding: 0 20px 16px 20px;
+    min-height: 20px;
+}
+
+.user-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111;
+}
+
+.user-tag {
+    font-size: 13px;
+    color: #555;
+    margin-top: 2px;
+}
+
+.user-bio {
+    font-size: 13px;
+    color: #333;
+    margin-top: 6px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 10px;
+    background: #ebf1fa;
+    border: none;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.content-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-top: 16px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #8e8e93;
+    font-size: 11px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    color: #000;
+    border-bottom: 2px solid #000;
+}
+
+.feed-empty-state {
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.empty-icon-wrapper {
+    margin-bottom: 12px;
+}
+
+.empty-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 16px;
+}
+
+.btn-create-post {
+    padding: 12px 24px;
+    background: #ebf1fa;
+    border: none;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   4. BARRA DE NAVEGAÇÃO FLUTUANTE FUMÊ
+   ========================================================================== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 60px;
+    background: rgba(22, 24, 28, 0.95);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 0 12px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    text-decoration: none;
+    color: #8e8e93;
+    transition: all 0.2s ease;
+}
+
+.nav-icon {
+    width: 18px;
+    height: 18px;
+    stroke: #8e8e93;
+    stroke-width: 1.5;
+}
+
+.nav-item.active .nav-icon {
+    stroke: #ffffff;
+}
+
+.nav-item.profile-circle-active .nav-profile-wrapper {
+    width: 23px;
+    height: 23px;
+    border: 1.2px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-item.profile-circle-active .nav-icon-profile {
+    width: 14px;
+    height: 14px;
+    stroke: #8e8e93;
+    stroke-width: 1.5;
+}
+
+/* ==========================================================================
+   5. TELA DE EDITAR PERFIL (editar-perfil.html)
+   ========================================================================== */
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0d1b2a;
+}
+
+.btn-save-top {
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.edit-profile-form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.edit-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.edit-avatar-circle {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #e8eef7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.camera-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.change-photo-text {
+    font-size: 13px;
+    color: #1d2d44;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.edit-card-group {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-card-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+
+.edit-card-group input,
+.edit-card-group textarea {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #334155;
+    outline: none;
+    width: 100%;
+    resize: none;
+}
+
+.edit-card-group input::placeholder,
+.edit-card-group textarea::placeholder {
+    color: #94a3b8;
+}
+
+.edit-links-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-link-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 4px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.link-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.link-count {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   6. ESTILOS DAS MODAIS / PAINÉIS DESLIZANTES
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 2000;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-sheet {
+    width: 100%;
+    max-width: 480px;
+    background: #ffffff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(100%);
+    transition: transform 0.25s ease-out;
+}
+
+.modal-overlay.show .modal-sheet {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.btn-primary-sheet {
+    width: 100%;
+    padding: 12px;
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 16px;
+    cursor: pointer;
+   }
+   
