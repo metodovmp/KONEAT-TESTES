@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Bloqueios</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        .blocks-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tabs-connections {
+            display: flex;
+            border-bottom: 1px solid #efefef;
+            background: #fff;
+        }
+
+        .tab-conn-btn {
+            flex: 1;
+            padding: 14px 0;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #8e8e93;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tab-conn-btn.active {
+            color: #000;
+            border-bottom: 2px solid #000;
+        }
+
+        .search-bar-container {
+            padding: 12px 16px;
+            background: #ffffff;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-wrapper svg {
+            position: absolute;
+            left: 14px;
+            stroke: #8e8e93;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #dbdbdb;
+            background: #fafafa;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-connections {
+            padding: 80px 20px;
+            text-align: center;
+            color: #8e8e93;
+            font-size: 14px;
+        }
+
+        /* Lista de Contas */
+        .user-list {
+            padding: 8px 16px 80px 16px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #efefef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .user-details p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .btn-action-outline {
+            background: transparent;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-action-outline:active {
+            background: #f0f0f0;
+        }
+
+        /* Botão Fixo de Guardar Alterações */
+        .bottom-save-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-top: 1px solid #efefef;
+            box-sizing: border-box;
+        }
+
+        .btn-save-main {
+            width: 100%;
+            height: 42px;
+            background: #efefef;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="blocks-header">
+            <a href="./atividades.html" class="icon-btn" aria-label="Voltar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
+            <h1 style="font-size: 18px; font-weight: 700; margin: 0;">Contas Bloqueadas</h1>
+        </header>
+
+        <!-- Abas Superiores -->
+        <div class="tabs-connections">
+            <button class="tab-conn-btn active" onclick="switchTab(event, 'tab-bloqueadas')">Bloqueadas</button>
+            <button class="tab-conn-btn" onclick="switchTab(event, 'tab-restritas')">Restritas</button>
+        </div>
+
+        <!-- Barra de Pesquisa -->
+        <div class="search-bar-container">
+            <div class="search-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="search-input" placeholder="Pesquisar contas">
+            </div>
+        </div>
+
+        <!-- Conteúdo Aba 1: Contas Bloqueadas -->
+        <div id="tab-bloqueadas" class="tab-content active">
+            <div class="empty-connections" id="emptyBloqueadas">
+                Nenhuma conta bloqueada.
+            </div>
+            <div class="user-list" id="listBloqueadas" style="display: none;">
+                <!-- Exemplo dinâmico quando houver contas -->
+            </div>
+        </div>
+
+        <!-- Conteúdo Aba 2: Contas Restritas -->
+        <div id="tab-restritas" class="tab-content">
+            <div class="empty-connections" id="emptyRestritas">
+                Nenhuma conta restrita.
+            </div>
+            <div class="user-list" id="listRestritas" style="display: none;">
+                <!-- Exemplo dinâmico quando houver contas -->
+            </div>
+        </div>
+
+        <!-- Botão Fixo de Ação -->
+        <div class="bottom-save-container">
+            <button class="btn-save-main" onclick="window.location.href='./atividades.html'">Guardar alterações</button>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-conn-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            evt.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+</body>
+  </html>
+  
