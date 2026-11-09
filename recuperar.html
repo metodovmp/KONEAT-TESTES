@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Koneat Lite - Recuperar acesso</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* DETALHES DE LINHAS BRANCAS LUMINOSAS NOS CANTOS (IGUAL AO LOGIN E CADASTRO) */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            pointer-events: none;
+            opacity: 0.25;
+        }
+
+        body::before {
+            top: -100px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            border-bottom-right-radius: 100%;
+            box-shadow: inset -1px -1px 2px rgba(255,255,255,0.3);
+        }
+
+        body::after {
+            bottom: -100px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            border-top-left-radius: 100%;
+            box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .app-screen {
+            width: 100%;
+            max-width: 390px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 24px 44px 24px;
+            position: relative;
+            z-index: 1;
+            gap: 20px;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .logo-title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        .form-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 400;
+            color: #ffffff;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.35); /* Borda visível e padronizada */
+            border-radius: 23px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #ffffff;
+        }
+
+        .input-field {
+            width: 100%;
+            background: none;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .input-field::placeholder {
+            color: #8e8e93;
+        }
+
+        .btn-submit {
+            width: 100%;
+            height: 46px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 23px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 34px; /* Espaço amplo idêntico ao login e cadastro */
+            letter-spacing: 0.5px;
+        }
+
+        .footer-area {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .footer-link {
+            color: #8e8e93;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover, .footer-link:active {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-screen">
+        <div class="logo-area">
+            <h1 class="logo-title">RECUPERAR ACESSO</h1>
+        </div>
+
+        <div class="form-container">
+            <form id="recoveryForm">
+                <div class="input-group">
+                    <label class="input-label" for="emailField">E-mail da conta</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="emailField" class="input-field" placeholder="Digite seu e-mail" required autocomplete="email">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSubmit">ENVIAR CÓDIGO</button>
+            </form>
+        </div>
+
+        <div class="footer-area">
+            <a class="footer-link" id="btnLoginRedirect">Voltar ao Login</a>
+        </div>
+    </div>
+
+    <script>
+        /* ===============================================================
+           EVENTOS DE SUBMISSÃO E NAVEGAÇÃO
+           =============================================================== */
+        document.getElementById('recoveryForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('emailField').value.trim();
+
+            if (!email) {
+                alert('Digite o e-mail da conta.');
+                return;
+            }
+
+            // Placeholder para integração de recuperação (o construtor injetará o Supabase depois)
+            alert('Código de recuperação enviado para ' + email);
+        });
+
+        document.getElementById('btnLoginRedirect').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
