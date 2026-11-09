@@ -53,10 +53,17 @@
             color: #8e8e93;
             cursor: pointer;
             border-bottom: 2px solid transparent;
+            transition: color 0.2s ease;
         }
         .tab-conn-btn.active {
             color: #000;
             border-bottom: 2px solid #000;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
         .empty-connections {
             padding: 80px 20px;
@@ -85,19 +92,37 @@
             </div>
         </div>
 
-        <!-- Abas Superiores -->
+        <!-- Abas Superiores com Barrinha Deslizante -->
         <div class="tabs-connections">
-            <button class="tab-conn-btn active">Seguidores</button>
-            <button class="tab-conn-btn" onclick="alert('Funcionalidade de remoção em breve')">Remover</button>
-            <button class="tab-conn-btn" onclick="alert('Funcionalidade de bloqueio em breve')">Bloquear</button>
+            <button class="tab-conn-btn active" onclick="switchTab(event, 'tab-seguidores')">Seguidores</button>
+            <button class="tab-conn-btn" onclick="switchTab(event, 'tab-remover')">Remover</button>
+            <button class="tab-conn-btn" onclick="window.location.href='./bloqueios.html'">Bloquear</button>
         </div>
 
-        <!-- Estado Vazio -->
-        <div class="empty-connections">
-            Seus seguidores aparecerão aqui.
+        <!-- Conteúdos das Abas -->
+        <div id="tab-seguidores" class="tab-content active">
+            <div class="empty-connections">
+                Seus seguidores aparecerão aqui.
+            </div>
+        </div>
+
+        <div id="tab-remover" class="tab-content">
+            <div class="empty-connections">
+                Nenhum usuário para remover.
+            </div>
         </div>
     </div>
 
+    <script>
+        function switchTab(evt, tabId) {
+            // Remove a classe active de todas as abas e conteúdos
+            document.querySelectorAll('.tab-conn-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Adiciona a classe active na aba clicada e no conteúdo correspondente
+            evt.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
 </body>
-   
 </html>
