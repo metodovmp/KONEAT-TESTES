@@ -123,59 +123,7 @@
             text-align: center;
         }
 
-        .message-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            max-width: 80%;
-            margin-bottom: 12px;
-            width: 100%;
-        }
-
-        .message-row.incoming {
-            align-self: flex-start;
-        }
-
-        .message-row.outgoing {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
-        .avatar-msg {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #000000;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .bubble {
-            padding: 12px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .incoming .bubble {
-            background: #f0f0f2;
-            color: #000000;
-            border-bottom-left-radius: 4px;
-        }
-
-        .outgoing .bubble {
-            background: #6c5ce7;
-            color: #ffffff;
-            border-bottom-right-radius: 4px;
-        }
-
-        /* Rodapé / Barra de Entrada Idêntica ao Instagram */
+        /* Rodapé / Barra de Entrada Estilo Instagram */
         .chat-input-bar {
             padding: 10px 16px 20px 16px;
             background: #ffffff;
@@ -187,7 +135,7 @@
             flex: 1;
             display: flex;
             align-items: center;
-            background: #efefef; /* Tom cinza suave padrão Instagram */
+            background: #efefef; /* Tom cinza suave */
             border-radius: 24px;
             padding: 8px 14px;
             gap: 12px;
@@ -204,17 +152,18 @@
             color: #000000;
         }
 
+        /* Campo de Texto com Digitação em Preto Forçada */
         .message-input {
             flex: 1;
             border: none;
             background: transparent;
             font-size: 14px;
             outline: none;
-            color: #000000;
+            color: #000000 !important; /* Texto digitado em preto */
         }
 
         .message-input::placeholder {
-            color: #8e8e93;
+            color: #8e8e93; /* Placeholder cinza */
         }
 
         .input-actions-right {
@@ -272,7 +221,7 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                 </button>
                 
-                <!-- Campo de Texto -->
+                <!-- Campo de Texto com Digitação em Preto -->
                 <input type="text" class="message-input" placeholder="Mensagem...">
                 
                 <!-- Ícones à Direita (Enviar, Microfone, Galeria) -->
