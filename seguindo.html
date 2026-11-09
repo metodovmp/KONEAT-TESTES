@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koneat - Seguindo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .connections-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .search-bar-container {
+            padding: 12px 16px;
+            background: #ffffff;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #dbdbdb;
+            background: #fafafa;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-wrapper svg {
+            position: absolute;
+            left: 14px;
+            stroke: #8e8e93;
+        }
+        .tabs-connections {
+            display: flex;
+            border-bottom: 1px solid #efefef;
+            background: #fff;
+        }
+        .tab-conn-btn {
+            flex: 1;
+            padding: 14px 0;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #8e8e93;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-conn-btn.active {
+            color: #000;
+            border-bottom: 2px solid #000;
+        }
+        .empty-connections {
+            padding: 80px 20px;
+            text-align: center;
+            color: #8e8e93;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="connections-header">
+            <a href="./passo1.html" class="icon-btn" aria-label="Voltar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </a>
+            <h1 style="font-size: 18px; font-weight: 700;">@koneat_user</h1>
+        </header>
+
+        <!-- Barra de Pesquisa -->
+        <div class="search-bar-container">
+            <div class="search-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="search-input" placeholder="Encontre pessoas">
+            </div>
+        </div>
+
+        <!-- Abas Superiores -->
+        <div class="tabs-connections">
+            <button class="tab-conn-btn active">Seguindo</button>
+            <button class="tab-conn-btn" onclick="alert('Funcionalidade de remoção em breve')">Remover</button>
+            <button class="tab-conn-btn" onclick="alert('Funcionalidade de bloqueio em breve')">Bloquear</button>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div class="empty-connections">
+            Você ainda não segue ninguém.
+        </div>
+    </div>
+
+</body>
+  <
+    /html>
