@@ -25,13 +25,13 @@
             position: relative;
         }
 
-        /* Cabeçalho */
+        /* Cabeçalho Sem Linha Cinza (Borda Transparente) */
         .chat-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 12px 16px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid transparent;
             background: #ffffff;
             position: sticky;
             top: 0;
@@ -102,17 +102,26 @@
             align-items: center;
             justify-content: center;
             color: #000000;
+            text-decoration: none;
         }
 
-        /* Área de Mensagens */
+        /* Área Principal de Mensagens */
         .chat-messages {
             flex: 1;
             padding: 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            justify-content: center;
+            align-items: center;
             background: #ffffff;
+        }
+
+        /* Mensagem de Estado Vazio */
+        .empty-chat-msg {
+            color: #8e8e93;
+            font-size: 15px;
+            text-align: center;
         }
 
         .message-row {
@@ -120,6 +129,8 @@
             align-items: flex-end;
             gap: 8px;
             max-width: 80%;
+            margin-bottom: 12px;
+            width: 100%;
         }
 
         .message-row.incoming {
@@ -160,12 +171,12 @@
         }
 
         .outgoing .bubble {
-            background: #6c5ce7; /* Roxo característico do Koneat */
+            background: #6c5ce7;
             color: #ffffff;
             border-bottom-right-radius: 4px;
         }
 
-        /* Barra de Entrada Inferior */
+        /* Barra de Entrada Inferior Clean */
         .chat-input-bar {
             padding: 10px 16px 20px 16px;
             background: #ffffff;
@@ -219,10 +230,10 @@
 <body class="light-theme">
 
     <div class="chat-container">
-        <!-- Header -->
+        <!-- Header sem borda cinza -->
         <header class="chat-header">
             <div class="header-left">
-                <a href="./passo1.html" class="icon-action-btn" aria-label="Voltar">
+                <a href="./mensagens.html" class="icon-action-btn" aria-label="Voltar">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </a>
                 <div class="user-info-header">
@@ -230,7 +241,6 @@
                     <div class="user-titles">
                         <div class="name-row">
                             <span class="user-name-title">KONEAT</span>
-                            <!-- Selo Verificado Azul -->
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="#0095f6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                         </div>
                         <span class="status-sub">Online há 2 h</span>
@@ -251,43 +261,9 @@
             </div>
         </header>
 
-        <!-- Área de Conversa -->
+        <!-- Área Central com Mensagem Clean -->
         <main class="chat-messages" id="chatMessages">
-            <div class="message-row outgoing">
-                <div class="bubble">Olá KONEAT! 👋</div>
-            </div>
-
-            <div class="message-row incoming">
-                <div class="avatar-msg">K</div>
-                <div class="bubble">Olá! Como posso ajudar você hoje?</div>
-            </div>
-
-            <div class="message-row outgoing">
-                <div class="bubble">Quero saber mais sobre o KONEAT lite.</div>
-            </div>
-
-            <div class="message-row incoming">
-                <div class="avatar-msg">K</div>
-                <div class="bubble">Claro! O KONEAT lite é uma versão simplificada da nossa plataforma, feita para você compartilhar, se conectar e explorar conteúdos incríveis.</div>
-            </div>
-
-            <div class="message-row outgoing">
-                <div class="bubble">Top! E como posso começar?</div>
-            </div>
-
-            <div class="message-row incoming">
-                <div class="avatar-msg">K</div>
-                <div class="bubble">É muito fácil! Basta criar sua conta, personalizar seu perfil e começar a explorar o feed. 🚀</div>
-            </div>
-
-            <div class="message-row outgoing">
-                <div class="bubble">Show! Obrigado! 🙏</div>
-            </div>
-
-            <div class="message-row incoming">
-                <div class="avatar-msg">K</div>
-                <div class="bubble">Sempre por aqui! 🤝<br>Equipe KONEAT.</div>
-            </div>
+            <div class="empty-chat-msg">Suas mensagens aparecerão aqui.</div>
         </main>
 
         <!-- Input Inferior -->
@@ -313,5 +289,4 @@
     </div>
 
 </body>
-  </html>
-  
+</html>
