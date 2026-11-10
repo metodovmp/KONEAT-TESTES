@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Koneat - Perfil</title>
+<style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#000;padding-bottom:80px}.top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fff;z-index:10}.logo{font-size:22px;font-weight:800;letter-spacing:-.8px}.wrap{padding:16px}.avatar{width:90px;height:90px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.stats{display:flex;gap:20px;margin:14px 0}.stats b{display:block}.btn{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;background:#fff;font-weight:700;cursor:pointer;margin-top:8px}.btn-dark{background:#000;color:#fff;border-color:#000}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.grid div{aspect-ratio:1;background:#f2f2f7;overflow:hidden;position:relative}.grid img,.grid video{width:100%;height:100%;object-fit:cover}.badge{position:absolute;top:6px;right:6px;background:#000;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px}.empty{text-align:center;padding:40px 20px;color:#8e8e93}.tabs{display:flex;gap:24px;padding:0 16px;border-bottom:1px solid #eee}.tabs button{border:none;background:none;padding:12px 0;font-weight:700;cursor:pointer}.bottom{position:fixed;bottom:0;left:0;right:0;height:62px;background:#121214;border-radius:20px 20px 0 0;display:flex;justify-content:space-around;align-items:center;z-index:99}.bottom a{width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:#8e8e93;text-decoration:none}.bottom a svg{width:24px;height:24px}</style></head>
+<body>
+<header class="top"><div class="logo">koneat</div><div>⋯</div></header>
+<div class="wrap"><div class="avatar" id="avatar">K</div><h2 id="name" style="margin:12px 0 4px">@koneat_user</h2><p id="bio" style="color:#555;margin:0">Perfil Koneat</p>
+<div class="stats"><div><b id="cPosts">0</b>posts</div><div><b>0</b>seguidores</div><div><b>0</b>seguindo</div></div>
+<button class="btn btn-dark" id="btnCreate">Crie seu primeiro post</button>
+<button class="btn" id="btnCreate2" style="display:none">Crie um outro post</button></div>
+<div class="tabs"><button>Todos</button><button>Reposts</button><button>Marcações</button></div>
+<div id="grid" class="grid"></div><div id="empty" class="empty"></div>
+<nav class="bottom">
+<a href="./passo4.html"><svg viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg></a>
+<a href="./passo3.html"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8"/><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+<a href="./passo2.html"><svg viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><polygon points="10,8 16,12 10,16"/></svg></a>
+<a href="./passo1.html"><svg viewBox="0 0 24 24" fill="#fff"><path d="M22 20v-7.826a2 2 0 0 0-.613-1.43l-8-7.826a2 2 0 0 0-2.774 0l-8 7.826A2 2 0 0 0 2 12.174V20a2 2 0 0 0 2 2h4.5a.5.5 0 0 0 .5-.5v-5a2.5 2.5 0 0 1 5 0v5a.5.5 0 0 0 .5.5H19a2 2 0 0 0 2-2z"/></svg></a>
+</nav>
+<script>
+function getPosts(){return JSON.parse(localStorage.getItem('koneat_posts')||'[]')}
+function render(){
+  // PERFIL: FEED + VIRAL. STORY NUNCA entra aqui.
+  let posts=getPosts().filter(p=>p.tipo!=='STORY');
+  document.getElementById('cPosts').textContent=posts.length;
+  let btn=document.getElementById('btnCreate'), btn2=document.getElementById('btnCreate2');
+  btn.style.display=posts.length===0?'block':'none'; btn2.style.display=posts.length>0?'block':'none';
+  btn.onclick=btn2.onclick=()=>location.href='./criar.html';
+  document.getElementById('grid').innerHTML=posts.map(p=>{
+    let m=p.midia||p.url||''; let isV=(m.startsWith('data:video')||/\.mp4/i.test(m));
+    return `<div>${isV?`<video src="${m}" muted playsinline></video>`:`<img src="${m}">`}${p.tipo==='VIRAL'?'<span class="badge">VIRAL</span>':''}</div>`;
+  }).join('');
+  document.getElementById('empty').innerHTML=posts.length===0?'Nenhum post ainda.<br>Poste pelo Perfil ou pelo + que fica salvo aqui.':'';
+}
+document.addEventListener('DOMContentLoaded',render);
+</script></body></html>
