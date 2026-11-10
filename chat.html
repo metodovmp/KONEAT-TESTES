@@ -3,533 +3,216 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KONEAT - Chat</title>
-
+<title>Koneat - Criar Publicação</title>
 <style>
-* {
-    box-sizing: border-box;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    font-family: -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-.chat-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 480px;
-    height: 100vh;
-    height: 100dvh;
-    margin: 0 auto;
-    background: #fff;
-    overflow: hidden;
-}
-
-/* CABEÇALHO */
-
-.chat-header {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: #fff;
-    min-height: 76px;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.user-info-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.avatar-chat {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #000;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 21px;
-    font-weight: 800;
-}
-
-.user-titles {
-    display: flex;
-    flex-direction: column;
-}
-
-.name-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.user-name-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: #000;
-}
-
-.status-sub {
-    font-size: 12px;
-    color: #8e8e93;
-}
-
-.header-actions-chat {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.icon-action-btn {
-    border: none;
-    background: none;
-    padding: 2px;
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-/* ÁREA DAS MENSAGENS COM RESERVA PARA NÃO COBRIR */
-
-.chat-messages {
-    flex: 1;
-    min-height: 0;
-    padding: 16px;
-    padding-bottom: 100px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #fff;
-}
-
-.empty-chat-msg {
-    color: #8e8e93;
-    font-size: 15px;
-    text-align: center;
-}
-
-/* RODAPÉ REALMENTE NO LIMITE INFERIOR DA TELA */
-
-.chat-input-bar {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-
-    width: 100%;
-    max-width: 480px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 0 20px;
-    margin: 0;
-
-    background: #fff;
-    z-index: 100;
-}
-
-/* CARD CINZA */
-
-.input-wrapper {
-    width: 100%;
-    min-height: 68px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 6px 12px;
-    gap: 8px;
-
-    margin: 0;
-    border-radius: 40px;
-    background: #f1f1f3;
-}
-
-/* ÍCONES */
-
-.btn-input-icon {
-    width: 30px;
-    height: 38px;
-    flex-shrink: 0;
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    background: transparent;
-    color: #000;
-    cursor: pointer;
-}
-
-.btn-input-icon svg {
-    width: 20px;
-    height: 30px;
-    display: block;
-}
-
-/* CÂMERA PRETA */
-
-.camera-icon {
-    width: 36px;
-    height: 38px;
-}
-
-.camera-icon svg {
-    width: 30px;
-    height: 30px;
-}
-
-/* CAMPO DE MENSAGEM */
-
-.message-input {
-    flex: 1;
-    min-width: 0;
-    height: 40px;
-
-    border: none;
-    outline: none;
-    background: transparent;
-
-    font-size: 15px;
-    color: #000;
-    padding: 0;
-}
-
-.message-input::placeholder {
-    color: #898991;
-    opacity: 1;
-}
-
-/* ÍCONES DA DIREITA */
-
-.input-actions-right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    flex-shrink: 0;
-}
-
-/* TELAS PEQUENAS */
-
-@media (max-width: 360px) {
-
-    .chat-input-bar {
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-    .input-wrapper {
-        gap: 7px;
-        padding: 6px 10px;
-        min-height: 66px;
-    }
-
-    .input-actions-right {
-        gap: 5px;
-    }
-
-    .btn-input-icon {
-        width: 30px;
-    }
-
-    .btn-input-icon svg {
-        width: 20px;
-        height: 30px;
-    }
-
-    .camera-icon {
-        width: 36px;
-    }
-
-    .camera-icon svg {
-        width: 30px;
-        height: 30px;
-    }
-}
-
+body.dark-create-theme{background:#000;color:#fff;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column;justify-content:space-between}
+.create-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;border-bottom:1px solid rgba(255,255,255,.08)}
+.btn-close{background:none;border:none;color:#fff;cursor:pointer;padding:4px;display:flex;text-decoration:none}
+.type-selector-tabs{display:flex;gap:16px}
+.type-tab{background:none;border:none;color:#8e8e93;font-size:14px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;padding:4px 0}
+.type-tab.active{color:#fff;border-bottom:2px solid #fff}
+.btn-advance-top{background:#262626;color:#8e8e93;border:none;font-size:14px;font-weight:600;cursor:not-allowed;padding:8px 16px;border-radius:20px}
+.btn-advance-top.active{background:#fff;color:#000;cursor:pointer}
+.gallery-controls-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+.btn-gallery-dropdown{background:none;border:none;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer}
+.create-preview-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#8e8e93;font-size:15px;font-weight:500;cursor:pointer;position:relative;overflow:hidden;background:#000}
+.preview-placeholder-content{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.create-preview-area video,.create-preview-area img{width:100%;height:100%;object-fit:contain;position:absolute;top:0;left:0}
+.caption-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.95);z-index:100;display:none;flex-direction:column;padding:20px;box-sizing:border-box}
+.caption-modal.show{display:flex}
+.caption-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.caption-header h2{font-size:18px;margin:0;font-weight:700}
+.btn-back-caption,.btn-publish-final{background:none;border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.btn-publish-final{color:#00ff88}
+.caption-body{display:flex;gap:16px;align-items:flex-start}
+.caption-thumbnail{width:84px;height:84px;border-radius:12px;object-fit:cover;background:#222}
+.caption-textarea{flex:1;height:120px;background:transparent;border:none;color:#fff;font-size:15px;resize:none;outline:none;font-family:inherit}
+.caption-textarea::placeholder{color:#8e8e93}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center}
+.loading-overlay.show{display:flex}
+.loading-box{background:#18181b;border:1px solid rgba(255,255,255,.1);padding:24px 28px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.2);border-top-color:#00ff88;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:15px;font-weight:600;color:#fff}
 </style>
 </head>
-
-<body>
-
-<div class="chat-container">
-
-    <!-- CABEÇALHO -->
-
-    <header class="chat-header">
-
-        <div class="header-left">
-
-            <a href="./mensagens.html"
-               class="icon-action-btn"
-               aria-label="Voltar">
-
-                <svg width="25" height="25"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2.7"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-
-            </a>
-
-            <div class="user-info-header">
-
-                <div class="avatar-chat">K</div>
-
-                <div class="user-titles">
-
-                    <div class="name-row">
-
-                        <span class="user-name-title">
-                            KONEAT
-                        </span>
-
-                        <svg width="15" height="15"
-                             viewBox="0 0 24 24"
-                             fill="#0095f6">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-
-                    </div>
-
-                    <span class="status-sub">
-                        Online há 2 h
-                    </span>
-
-                </div>
-
-            </div>
-        </div>
-
-        <div class="header-actions-chat">
-
-            <!-- TELEFONE -->
-
-            <button class="icon-action-btn"
-                    aria-label="Chamada de voz">
-
-                <svg width="30" height="30"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2
-                    19.79 19.79 0 0 1-8.63-3.07
-                    19.5 19.5 0 0 1-6-6
-                    19.79 19.79 0 0 1-3.07-8.67
-                    A2 2 0 0 1 4.11 2h3
-                    a2 2 0 0 1 2 1.72
-                    12.84 12.84 0 0 0 .7 2.81
-                    2 2 0 0 1-.45 2.11L8.09 9.91
-                    a16 16 0 0 0 6 6l1.27-1.27
-                    a2 2 0 0 1 2.11-.45
-                    12.84 12.84 0 0 0 2.81.7
-                    A2 2 0 0 1 22 16.92z"/>
-                </svg>
-
-            </button>
-
-            <!-- VÍDEO -->
-
-            <button class="icon-action-btn"
-                    aria-label="Chamada de vídeo">
-
-                <svg width="32" height="30"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <rect x="2" y="5" width="14"
-                          height="14" rx="2"/>
-                    <path d="M16 10l6-4v12l-6-4"/>
-                </svg>
-
-            </button>
-
-            <!-- INFORMAÇÕES -->
-
-            <button class="icon-action-btn"
-                    aria-label="Informações">
-
-                <svg width="30" height="30"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 16v-4"/>
-                    <path d="M12 8h.01"/>
-                </svg>
-
-            </button>
-
-        </div>
-    </header>
-
-    <!-- ÁREA DA CONVERSA -->
-
-    <main class="chat-messages" id="chatMessages">
-
-        <div class="empty-chat-msg">
-            Suas mensagens aparecerão aqui.
-        </div>
-
-    </main>
-
-    <!-- RODAPÉ PADRÃO KONEAT -->
-
-    <footer class="chat-input-bar">
-
-        <div class="input-wrapper">
-
-            <!-- CÂMERA -->
-
-            <button class="btn-input-icon camera-icon"
-                    aria-label="Câmera">
-
-                <svg viewBox="0 0 40 40"
-                     xmlns="http://www.w3.org/2000/svg">
-
-                    <path fill="#000"
-                    d="M13 5h14l3 4h4
-                    c2.2 0 4 1.8 4 4v18
-                    c0 2.2-1.8 4-4 4H6
-                    c-2.2 0-4-1.8-4-4V13
-                    c0-2.2 1.8-4 4-4h4z"/>
-
-                    <circle cx="20" cy="21"
-                            r="9" fill="#fff"/>
-
-                    <circle cx="20" cy="21"
-                            r="5.5" fill="#000"/>
-
-                </svg>
-
-            </button>
-
-            <!-- CAMPO DE MENSAGEM -->
-
-            <input
-                type="text"
-                class="message-input"
-                placeholder="Mensagem..."
-                aria-label="Escrever mensagem"
-            >
-
-            <div class="input-actions-right">
-
-                <!-- ENCAMINHAR -->
-
-                <button class="btn-input-icon"
-                        aria-label="Encaminhar">
-
-                    <svg viewBox="0 0 24 24"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="1.9"
-                         stroke-linecap="round"
-                         stroke-linejoin="round">
-
-                        <path d="M22 2L11 13"/>
-                        <path d="M22 2L15 22l-4-9-9-4z"/>
-
-                    </svg>
-
-                </button>
-
-                <!-- ÁUDIO -->
-
-                <button class="btn-input-icon"
-                        aria-label="Gravar áudio">
-
-                    <svg viewBox="0 0 24 24"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="1.9"
-                         stroke-linecap="round"
-                         stroke-linejoin="round">
-
-                        <rect x="9" y="2" width="6"
-                              height="13" rx="3"/>
-
-                        <path d="M5 11a7 7 0 0 0 14 0"/>
-                        <path d="M12 18v4"/>
-                        <path d="M8 22h8"/>
-
-                    </svg>
-
-                </button>
-
-                <!-- GALERIA -->
-
-                <button class="btn-input-icon"
-                        aria-label="Galeria">
-
-                    <svg viewBox="0 0 24 24"
-                         fill="none"
-                         stroke="currentColor"
-                         stroke-width="1.9"
-                         stroke-linecap="round"
-                         stroke-linejoin="round">
-
-                        <rect x="2.5" y="2.5"
-                              width="19" height="19"
-                              rx="3.5"/>
-
-                        <circle cx="8" cy="8"
-                                r="1.5"/>
-
-                        <path d="M21.5 15l-6-6L5 19.5"/>
-
-                    </svg>
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </footer>
-
+<body class="dark-create-theme">
+<header class="create-header">
+<a href="./passo1.html" class="btn-close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></a>
+<div class="type-selector-tabs">
+<button type="button" class="type-tab active" data-type="post">POST</button>
+<button type="button" class="type-tab" data-type="video">VÍDEO</button>
+<button type="button" class="type-tab" data-type="viral">VIRAL</button>
 </div>
-
+<button type="button" class="btn-advance-top" id="btnAdvance">Avançar</button>
+</header>
+<div class="gallery-controls-bar">
+<button type="button" class="btn-gallery-dropdown">Galeria <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+</div>
+<main class="create-preview-area" id="previewContainer">
+<div class="preview-placeholder-content" id="placeholderContent">
+<svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+<span id="previewText">Capture o momento com um amigo</span>
+</div>
+</main>
+<div class="caption-modal" id="captionModal">
+<div class="caption-header"><button type="button" class="btn-back-caption" id="closeModalBtn">Voltar</button><h2>Nova publicação</h2><button type="button" class="btn-publish-final" id="publishFinalBtn">Compartilhar</button></div>
+<div class="caption-body"><img id="modalThumbnail" class="caption-thumbnail" src="" alt="Thumbnail"><textarea id="postCaptionInput" class="caption-textarea" placeholder="Escreva uma legenda..."></textarea></div>
+</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><div class="spinner"></div><span class="loading-text">Sua publicação está sendo postada</span></div></div>
+<input type="file" id="fileInput" accept="image/*,video/*" style="display:none;">
+<script>
+let selectedType = 'post';
+let mediaDataUrl = null;
+let mediaType = null;
+let selectedFile = null;
+let selectedFormato = '1:1';
+let selectedDur = 0;
+let selectedCapa = '';
+let isPublishing = false;
+const tabs = document.querySelectorAll('.type-tab');
+const previewText = document.getElementById('previewText');
+const fileInput = document.getElementById('fileInput');
+const previewContainer = document.getElementById('previewContainer');
+const placeholderContent = document.getElementById('placeholderContent');
+const btnAdvance = document.getElementById('btnAdvance');
+const captionModal = document.getElementById('captionModal');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const publishFinalBtn = document.getElementById('publishFinalBtn');
+const modalThumbnail = document.getElementById('modalThumbnail');
+const postCaptionInput = document.getElementById('postCaptionInput');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const userId = localStorage.getItem('koneat_userId')||'user_'+Date.now();
+localStorage.setItem('koneat_userId', userId);
+const username = localStorage.getItem('koneat_username')||'koneat_user';
+function getFormato(file, callback){
+  if(file.type.startsWith('image')){
+    const img=new Image(); img.onload=()=>{ let r=img.width/img.height; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; img.src=URL.createObjectURL(file);
+  } else {
+    const v=document.createElement('video'); v.onloadedmetadata=()=>{ let r=v.videoWidth/v.videoHeight; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; v.src=URL.createObjectURL(file);
+  }
+}
+function validar(file,dur,tipoAba){
+  const mb=file.size/1024/1024;
+  if(tipoAba==='viral'){
+    if(!file.type.startsWith('video')) return {ok:false,msg:'VIRAL só aceita vídeo'};
+    if(mb>50) return {ok:false,msg:'Somente Viral de 1:30 minutos até 50MB'};
+    if(dur<=90) return {ok:true};
+    if(dur>90&&dur<=95) return {ok:true,trim:90};
+    if(dur>95) return {ok:false,msg:'Somente Viral de 1:30 minutos'};
+  }
+  if(tipoAba==='post'){
+    if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'POST até 10MB'};
+    if(file.type.startsWith('video')){
+      if(mb>100) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+      if(dur>185) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+    }
+    return {ok:true};
+  }
+  if(tipoAba==='video'){
+    if(!file.type.startsWith('video')) return {ok:false,msg:'VÍDEO só aceita vídeo'};
+    if(mb>100) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+    if(dur<=180) return {ok:true};
+    if(dur>180&&dur<=185) return {ok:true,trim:180};
+    if(dur>185) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+  }
+  return {ok:true};
+}
+function salvar(dados){
+  const isViral = dados.aba === 'viral';
+  const now = Date.now();
+  const novo = { id: now, tipo: isViral ? 'VIRAL' : 'FEED', type: isViral ? 'viral' : 'home', subTipo: dados.aba, origem: 'perfil', midia: dados.midia, url: dados.midia, mediaType: dados.midia.startsWith('data:video') ? 'video' : 'image', capa: dados.capa || '', formato: dados.formato || '1:1', legenda: dados.legenda || '', caption: dados.legenda || '', data: now, createdAt: now, author: username, userId: userId, reacoes: { likes: 0, comentarios: [] } };
+  let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
+  todos.unshift(novo);
+  localStorage.setItem('koneat_posts', JSON.stringify(todos));
+  return novo;
+}
+function postarPerfil(aba, midia, capa, formato, legenda){
+  const novo = salvar({aba, midia, capa, formato, legenda});
+  if(novo.tipo === 'VIRAL') location.href = 'passo2.html';
+  else location.href = 'passo4.html';
+}
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    selectedType = tab.dataset.type;
+    if (selectedType === 'post') previewText.textContent = 'Capture o momento com um amigo';
+    if (selectedType === 'video') previewText.textContent = 'Selecione um vídeo (até 3 min)';
+    if (selectedType === 'viral') previewText.textContent = 'Crie um vídeo viral (até 1m30s)';
+  });
+});
+previewContainer.addEventListener('click', (e) => {
+  if (e.target === previewContainer || placeholderContent.contains(e.target)) fileInput.click();
+});
+function getDuracao(file){
+  return new Promise((res)=>{
+    if(file.type.startsWith('image')) return res(0);
+    const v=document.createElement('video'); v.preload='metadata';
+    v.onloadedmetadata=()=>{ URL.revokeObjectURL(v.src); res(v.duration||0); };
+    v.onerror=()=>res(0); v.src=URL.createObjectURL(file);
+  });
+}
+function gerarCapaVideo(file){
+  return new Promise((res)=>{
+    let done = false;
+    const finish = (val)=>{ if(!done){ done=true; res(val); } };
+    const v=document.createElement('video'); v.muted=true; v.preload='auto';
+    v.onloadeddata=()=>{ try{ v.currentTime=0.1; }catch(e){ finish(''); } };
+    v.onseeked=()=>{ try{ const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; c.getContext('2d').drawImage(v,0,0); finish(c.toDataURL('image/jpeg',0.7)); }catch(e){ finish(''); } URL.revokeObjectURL(v.src); };
+    v.onerror=()=>finish(''); v.src=URL.createObjectURL(file);
+    setTimeout(()=>finish(''),1500);
+  });
+}
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const dur = await getDuracao(file);
+  const v = validar(file, dur, selectedType);
+  if (!v || !v.ok){ alert(v.msg); fileInput.value=''; return; }
+  if ((selectedType==='viral'||selectedType==='video') && !file.type.startsWith('video')){ alert('Escolha um vídeo para VÍDEO / VIRAL'); fileInput.value=''; return; }
+  selectedFile = file;
+  selectedDur = dur;
+  getFormato(file, (f)=>{ selectedFormato = f; });
+  if (file.type.startsWith('video')) selectedCapa = await gerarCapaVideo(file);
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    mediaDataUrl = ev.target.result;
+    mediaType = file.type.startsWith('video') ? 'video' : 'image';
+    if (placeholderContent) placeholderContent.remove();
+    const old = previewContainer.querySelector('video, img');
+    if (old) old.remove();
+    if (mediaType === 'video'){
+      const el=document.createElement('video'); el.src=mediaDataUrl; el.controls=true; el.autoplay=true; el.playsInline=true; previewContainer.appendChild(el);
+      modalThumbnail.src = selectedCapa || '';
+    } else {
+      const el=document.createElement('img'); el.src=mediaDataUrl; previewContainer.appendChild(el);
+      modalThumbnail.src = mediaDataUrl;
+    }
+    btnAdvance.classList.add('active');
+  };
+  reader.readAsDataURL(file);
+});
+btnAdvance.addEventListener('click', () => { if (!mediaDataUrl) return; captionModal.classList.add('show'); });
+closeModalBtn.addEventListener('click', () => { captionModal.classList.remove('show'); });
+publishFinalBtn.addEventListener('click', async () => {
+  if (!mediaDataUrl || !selectedFile || isPublishing) return;
+  isPublishing = true;
+  publishFinalBtn.disabled = true;
+  loadingOverlay.classList.add('show');
+  try {
+    const v = validar(selectedFile, selectedDur, selectedType);
+    if (!v || !v.ok){ alert(v.msg); return; }
+    const legenda = postCaptionInput.value || '';
+    postarPerfil(selectedType, mediaDataUrl, selectedCapa, selectedFormato, legenda);
+  } catch(err){
+    alert('Não consegui publicar. Tenta um arquivo menor.');
+  } finally {
+    loadingOverlay.classList.remove('show');
+    publishFinalBtn.disabled = false;
+    isPublishing = false;
+  }
+});
+</script>
 </body>
 </html>
