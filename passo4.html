@@ -5,411 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
     <title>Koneat - Home</title>
-
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-            color: #000000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
-        }
-
-        button {
-            font-family: inherit;
-        }
-
-        /* CABEÇALHO COM LINHA SEPARADORA */
-        .home-header {
-            position: sticky;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 56px;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            z-index: 100;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .home-logo {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.8px;
-            color: #000000;
-        }
-
-        .home-header-icons {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .icon-top-btn {
-            background: none;
-            border: none;
-            color: #000000;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .icon-top-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* SUBNAV COM INDICADOR MÓVEL FLUIDO */
-        .home-subnav {
-            position: sticky;
-            top: 56px;
-            width: 100%;
-            height: 42px;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding: 0 16px;
-            z-index: 90;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .subnav-tab {
-            position: relative;
-            background: none;
-            border: none;
-            padding: 0 0 8px 0;
-            font-size: 15px;
-            font-weight: 500;
-            color: #8e8e93;
-            cursor: pointer;
-            transition: color 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .subnav-tab.active {
-            color: #000000;
-            font-weight: 700;
-        }
-
-        /* Indicador animado que desliza entre as abas */
-        .subnav-indicator {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 2px;
-            background: #000000;
-            border-radius: 2px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* WRAPPER PARA POSICIONAR O INDICADOR CORRETAMENTE */
-        .subnav-wrapper {
-            position: sticky;
-            top: 56px;
-            background: #ffffff;
-            z-index: 90;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .home-subnav-inner {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding: 0 16px;
-            height: 42px;
-            position: relative;
-        }
-
-        /* FEED CONTAINER */
-        .home-feed-container {
-            width: 100%;
-            padding-bottom: 80px;
-        }
-
-        /* STORIES */
-        .stories-bar {
-            width: 100%;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 16px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .stories-bar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .story-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-
-        .story-avatar {
-            width: 66px;
-            height: 66px;
-            border-radius: 50%;
-            background: #e5e5ea;
-            border: 1px solid #d1d1d6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .story-avatar svg {
-            width: 30px;
-            height: 30px;
-            color: #8e8e93;
-        }
-
-        .story-add-badge {
-            position: absolute;
-            bottom: 1px;
-            right: 1px;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #000000;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .story-username {
-            font-size: 12px;
-            color: #1c1c1e;
-            font-weight: 400;
-        }
-
-        /* PUBLICAÇÕES / POSTS */
-        .post-card {
-            width: 100%;
-            background: #ffffff;
-            border-bottom: 1px solid #efeff4;
-            margin-bottom: 12px;
-        }
-
-        .post-header {
-            width: 100%;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-        }
-
-        .post-author-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .author-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #000000;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .author-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #000000;
-        }
-
-        .btn-follow-home {
-            background: #000000;
-            color: #ffffff;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .post-media-wrapper {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: #f2f2f7;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .post-media-wrapper img,
-        .post-media-wrapper video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .post-media-wrapper video {
-            object-fit: contain;
-            background: #000;
-        }
-
-        .post-sound-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            border: none;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .post-sound-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .post-actions-bar {
-            width: 100%;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-        }
-
-        .post-actions-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .post-action-btn {
-            background: none;
-            border: none;
-            padding: 0;
-            color: #000000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .post-action-btn svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .post-caption-area {
-            padding: 0 16px 12px;
-            font-size: 14px;
-            color: #262626;
-        }
-
-        .post-caption-author {
-            font-weight: 600;
-            margin-right: 6px;
-        }
-
-        .empty-home-feed {
-            text-align: center;
-            padding: 60px 20px;
-            color: #8e8e93;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* NAVEGAÇÃO INFERIOR FIXA */
-        .bottom-nav-fixed {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 62px;
-            background: #121214;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            z-index: 999;
-            box-sizing: border-box;
-            padding: 0 10px;
-        }
-
-        .nav-link {
-            width: 48px;
-            height: 48px;
-            background: none;
-            border: none;
-            color: #8e8e93;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .nav-link svg {
-            width: 24px;
-            height: 24px;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; background: #ffffff; color: #000000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow-x: hidden; }
+        button { font-family: inherit; }
+        .home-header { position: sticky; top: 0; left: 0; width: 100%; height: 56px; background: #ffffff; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 100; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+        .home-logo { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.8px; color: #000000; }
+        .home-header-icons { display: flex; align-items: center; gap: 18px; }
+        .icon-top-btn { background: none; border: none; color: #000000; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .icon-top-btn svg { width: 24px; height: 24px; }
+        .subnav-wrapper { position: sticky; top: 56px; background: #ffffff; z-index: 90; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+        .home-subnav-inner { display: flex; align-items: center; gap: 24px; padding: 0 16px; height: 42px; position: relative; }
+        .subnav-tab { position: relative; background: none; border: none; padding: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #8e8e93; cursor: pointer; transition: color 0.2s ease; white-space: nowrap; }
+        .subnav-tab.active { color: #000000; font-weight: 700; }
+        .subnav-indicator { position: absolute; bottom: 0; left: 0; height: 2px; background: #000000; border-radius: 2px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .home-feed-container { width: 100%; padding-bottom: 80px; }
+        .stories-bar { width: 100%; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); overflow-x: auto; scrollbar-width: none; }
+        .stories-bar::-webkit-scrollbar { display: none; }
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; }
+        .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #e5e5ea; border: 1px solid #d1d1d6; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
+        .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
+        .story-add-badge { position: absolute; bottom: 1px; right: 1px; width: 22px; height: 22px; border-radius: 50%; background: #000000; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
+        .story-username { font-size: 12px; color: #1c1c1e; font-weight: 400; }
+        .post-card { width: 100%; background: #ffffff; border-bottom: 1px solid #efeff4; margin-bottom: 12px; }
+        .post-header { width: 100%; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+        .post-author-info { display: flex; align-items: center; gap: 10px; }
+        .author-avatar { width: 32px; height: 32px; border-radius: 50%; background: #000000; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+        .author-name { font-size: 14px; font-weight: 600; color: #000000; }
+        .btn-follow-home { background: #000000; color: #ffffff; border: none; padding: 6px 16px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .post-media-wrapper { width: 100%; aspect-ratio: 1 / 1; background: #f2f2f7; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .post-media-wrapper img, .post-media-wrapper video { width: 100%; height: 100%; object-fit: cover; }
+        .post-media-wrapper video { object-fit: contain; background: #000; }
+        .post-sound-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0, 0, 0, 0.6); border: none; color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
+        .post-sound-btn svg { width: 16px; height: 16px; }
+        .post-actions-bar { width: 100%; height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+        .post-actions-left { display: flex; align-items: center; gap: 16px; }
+        .post-action-btn { background: none; border: none; padding: 0; color: #000000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .post-action-btn svg { width: 24px; height: 24px; }
+        .post-action-btn.liked svg { fill: #e74c3c; stroke: #e74c3c; }
+        .post-action-btn.saved svg { fill: #000; }
+        .post-caption-area { padding: 0 16px 12px; font-size: 14px; color: #262626; }
+        .post-caption-author { font-weight: 600; margin-right: 6px; }
+        .empty-home-feed { text-align: center; padding: 60px 20px; color: #8e8e93; font-size: 14px; line-height: 1.5; }
+        .bottom-nav-fixed { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 62px; background: #121214; border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; align-items: center; justify-content: space-around; z-index: 999; box-sizing: border-box; padding: 0 10px; }
+        .nav-link { width: 48px; height: 48px; background: none; border: none; color: #8e8e93; display: flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; }
+        .nav-link svg { width: 24px; height: 24px; }
     </style>
 </head>
 <body>
-
-    <!-- CABEÇALHO -->
     <header class="home-header">
         <h1 class="home-logo">koneat</h1>
         <div class="home-header-icons">
-            <button type="button" class="icon-top-btn" aria-label="Pesquisar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </button>
-            <button type="button" class="icon-top-btn" aria-label="Notificações">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M12 2v2"/></svg>
-            </button>
+            <button type="button" class="icon-top-btn" aria-label="Pesquisar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+            <button type="button" class="icon-top-btn" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M12 2v2"/></svg></button>
         </div>
     </header>
-
-    <!-- SUBNAV COM LINHA E INDICADOR MÓVEL -->
     <div class="subnav-wrapper">
         <nav class="home-subnav-inner" id="subnavContainer">
             <button type="button" class="subnav-tab active" data-target="for-you">pra você</button>
@@ -418,81 +69,33 @@
             <div class="subnav-indicator" id="subnavIndicator"></div>
         </nav>
     </div>
-
-    <!-- FEED -->
     <main class="home-feed-container" id="homeFeedContainer">
-        <!-- STORIES -->
-        <section class="stories-bar">
-            <div class="story-item">
-                <div class="story-avatar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <div class="story-add-badge">+</div>
-                </div>
+        <section class="stories-bar" id="storiesBar">
+            <div class="story-item" onclick="window.location.href='./passo3.html'">
+                <div class="story-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="story-add-badge">+</div></div>
                 <span class="story-username">seu story</span>
             </div>
         </section>
-
-        <!-- PUBLICAÇÕES -->
-        <section id="postsDynamicFeed">
-            <div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>
-        </section>
+        <section id="postsDynamicFeed"><div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div></section>
     </main>
-
-    <!-- NAVEGAÇÃO INFERIOR FIXA -->
     <nav class="bottom-nav-fixed">
-        <!-- 1. HOME ATIVA (Versão oficial Instagram preenchida em branco) -->
-        <a href="./passo4.html" class="nav-link" aria-label="Home">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
-                <path d="M22 20v-7.826a2 2 0 0 0-.613-1.43l-8-7.826a2 2 0 0 0-2.774 0l-8 7.826A2 2 0 0 0 2 12.174V20a2 2 0 0 0 2 2h4.5a.5.5 0 0 0 .5-.5v-5a2.5 2.5 0 0 1 5 0v5a.5.5 0 0 0 .5.5H19a2 2 0 0 0 2-2z"/>
-            </svg>
-        </a>
-
-        <!-- 2. PLUS (Passo 3 - Gradinha oca e sinal de + em cinza) -->
-        <a href="./passo3.html" class="nav-link" aria-label="Criar">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect>
-                <path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-        </a>
-
-        <!-- 3. VÍDEOS (Passo 2 - Oco em cinza) -->
-        <a href="./passo2.html" class="nav-link" aria-label="Vídeos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5"/>
-                <polygon points="10,8 16,12 10,16" fill="none"/>
-            </svg>
-        </a>
-
-        <!-- 4. PERFIL (Passo 1 - Padronizado com o formato correto de ombros e linha inferior da cabeça) -->
-        <a href="./passo1.html" class="nav-link" aria-label="Perfil">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-        </a>
+        <a href="./passo4.html" class="nav-link" aria-label="Home"><svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff"><path d="M22 20v-7.826a2 2 0 0 0-.613-1.43l-8-7.826a2 2 0 0 0-2.774 0l-8 7.826A2 2 0 0 0 2 12.174V20a2 2 0 0 0 2 2h4.5a.5.5 0 0 0 .5-.5v-5a2.5 2.5 0 0 1 5 0v5a.5.5 0 0 0 .5.5H19a2 2 0 0 0 2-2z"/></svg></a>
+        <a href="./passo3.html" class="nav-link" aria-label="Criar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+        <a href="./passo2.html" class="nav-link" aria-label="Vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><polygon points="10,8 16,12 10,16" fill="none"/></svg></a>
+        <a href="./passo1.html" class="nav-link" aria-label="Perfil"><svg viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
     </nav>
-
-    <!-- JAVASCRIPT -->
     <script>
         const postsDynamicFeed = document.getElementById('postsDynamicFeed');
+        const storiesBar = document.getElementById('storiesBar');
         const subnavTabs = document.querySelectorAll('.subnav-tab');
         const indicator = document.getElementById('subnavIndicator');
-
         function updateIndicator(tab) {
+            if(!tab) return;
             indicator.style.width = `${tab.getBoundingClientRect().width}px`;
             indicator.style.left = `${tab.offsetLeft}px`;
         }
-
-        window.addEventListener('load', () => {
-            const activeTab = document.querySelector('.subnav-tab.active');
-            if (activeTab) updateIndicator(activeTab);
-        });
-
-        window.addEventListener('resize', () => {
-            const activeTab = document.querySelector('.subnav-tab.active');
-            if (activeTab) updateIndicator(activeTab);
-        });
-
+        window.addEventListener('load', () => updateIndicator(document.querySelector('.subnav-tab.active')));
+        window.addEventListener('resize', () => updateIndicator(document.querySelector('.subnav-tab.active')));
         subnavTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 subnavTabs.forEach(t => t.classList.remove('active'));
@@ -500,79 +103,77 @@
                 updateIndicator(tab);
             });
         });
-
+        function isVideoUrl(midia){
+          if(!midia) return false;
+          if(midia.startsWith('data:video')) return true;
+          if(midia.startsWith('data:image')) return false;
+          return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(midia);
+        }
         function renderHomeFeed() {
-            const userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
-            const viraisFeed = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
-            const allPostsMap = new Map();
-
-            [...userPosts, ...viraisFeed].forEach(post => {
-                if (post && post.id != null) {
-                    allPostsMap.set(String(post.id), post);
-                }
+            // REFINADO: lê da GAVETA ÚNICA - koneat_posts
+            let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
+            // Migra velhos se existirem
+            let velhos1 = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
+            velhos1.forEach(v=>{
+              if(!todos.some(t=>String(t.id)===String(v.id))){
+                todos.push({id:v.id, tipo:'FEED', type:'home', midia:v.url||v.midia||'', url:v.url||v.midia||'', legenda:v.caption||v.legenda||'', capa:'', data:Date.now(), userId:'user'});
+              }
             });
-
-            const combinedPosts = Array.from(allPostsMap.values());
-
-            if (combinedPosts.length === 0) {
+            // STORIES vão pra barra de cima - só STORY
+            let stories = todos.filter(p => p.tipo==='STORY' || p.type==='story');
+            // FEED vai pro feed - só FEED / home. VIRAL NÃO ENTRA NA HOME.
+            let feed = todos.filter(p => p.tipo==='FEED' || p.type==='home');
+            // Render Stories
+            let storiesHtml = `<div class="story-item" onclick="window.location.href='./passo3.html'"><div class="story-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="story-add-badge">+</div></div><span class="story-username">seu story</span></div>`;
+            storiesHtml += stories.map(s=>{
+              const midia = s.midia || s.url || '';
+              const capa = s.capa || midia;
+              return `<div class="story-item"><div class="story-avatar">${isVideoUrl(midia) ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></div>`;
+            }).join('');
+            storiesBar.innerHTML = storiesHtml;
+            if (feed.length === 0) {
                 postsDynamicFeed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
                 return;
             }
-
-            postsDynamicFeed.innerHTML = combinedPosts.map(item => {
-                const isVideo = item.type === 'video';
-                const authorName = item.author || 'Eributtler';
-                const caption = item.caption || '';
+            postsDynamicFeed.innerHTML = feed.map(item => {
+                const midia = item.midia || item.url || '';
+                const isVideo = isVideoUrl(midia);
+                const authorName = item.author || 'koneat_user';
+                const caption = item.legenda || item.caption || '';
                 const postId = item.id;
-
+                const isLiked = localStorage.getItem(`koneat_like_${postId}`)==='true';
+                const isSaved = localStorage.getItem(`koneat_save_${postId}`)==='true';
                 return `
                     <article class="post-card" data-post-id="${postId}">
                         <div class="post-header">
-                            <div class="post-author-info">
-                                <div class="author-avatar">${authorName.charAt(0).toUpperCase()}</div>
-                                <span class="author-name">${authorName}</span>
-                            </div>
+                            <div class="post-author-info"><div class="author-avatar">${authorName.charAt(0).toUpperCase()}</div><span class="author-name">@${authorName}</span></div>
                             <button type="button" class="btn-follow-home">Seguir</button>
                         </div>
                         <div class="post-media-wrapper">
-                            ${isVideo ? 
-                                `<video src="${item.url}" autoplay loop muted playsinline></video>
-                                 <button type="button" class="post-sound-btn" aria-label="Som">
-                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-                                 </button>` : 
-                                `<img src="${item.url}" alt="Publicação">`
-                            }
+                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><button type="button" class="post-sound-btn" aria-label="Som"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
                         </div>
                         <div class="post-actions-bar">
                             <div class="post-actions-left">
-                                <button type="button" class="post-action-btn" aria-label="Curtir">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                                </button>
-                                <button type="button" class="post-action-btn" aria-label="Comentar">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                </button>
-                                <button type="button" class="post-action-btn" aria-label="Compartilhar">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v-1a7 7 0 0 1 7-7h9"/><polyline points="16 8 20 4 16 0"/></svg>
-                                </button>
+                                <button type="button" class="post-action-btn btn-like ${isLiked?'liked':''}" data-id="${postId}" aria-label="Curtir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+                                <button type="button" class="post-action-btn" aria-label="Comentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                                <button type="button" class="post-action-btn" aria-label="Compartilhar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v-1a7 7 0 0 1 7-7h9"/><polyline points="16 8 20 4 16 0"/></svg></button>
                             </div>
-                            <button type="button" class="post-action-btn" aria-label="Salvar">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                            </button>
+                            <button type="button" class="post-action-btn btn-save ${isSaved?'saved':''}" data-id="${postId}" aria-label="Salvar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
                         </div>
-                        ${caption ? `
-                            <div class="post-caption-area">
-                                <span class="post-caption-author">${authorName}</span>
-                                <span class="post-caption-text">${caption}</span>
-                            </div>
-                        ` : ''}
+                        ${caption ? `<div class="post-caption-area"><span class="post-caption-author">@${authorName}</span><span class="post-caption-text">${caption}</span></div>` : ''}
                     </article>
                 `;
             }).join('');
+            // Like / Save / Som funcionam
+            document.querySelectorAll('.btn-like').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('liked'); localStorage.setItem(`koneat_like_${this.dataset.id}`, on?'true':'false'); }));
+            document.querySelectorAll('.btn-save').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('saved'); localStorage.setItem(`koneat_save_${this.dataset.id}`, on?'true':'false'); }));
+            document.querySelectorAll('.post-sound-btn').forEach(btn=>{
+              btn.addEventListener('click', ()=>{
+                const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted;
+              });
+            });
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderHomeFeed();
-        });
+        document.addEventListener('DOMContentLoaded', renderHomeFeed);
     </script>
 </body>
-  </html>
+</html>
