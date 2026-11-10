@@ -22,8 +22,8 @@
         .home-feed-container { width: 100%; padding-bottom: 80px; }
         .stories-bar { width: 100%; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); overflow-x: auto; scrollbar-width: none; }
         .stories-bar::-webkit-scrollbar { display: none; }
-        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; }
-        .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #e5e5ea; border: 1px solid #d1d1d6; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; background: none; border: none; padding: 0; }
+        .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #e5e5ea; border: 2px solid #00ff88; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
         .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
         .story-add-badge { position: absolute; bottom: 1px; right: 1px; width: 22px; height: 22px; border-radius: 50%; background: #000000; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
@@ -51,6 +51,10 @@
         .bottom-nav-fixed { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 62px; background: #121214; border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; align-items: center; justify-content: space-around; z-index: 999; box-sizing: border-box; padding: 0 10px; }
         .nav-link { width: 48px; height: 48px; background: none; border: none; color: #8e8e93; display: flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; }
         .nav-link svg { width: 24px; height: 24px; }
+        .story-viewer { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .story-viewer.show { display: flex; }
+        .story-viewer img, .story-viewer video { width: 100%; height: 100%; object-fit: contain; }
+        .story-viewer-close { position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10; }
     </style>
 </head>
 <body>
@@ -70,14 +74,14 @@
         </nav>
     </div>
     <main class="home-feed-container" id="homeFeedContainer">
-        <section class="stories-bar" id="storiesBar">
-            <div class="story-item" onclick="window.location.href='./passo3.html'">
-                <div class="story-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="story-add-badge">+</div></div>
-                <span class="story-username">seu story</span>
-            </div>
-        </section>
+        <section class="stories-bar" id="storiesBar"></section>
         <section id="postsDynamicFeed"><div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div></section>
     </main>
+    <input type="file" id="homeStoryInput" accept="image/*,video/*" style="display:none">
+    <div class="story-viewer" id="storyViewer">
+      <button class="story-viewer-close" id="closeStoryViewer">×</button>
+      <div id="storyViewerContent" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
+    </div>
     <nav class="bottom-nav-fixed">
         <a href="./passo4.html" class="nav-link" aria-label="Home"><svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff"><path d="M22 20v-7.826a2 2 0 0 0-.613-1.43l-8-7.826a2 2 0 0 0-2.774 0l-8 7.826A2 2 0 0 0 2 12.174V20a2 2 0 0 0 2 2h4.5a.5.5 0 0 0 .5-.5v-5a2.5 2.5 0 0 1 5 0v5a.5.5 0 0 0 .5.5H19a2 2 0 0 0 2-2z"/></svg></a>
         <a href="./passo3.html" class="nav-link" aria-label="Criar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg></a>
@@ -89,6 +93,9 @@
         const storiesBar = document.getElementById('storiesBar');
         const subnavTabs = document.querySelectorAll('.subnav-tab');
         const indicator = document.getElementById('subnavIndicator');
+        const homeStoryInput = document.getElementById('homeStoryInput');
+        const storyViewer = document.getElementById('storyViewer');
+        const storyViewerContent = document.getElementById('storyViewerContent');
         function updateIndicator(tab) {
             if(!tab) return;
             indicator.style.width = `${tab.getBoundingClientRect().width}px`;
@@ -109,28 +116,67 @@
           if(midia.startsWith('data:image')) return false;
           return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(midia);
         }
+        // Home -> STORY não troca de página, abre galeria aqui
+        function abrirGaleriaStory(){ homeStoryInput.click(); }
+        function getDuracao(file){
+          return new Promise(res=>{
+            if(file.type.startsWith('image')) return res(0);
+            const v=document.createElement('video'); v.preload='metadata';
+            v.onloadedmetadata=()=>{ URL.revokeObjectURL(v.src); res(v.duration||0); };
+            v.onerror=()=>res(0); v.src=URL.createObjectURL(file);
+          });
+        }
+        homeStoryInput.addEventListener('change', async e=>{
+          const file = e.target.files[0]; if(!file) return;
+          const dur = await getDuracao(file);
+          if(file.size/1024/1024>10 && file.type.startsWith('image')){ alert('STORY até 10MB'); return; }
+          if(file.type.startsWith('video') && dur>60){ alert('STORY até 60s'); return; }
+          const reader = new FileReader();
+          reader.onload = ev=>{
+            const now = Date.now();
+            const novo = { id: now, tipo:'STORY', type:'story', subTipo:'story', origem:'home', midia: ev.target.result, url: ev.target.result, mediaType: file.type.startsWith('video')?'video':'image', capa:'', formato:'9:16', legenda:'', caption:'', data: now, createdAt: now, expiresAt: now + 24*60*60*1000, author: localStorage.getItem('koneat_username')||'koneat_user', userId: localStorage.getItem('koneat_userId')||'user', reacoes:{likes:0, comentarios:[]} };
+            let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
+            s.unshift(novo);
+            localStorage.setItem('koneat_stories', JSON.stringify(s));
+            homeStoryInput.value='';
+            renderHomeFeed();
+          };
+          reader.readAsDataURL(file);
+        });
+        document.getElementById('closeStoryViewer').addEventListener('click', ()=>{ storyViewer.classList.remove('show'); storyViewerContent.innerHTML=''; });
+        function openStory(midia){
+          storyViewerContent.innerHTML = isVideoUrl(midia) ? `<video src="${midia}" autoplay controls playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>` : `<img src="${midia}" style="width:100%;height:100%;object-fit:contain">`;
+          storyViewer.classList.add('show');
+        }
         function renderHomeFeed() {
-            // REFINADO: lê da GAVETA ÚNICA - koneat_posts
             let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
-            // Migra velhos se existirem
             let velhos1 = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
             velhos1.forEach(v=>{
               if(!todos.some(t=>String(t.id)===String(v.id))){
                 todos.push({id:v.id, tipo:'FEED', type:'home', midia:v.url||v.midia||'', url:v.url||v.midia||'', legenda:v.caption||v.legenda||'', capa:'', data:Date.now(), userId:'user'});
               }
             });
-            // STORIES vão pra barra de cima - só STORY
-            let stories = todos.filter(p => p.tipo==='STORY' || p.type==='story');
-            // FEED vai pro feed - só FEED / home. VIRAL NÃO ENTRA NA HOME.
-            let feed = todos.filter(p => p.tipo==='FEED' || p.type==='home');
-            // Render Stories
-            let storiesHtml = `<div class="story-item" onclick="window.location.href='./passo3.html'"><div class="story-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="story-add-badge">+</div></div><span class="story-username">seu story</span></div>`;
+            // REFINO: STORIES vêm de koneat_stories, NÃO de koneat_posts, e só os de até 24h
+            let stories = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
+            const now = Date.now();
+            stories = stories.filter(s => !s.expiresAt || s.expiresAt > now);
+            localStorage.setItem('koneat_stories', JSON.stringify(stories));
+            // FEED vai pro feed - só FEED / home. VIRAL NÃO ENTRA NA HOME. STORY NÃO ENTRA NO FEED.
+            let feed = todos.filter(p => {
+              const isFeed = p.tipo==='FEED' || p.type==='home';
+              const isViral = p.tipo==='VIRAL' || p.type==='viral';
+              const isStory = p.tipo==='STORY' || p.type==='story';
+              return isFeed && !isViral && !isStory;
+            });
+            let storiesHtml = `<button class="story-item" data-action="home-story-create"><div class="story-avatar" style="border:1px solid #d1d1d6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="story-add-badge">+</div></div><span class="story-username">seu story</span></button>`;
             storiesHtml += stories.map(s=>{
               const midia = s.midia || s.url || '';
               const capa = s.capa || midia;
-              return `<div class="story-item"><div class="story-avatar">${isVideoUrl(midia) ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></div>`;
+              const safeMidia = midia.replace(/"/g,'&quot;');
+              return `<button class="story-item" onclick="openStory('${safeMidia}')"><div class="story-avatar">${isVideoUrl(midia) ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></button>`;
             }).join('');
             storiesBar.innerHTML = storiesHtml;
+            document.querySelector('[data-action="home-story-create"]')?.addEventListener('click', abrirGaleriaStory);
             if (feed.length === 0) {
                 postsDynamicFeed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
                 return;
@@ -164,16 +210,8 @@
                     </article>
                 `;
             }).join('');
-            // Like / Save / Som funcionam
             document.querySelectorAll('.btn-like').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('liked'); localStorage.setItem(`koneat_like_${this.dataset.id}`, on?'true':'false'); }));
             document.querySelectorAll('.btn-save').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('saved'); localStorage.setItem(`koneat_save_${this.dataset.id}`, on?'true':'false'); }));
             document.querySelectorAll('.post-sound-btn').forEach(btn=>{
               btn.addEventListener('click', ()=>{
-                const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted;
-              });
-            });
-        }
-        document.addEventListener('DOMContentLoaded', renderHomeFeed);
-    </script>
-</body>
-</html>
+                const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.m
