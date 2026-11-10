@@ -66,8 +66,8 @@ body.dark-create-theme{background:#000;color:#fff;margin:0;font-family:-apple-sy
 <div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><div class="spinner"></div><span class="loading-text">Sua publicação está sendo postada</span></div></div>
 <input type="file" id="fileInput" accept="image/*,video/*" style="display:none;">
 <script>
-// ===== KONEAT - criar.html EM CONFORMIDADE COM O JS FINAL DEFINITIVO =====
-let selectedType = 'post'; // post | video | viral -> mapeado para POST / VIDEO / VIRAL
+// ===== KONEAT - criar.html REFINADO - ANTIGO + JS FINAL =====
+let selectedType = 'post';
 let mediaDataUrl = null;
 let mediaType = null;
 let selectedFile = null;
@@ -89,7 +89,6 @@ const modalThumbnail = document.getElementById('modalThumbnail');
 const postCaptionInput = document.getElementById('postCaptionInput');
 const loadingOverlay = document.getElementById('loadingOverlay');
 
-// --- Mesmas funções do JS ---
 let posts = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
 const userId = localStorage.getItem('koneat_userId')||'user_'+Date.now();
 localStorage.setItem('koneat_userId', userId);
@@ -101,19 +100,27 @@ function getFormato(file, callback){
     const v=document.createElement('video'); v.onloadedmetadata=()=>{ let r=v.videoWidth/v.videoHeight; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; v.src=URL.createObjectURL(file);
   }
 }
-async function converter720(file){ return file; }
+// REFINADO: antes recebia dataURL e devolvia File e quebrava o localStorage. Agora devolve o dataURL mesmo.
+async function converter720(dataUrl){ return dataUrl; }
 
-// VALIDAÇÃO - CÓPIA EXATA DO JS
-function validar(file,dur,tipo){
+// VALIDAÇÃO - igual ANTIGO + JS
+function validar(file,dur,tipoAba){
   const mb=file.size/1024/1024;
-  if(tipo==='VIRAL'){
+  if(tipoAba==='viral'){
     if(mb>50) return {ok:false,msg:'🚫 Somente Viral de 1:30 minutos até 50MB'};
     if(dur<=90) return {ok:true};
     if(dur>90&&dur<=95) return {ok:true,trim:90};
     if(dur>95) return {ok:false,msg:'🚫 Somente Viral de 1:30 minutos'};
   }
-  if(tipo==='HOME'||tipo==='POST'||tipo==='VIDEO'){
-    if(tipo==='POST'&&file.type.startsWith('image')&&mb>10) return {ok:false,msg:'🚫 POST até 10MB'};
+  if(tipoAba==='post'){
+    if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'🚫 POST até 10MB'};
+    if(file.type.startsWith('video')){
+      if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+      if(dur>185) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+    }
+    return {ok:true};
+  }
+  if(tipoAba==='video'){
     if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
     if(dur<=180) return {ok:true};
     if(dur>180&&dur<=185) return {ok:true,trim:180};
@@ -122,14 +129,42 @@ function validar(file,dur,tipo){
   return {ok:true};
 }
 
-// SALVA + REDIRECIONA - CÓPIA EXATA DO JS
-function salvar(post){
-  const novo={id:Date.now(),tipo:post.tipo,formato:post.formato||'1:1',origem:post.origem,midia:post.midia,capa:post.capa||'',data:Date.now(),userId};
-  posts.unshift(novo); localStorage.setItem('koneat_posts',JSON.stringify(posts)); return novo;
+// REFINADO - SALVA 1 VEZ SÓ COM OS 2 CAMPOS - ANTIGO + JS
+function salvar(dados){
+  // MAPEAMENTO UNIFICADO - igual seu ANTIGO guardado:
+  // POST -> tipo FEED / type home -> 4ª HOME + Perfil
+  // VÍDEO -> tipo FEED / type home -> 4ª HOME + Perfil
+  // VIRAL -> tipo VIRAL / type viral -> 2ª VIRAL + Perfil
+  const isViral = dados.aba === 'viral';
+  const novo = {
+    id: Date.now(),
+    // JS final
+    tipo: isViral ? 'VIRAL' : 'FEED',
+    // ANTIGO
+    type: isViral ? 'viral' : 'home',
+    // Pra saber se era POST ou VÍDEO dentro do FEED
+    subTipo: dados.aba, // 'post' | 'video' | 'viral'
+    origem: 'perfil',
+    midia: dados.midia,
+    url: dados.midia, // alias pro passo2 velho
+    capa: dados.capa || '',
+    formato: dados.formato || '1:1',
+    legenda: dados.legenda || '',
+    data: Date.now(),
+    userId: userId,
+    reacoes: { likes: 0, comentarios: [] }
+  };
+  let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
+  todos.unshift(novo);
+  localStorage.setItem('koneat_posts', JSON.stringify(todos));
+  return novo;
 }
-function postarPerfil(tipo,midia,capa,formato){
-  salvar({tipo,origem:'perfil',midia,capa,formato});
-  if(tipo==='VIRAL') location.href='passo2.html'; else location.href='passo1.html';
+
+function postarPerfil(aba, midia, capa, formato, legenda){
+  const novo = salvar({aba, midia, capa, formato, legenda});
+  // REDIRECIONA SEMPRE - igual ANTIGO + Manus: VIRAL -> passo2, resto -> passo1
+  if(novo.tipo === 'VIRAL') location.href = 'passo2.html';
+  else location.href = 'passo1.html';
 }
 
 tabs.forEach(tab => {
@@ -156,27 +191,23 @@ function getDuracao(file){
 }
 function gerarCapaVideo(file){
   return new Promise((res)=>{
+    let done = false;
+    const finish = (val)=>{ if(!done){ done=true; res(val); } };
     const v=document.createElement('video'); v.muted=true; v.preload='auto';
-    v.onloadeddata=()=>{ try{ v.currentTime=0.1; }catch(e){ res(''); } };
-    v.onseeked=()=>{ try{ const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; c.getContext('2d').drawImage(v,0,0); res(c.toDataURL('image/jpeg',0.7)); }catch(e){ res(''); } URL.revokeObjectURL(v.src); };
-    v.onerror=()=>res(''); v.src=URL.createObjectURL(file);
-    setTimeout(()=>res(''),1500);
+    v.onloadeddata=()=>{ try{ v.currentTime=0.1; }catch(e){ finish(''); } };
+    v.onseeked=()=>{ try{ const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; c.getContext('2d').drawImage(v,0,0); finish(c.toDataURL('image/jpeg',0.7)); }catch(e){ finish(''); } URL.revokeObjectURL(v.src); };
+    v.onerror=()=>finish(''); v.src=URL.createObjectURL(file);
+    setTimeout(()=>finish(''),1500);
   });
 }
 
 fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const tipoJS = selectedType === 'viral' ? 'VIRAL' : selectedType === 'video' ? 'VIDEO' : 'POST';
   const dur = await getDuracao(file);
-  const v = validar(file, dur, tipoJS);
+  const v = validar(file, dur, selectedType);
   if (!v || !v.ok){ alert(v.msg); fileInput.value=''; return; }
-  // Se for vídeo, valida tipo de arquivo também
-  if ((tipoJS==='VIRAL'||tipoJS==='VIDEO') && !file.type.startsWith('video')){ alert('🚫 Escolha um vídeo para VÍDEO / VIRAL'); fileInput.value=''; return; }
-  if (tipoJS==='POST' && file.type.startsWith('video')){
-    // POST no JS é HOME: vídeo de Feed também é permitido, vai pra passo1
-    // mantém como VIDEO de Feed, mas respeita a aba: se aba é POST e é vídeo, trata como VIDEO
-  }
+  if ((selectedType==='viral'||selectedType==='video') && !file.type.startsWith('video')){ alert('🚫 Escolha um vídeo para VÍDEO / VIRAL'); fileInput.value=''; return; }
   selectedFile = file;
   selectedDur = dur;
   getFormato(file, (f)=>{ selectedFormato = f; });
@@ -210,17 +241,14 @@ publishFinalBtn.addEventListener('click', async () => {
   publishFinalBtn.disabled = true;
   loadingOverlay.classList.add('show');
   try {
-    const tipoJS = selectedType === 'viral' ? 'VIRAL' : selectedType === 'video' ? 'VIDEO' : 'POST';
-    // Revalida antes de salvar - igual JS
-    const v = validar(selectedFile, selectedDur, tipoJS);
+    const v = validar(selectedFile, selectedDur, selectedType);
     if (!v || !v.ok){ alert(v.msg); return; }
     const midiaFinal = await converter720(mediaDataUrl);
-    // postarPerfil do JS: VIRAL -> passo2, resto -> passo1
-    postarPerfil(tipoJS, midiaFinal, selectedCapa, selectedFormato);
+    const legenda = postCaptionInput.value || '';
+    postarPerfil(selectedType, midiaFinal, selectedCapa, selectedFormato, legenda);
   } catch(err){
     alert('Não consegui publicar. Tenta um arquivo menor.');
   } finally {
-    // Nunca mais infinito
     loadingOverlay.classList.remove('show');
     publishFinalBtn.disabled = false;
     isPublishing = false;
@@ -228,4 +256,4 @@ publishFinalBtn.addEventListener('click', async () => {
 });
 </script>
 </body>
-    </html>
+                                                                                                                                                                                                            </html>
