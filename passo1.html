@@ -241,8 +241,7 @@
             <h2 class="empty-title" style="font-size: 13px; font-weight: 400; color: #8e8e93; margin: 0 0 12px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Compartilhe seu primeiro momento com o koneat</h2>
             <a href="./criar.html" class="btn-create-post" style="display: inline-block; background: #efefef; color: #000; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none;">Crie seu primeiro post</a>
         </section>
-    </div>
-
+           
         <!-- Grid das Mídias Salvas - DENTRO do container -->
         <div class="posts-grid" id="userPostsGrid" style="display:none;"></div>
 </div>
@@ -296,69 +295,6 @@
                 alert('Link do perfil copiado para a área de transferência!');
             }
         }
-
-        // Função para Renderizar Posts e Lixeira
-        function renderUserPosts() {
-            const userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
-            const postsGrid = document.getElementById('userPostsGrid');
-            const emptyState = document.getElementById('emptyState');
-            const postsCount = document.getElementById('postsCount');
-
-            postsCount.textContent = userPosts.length;
-
-            if (userPosts.length === 0) {
-                emptyState.style.display = 'flex';
-                postsGrid.style.display = 'none';
-                postsGrid.innerHTML = '';
-            } else {
-                emptyState.style.display = 'none';
-                postsGrid.style.display = 'grid';
-
-                postsGrid.innerHTML = userPosts.map(post => {
-                    const isVideo = post.type === 'video';
-                    return `
-                        <div class="post-grid-item" data-id="${post.id}">
-                            <!-- Ícone da Lixeira 🗑️ (Só aparece quando existe post) -->
-                            <button type="button" class="btn-delete-post" onclick="deletePost('${post.id}')" title="Excluir publicação">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                </svg>
-                            </button>
-
-                            ${isVideo ? 
-                                `<video src="${post.url}"></video>
-                                 <div class="badge-video">
-                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                                 </div>` 
-                                : `<img src="${post.url}" alt="Post">`
-                            }
-                        </div>`;
-                }).join('');
-            }
-        }
-
-        // Função para Deletar a Publicação ao Clicar na Lixeira 🗑️
-        function deletePost(postId) {
-            if (!confirm('Deseja realmente excluir esta publicação?')) return;
-
-            // 1. Remove das mídias do usuário
-            let userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
-            userPosts = userPosts.filter(p => p.id !== postId);
-            localStorage.setItem('koneat_user_posts', JSON.stringify(userPosts));
-
-            // 2. Se for um vídeo viral, remove também do feed de vídeos
-            let viraisFeed = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
-            viraisFeed = viraisFeed.filter(v => v.id !== postId);
-            localStorage.setItem('koneat_virais_feed', JSON.stringify(viraisFeed));
-
-            // 3. Atualiza a tela em tempo real
-            renderUserPosts();
-        }
-
-        // Inicializar o carregamento ao abrir a tela
-        renderUserPosts();
     </script>
 </body>
-                    </html>
-                        
+    </html>
