@@ -498,6 +498,53 @@ document.addEventListener('DOMContentLoaded', ()=>{
   initPasso4();
 });
 
-
+// ===== CORREÇÃO 10/11 - Sobrescreve as funções velhas =====
+function initPasso1(){
+  const grid = document.getElementById('userPostsGrid');
+  if(!grid) return;
+  const u = getUser();
+  const h = document.getElementById('headerUsername'); if(h) h.textContent = u;
+  const pn = document.getElementById('profileName'); if(pn) pn.textContent = localStorage.getItem('koneat_name')||u;
+  const pt = document.getElementById('profileTag'); if(pt) pt.textContent = '@'+u;
+  const pb = document.getElementById('profileBio'); if(pb) pb.textContent = localStorage.getItem('koneat_bio')||'';
+  const menuBtn = document.getElementById('menuBtn');
+  const menu = document.getElementById('dropdownMenu');
+  if(menuBtn && menu){
+    menuBtn.onclick = e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; };
+    document.addEventListener('click', ()=>{ menu.style.display='none'; });
+  }
+  window.shareProfile = function(){
+    const link = location.href;
+    if(navigator.share) navigator.share({title:'Perfil no Koneat', url:link}).catch(()=>{});
+    else { navigator.clipboard.writeText(link); alert('Link copiado!'); }
+  };
+  function render(){
+    const posts = getPosts().filter(p=>p.tipo!=='STORY');
+    const empty = document.getElementById('emptyState');
+    const count = document.getElementById('postsCount');
+    if(count) count.textContent = posts.length;
+    const btn = empty ? empty.querySelector('.btn-create-post') : null;
+    if(posts.length===0){
+      if(empty){ empty.style.display='block'; if(btn){ btn.textContent='Crie seu primeiro post'; btn.href='./passo3.html'; } }
+      grid.style.display='none'; grid.innerHTML='';
+      return;
+    }
+    if(empty){ empty.style.display='block'; if(btn){ btn.textContent='Crie outro post'; btn.href='./passo3.html'; } }
+    grid.style.display='grid';
+    grid.innerHTML = posts.map(post=>`<div class="post-grid-item" data-id="${post.id}">
+      <button type="button" class="btn-delete-post" data-del="${post.id}">🗑️</button>
+      ${post.mediaType==='video' ? `<video src="${post.url}" muted playsinline></video><div class="badge-video">▶</div>` : `<img src="${post.url}">`}
+    </div>`).join('');
+    grid.querySelectorAll('[data-del]').forEach(b=>{
+      b.onclick = ()=>{
+        if(!confirm('Excluir esta publicação?')) return;
+        savePosts(getPosts().filter(p=>String(p.id)!==String(b.dataset.del)));
+        render();
+      };
+    });
+  }
+  window.deletePost = function(id){ savePosts(getPosts().filter(p=>String(p.id)!==String(id))); render(); };
+  render();
+}
 
 
