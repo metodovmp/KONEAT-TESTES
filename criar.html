@@ -1,464 +1,231 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koneat - Criar Publicação</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body.dark-create-theme {
-            background-color: #000000;
-            color: #ffffff;
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .create-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            z-index: 20;
-            background: #000000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .btn-close {
-            background: none;
-            border: none;
-            color: #ffffff;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-        }
-
-        .type-selector-tabs {
-            display: flex;
-            gap: 16px;
-        }
-
-        .type-tab {
-            background: none;
-            border: none;
-            color: #8e8e93;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 4px 0;
-            transition: color 0.2s;
-        }
-
-        .type-tab.active {
-            color: #ffffff;
-            border-bottom: 2px solid #ffffff;
-        }
-
-        .btn-advance-top {
-            background: #262626;
-            color: #8e8e93;
-            border: none;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: not-allowed;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: 0.2s;
-        }
-
-        .btn-advance-top.active {
-            background: #ffffff;
-            color: #000000;
-            cursor: pointer;
-        }
-
-        .btn-advance-top.active:active {
-            transform: scale(0.95);
-        }
-
-        .gallery-controls-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            z-index: 10;
-        }
-
-        .btn-gallery-dropdown {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .right-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .icon-circle-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #262626;
-            border: none;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .create-preview-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            color: #8e8e93;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            background: #000000;
-        }
-
-        .preview-placeholder-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-        }
-
-        .create-preview-area video, 
-        .create-preview-area img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .caption-modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .caption-modal.show { display: flex; }
-
-        .caption-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .caption-header h2 { font-size: 18px; margin: 0; font-weight: 700; }
-
-        .btn-back-caption, .btn-publish-final {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-publish-final { color: #00ff88; }
-
-        .caption-body {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-
-        .caption-thumbnail {
-            width: 84px;
-            height: 84px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: #222222;
-        }
-
-        .caption-textarea {
-            flex: 1;
-            height: 120px;
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-size: 15px;
-            resize: none;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .caption-textarea::placeholder { color: #8e8e93; }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-overlay.show { display: flex; }
-
-        .loading-box {
-            background: #18181b;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 24px 28px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            text-align: center;
-        }
-
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #00ff88;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 15px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koneat - Criar Publicação</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+body.dark-create-theme{background:#000;color:#fff;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column;justify-content:space-between}
+.create-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;border-bottom:1px solid rgba(255,255,255,.08)}
+.btn-close{background:none;border:none;color:#fff;cursor:pointer;padding:4px;display:flex}
+.type-selector-tabs{display:flex;gap:16px}
+.type-tab{background:none;border:none;color:#8e8e93;font-size:14px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;padding:4px 0}
+.type-tab.active{color:#fff;border-bottom:2px solid #fff}
+.btn-advance-top{background:#262626;color:#8e8e93;border:none;font-size:14px;font-weight:600;cursor:not-allowed;padding:8px 16px;border-radius:20px}
+.btn-advance-top.active{background:#fff;color:#000;cursor:pointer}
+.gallery-controls-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+.btn-gallery-dropdown{background:none;border:none;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer}
+.right-controls{display:flex;gap:12px}
+.icon-circle-btn{width:36px;height:36px;border-radius:50%;background:#262626;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.create-preview-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#8e8e93;font-size:15px;font-weight:500;cursor:pointer;position:relative;overflow:hidden;background:#000}
+.preview-placeholder-content{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.create-preview-area video,.create-preview-area img{width:100%;height:100%;object-fit:contain;position:absolute;top:0;left:0}
+.caption-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.95);z-index:100;display:none;flex-direction:column;padding:20px;box-sizing:border-box}
+.caption-modal.show{display:flex}
+.caption-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.caption-header h2{font-size:18px;margin:0;font-weight:700}
+.btn-back-caption,.btn-publish-final{background:none;border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.btn-publish-final{color:#00ff88}
+.caption-body{display:flex;gap:16px;align-items:flex-start}
+.caption-thumbnail{width:84px;height:84px;border-radius:12px;object-fit:cover;background:#222}
+.caption-textarea{flex:1;height:120px;background:transparent;border:none;color:#fff;font-size:15px;resize:none;outline:none;font-family:inherit}
+.caption-textarea::placeholder{color:#8e8e93}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center}
+.loading-overlay.show{display:flex}
+.loading-box{background:#18181b;border:1px solid rgba(255,255,255,.1);padding:24px 28px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.2);border-top-color:#00ff88;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:15px;font-weight:600;color:#fff}
+</style>
 </head>
 <body class="dark-create-theme">
+<header class="create-header">
+<a href="./passo1.html" class="btn-close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></a>
+<div class="type-selector-tabs">
+<button type="button" class="type-tab active" data-type="post">POST</button>
+<button type="button" class="type-tab" data-type="video">VÍDEO</button>
+<button type="button" class="type-tab" data-type="viral">VIRAL</button>
+</div>
+<button type="button" class="btn-advance-top" id="btnAdvance">Avançar</button>
+</header>
+<div class="gallery-controls-bar">
+<button type="button" class="btn-gallery-dropdown">Galeria <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+<div class="right-controls"><button type="button" class="icon-circle-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg></button></div>
+</div>
+<main class="create-preview-area" id="previewContainer">
+<div class="preview-placeholder-content" id="placeholderContent">
+<svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+<span id="previewText">Capture o momento com um amigo</span>
+</div>
+</main>
+<div class="caption-modal" id="captionModal">
+<div class="caption-header"><button type="button" class="btn-back-caption" id="closeModalBtn">Voltar</button><h2>Nova publicação</h2><button type="button" class="btn-publish-final" id="publishFinalBtn">Compartilhar</button></div>
+<div class="caption-body"><img id="modalThumbnail" class="caption-thumbnail" src="" alt="Thumbnail"><textarea id="postCaptionInput" class="caption-textarea" placeholder="Escreva uma legenda..."></textarea></div>
+</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><div class="spinner"></div><span class="loading-text">Sua publicação está sendo postada</span></div></div>
+<input type="file" id="fileInput" accept="image/*,video/*" style="display:none;">
+<script>
+// ===== KONEAT - criar.html EM CONFORMIDADE COM O JS FINAL DEFINITIVO =====
+let selectedType = 'post'; // post | video | viral -> mapeado para POST / VIDEO / VIRAL
+let mediaDataUrl = null;
+let mediaType = null;
+let selectedFile = null;
+let selectedFormato = '1:1';
+let selectedDur = 0;
+let selectedCapa = '';
+let isPublishing = false;
 
-    <header class="create-header">
-        <a href="./passo1.html" class="btn-close" aria-label="Fechar">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </a>
+const tabs = document.querySelectorAll('.type-tab');
+const previewText = document.getElementById('previewText');
+const fileInput = document.getElementById('fileInput');
+const previewContainer = document.getElementById('previewContainer');
+const placeholderContent = document.getElementById('placeholderContent');
+const btnAdvance = document.getElementById('btnAdvance');
+const captionModal = document.getElementById('captionModal');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const publishFinalBtn = document.getElementById('publishFinalBtn');
+const modalThumbnail = document.getElementById('modalThumbnail');
+const postCaptionInput = document.getElementById('postCaptionInput');
+const loadingOverlay = document.getElementById('loadingOverlay');
 
-        <div class="type-selector-tabs">
-            <button type="button" class="type-tab active" data-type="post">POST</button>
-            <button type="button" class="type-tab" data-type="video">VÍDEO</button>
-            <button type="button" class="type-tab" data-type="viral">VIRAL</button>
-        </div>
+// --- Mesmas funções do JS ---
+let posts = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
+const userId = localStorage.getItem('koneat_userId')||'user_'+Date.now();
+localStorage.setItem('koneat_userId', userId);
 
-        <button type="button" class="btn-advance-top" id="btnAdvance">Avançar</button>
-    </header>
+function getFormato(file, callback){
+  if(file.type.startsWith('image')){
+    const img=new Image(); img.onload=()=>{ let r=img.width/img.height; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; img.src=URL.createObjectURL(file);
+  } else {
+    const v=document.createElement('video'); v.onloadedmetadata=()=>{ let r=v.videoWidth/v.videoHeight; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; v.src=URL.createObjectURL(file);
+  }
+}
+async function converter720(file){ return file; }
 
-    <div class="gallery-controls-bar">
-        <button type="button" class="btn-gallery-dropdown">
-            Galeria
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </button>
+// VALIDAÇÃO - CÓPIA EXATA DO JS
+function validar(file,dur,tipo){
+  const mb=file.size/1024/1024;
+  if(tipo==='VIRAL'){
+    if(mb>50) return {ok:false,msg:'🚫 Somente Viral de 1:30 minutos até 50MB'};
+    if(dur<=90) return {ok:true};
+    if(dur>90&&dur<=95) return {ok:true,trim:90};
+    if(dur>95) return {ok:false,msg:'🚫 Somente Viral de 1:30 minutos'};
+  }
+  if(tipo==='HOME'||tipo==='POST'||tipo==='VIDEO'){
+    if(tipo==='POST'&&file.type.startsWith('image')&&mb>10) return {ok:false,msg:'🚫 POST até 10MB'};
+    if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+    if(dur<=180) return {ok:true};
+    if(dur>180&&dur<=185) return {ok:true,trim:180};
+    if(dur>185) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+  }
+  return {ok:true};
+}
 
-        <div class="right-controls">
-            <button type="button" class="icon-circle-btn" aria-label="Seleção Múltipla">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg>
-            </button>
-        </div>
-    </div>
+// SALVA + REDIRECIONA - CÓPIA EXATA DO JS
+function salvar(post){
+  const novo={id:Date.now(),tipo:post.tipo,formato:post.formato||'1:1',origem:post.origem,midia:post.midia,capa:post.capa||'',data:Date.now(),userId};
+  posts.unshift(novo); localStorage.setItem('koneat_posts',JSON.stringify(posts)); return novo;
+}
+function postarPerfil(tipo,midia,capa,formato){
+  salvar({tipo,origem:'perfil',midia,capa,formato});
+  if(tipo==='VIRAL') location.href='passo2.html'; else location.href='passo1.html';
+}
 
-    <main class="create-preview-area" id="previewContainer">
-        <div class="preview-placeholder-content" id="placeholderContent">
-            <!-- SVG da Câmera reduzido conforme solicitado -->
-            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-            </svg>
-            <span id="previewText">Capture o momento com um amigo</span>
-        </div>
-    </main>
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    selectedType = tab.dataset.type;
+    if (selectedType === 'post') previewText.textContent = 'Capture o momento com um amigo';
+    if (selectedType === 'video') previewText.textContent = 'Selecione um vídeo (até 3 min)';
+    if (selectedType === 'viral') previewText.textContent = 'Crie um vídeo viral (até 1m30s)';
+  });
+});
+previewContainer.addEventListener('click', (e) => {
+  if (e.target === previewContainer || placeholderContent.contains(e.target)) fileInput.click();
+});
 
-    <div class="caption-modal" id="captionModal">
-        <div class="caption-header">
-            <button type="button" class="btn-back-caption" id="closeModalBtn">Voltar</button>
-            <h2>Nova publicação</h2>
-            <button type="button" class="btn-publish-final" id="publishFinalBtn">Compartilhar</button>
-        </div>
-        <div class="caption-body">
-            <img id="modalThumbnail" class="caption-thumbnail" src="" alt="Thumbnail">
-            <textarea id="postCaptionInput" class="caption-textarea" placeholder="Escreva uma legenda..."></textarea>
-        </div>
-    </div>
+function getDuracao(file){
+  return new Promise((res)=>{
+    if(file.type.startsWith('image')) return res(0);
+    const v=document.createElement('video'); v.preload='metadata';
+    v.onloadedmetadata=()=>{ URL.revokeObjectURL(v.src); res(v.duration||0); };
+    v.onerror=()=>res(0); v.src=URL.createObjectURL(file);
+  });
+}
+function gerarCapaVideo(file){
+  return new Promise((res)=>{
+    const v=document.createElement('video'); v.muted=true; v.preload='auto';
+    v.onloadeddata=()=>{ try{ v.currentTime=0.1; }catch(e){ res(''); } };
+    v.onseeked=()=>{ try{ const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; c.getContext('2d').drawImage(v,0,0); res(c.toDataURL('image/jpeg',0.7)); }catch(e){ res(''); } URL.revokeObjectURL(v.src); };
+    v.onerror=()=>res(''); v.src=URL.createObjectURL(file);
+    setTimeout(()=>res(''),1500);
+  });
+}
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-box">
-            <div class="spinner"></div>
-            <span class="loading-text">Sua publicação está sendo postada</span>
-        </div>
-    </div>
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const tipoJS = selectedType === 'viral' ? 'VIRAL' : selectedType === 'video' ? 'VIDEO' : 'POST';
+  const dur = await getDuracao(file);
+  const v = validar(file, dur, tipoJS);
+  if (!v || !v.ok){ alert(v.msg); fileInput.value=''; return; }
+  // Se for vídeo, valida tipo de arquivo também
+  if ((tipoJS==='VIRAL'||tipoJS==='VIDEO') && !file.type.startsWith('video')){ alert('🚫 Escolha um vídeo para VÍDEO / VIRAL'); fileInput.value=''; return; }
+  if (tipoJS==='POST' && file.type.startsWith('video')){
+    // POST no JS é HOME: vídeo de Feed também é permitido, vai pra passo1
+    // mantém como VIDEO de Feed, mas respeita a aba: se aba é POST e é vídeo, trata como VIDEO
+  }
+  selectedFile = file;
+  selectedDur = dur;
+  getFormato(file, (f)=>{ selectedFormato = f; });
+  if (file.type.startsWith('video')) selectedCapa = await gerarCapaVideo(file);
 
-    <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    mediaDataUrl = ev.target.result;
+    mediaType = file.type.startsWith('video') ? 'video' : 'image';
+    if (placeholderContent) placeholderContent.remove();
+    const old = previewContainer.querySelector('video, img');
+    if (old) old.remove();
+    if (mediaType === 'video'){
+      const el=document.createElement('video'); el.src=mediaDataUrl; el.controls=true; el.autoplay=true; el.playsInline=true; previewContainer.appendChild(el);
+      modalThumbnail.src = selectedCapa || '';
+    } else {
+      const el=document.createElement('img'); el.src=mediaDataUrl; previewContainer.appendChild(el);
+      modalThumbnail.src = mediaDataUrl;
+    }
+    btnAdvance.classList.add('active');
+  };
+  reader.readAsDataURL(file);
+});
 
-    <script>
-        let selectedType = 'post';
-        let mediaDataUrl = null;
-        let mediaType = null;
+btnAdvance.addEventListener('click', () => { if (!mediaDataUrl) return; captionModal.classList.add('show'); });
+closeModalBtn.addEventListener('click', () => { captionModal.classList.remove('show'); });
 
-        const tabs = document.querySelectorAll('.type-tab');
-        const previewText = document.getElementById('previewText');
-        const fileInput = document.getElementById('fileInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const placeholderContent = document.getElementById('placeholderContent');
-        const btnAdvance = document.getElementById('btnAdvance');
-
-        const captionModal = document.getElementById('captionModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const publishFinalBtn = document.getElementById('publishFinalBtn');
-        const modalThumbnail = document.getElementById('modalThumbnail');
-        const postCaptionInput = document.getElementById('postCaptionInput');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                selectedType = tab.getAttribute('data-type');
-                
-                if (selectedType === 'post') previewText.textContent = 'Capture o momento com um amigo';
-                if (selectedType === 'video') previewText.textContent = 'Selecione um vídeo (até 3 min)';
-                if (selectedType === 'viral') previewText.textContent = 'Crie um vídeo viral (até 1m30s)';
-            });
-        });
-
-        previewContainer.addEventListener('click', (e) => {
-            if (e.target === previewContainer || placeholderContent.contains(e.target)) {
-                fileInput.click();
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(uploadEvent) {
-                mediaDataUrl = uploadEvent.target.result;
-                const isVideo = file.type.startsWith('video');
-                mediaType = isVideo ? 'video' : 'image';
-
-                // Remove o placeholder e insere a mídia preenchendo a área
-                if (placeholderContent) placeholderContent.remove();
-
-                const existingMedia = previewContainer.querySelector('video, img');
-                if (existingMedia) existingMedia.remove();
-
-                if (isVideo) {
-                    const videoEl = document.createElement('video');
-                    videoEl.src = mediaDataUrl;
-                    videoEl.controls = true;
-                    videoEl.autoplay = true;
-                    videoEl.playsInline = true;
-                    previewContainer.appendChild(videoEl);
-                } else {
-                    const imgEl = document.createElement('img');
-                    imgEl.src = mediaDataUrl;
-                    previewContainer.appendChild(imgEl);
-                }
-
-                modalThumbnail.src = mediaDataUrl;
-                btnAdvance.classList.add('active');
-            };
-            reader.readAsDataURL(file);
-        });
-
-        btnAdvance.addEventListener('click', () => {
-            if (!mediaDataUrl) return;
-            captionModal.classList.add('show');
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            captionModal.classList.remove('show');
-        });
-
-        publishFinalBtn.addEventListener('click', () => {
-            if (!mediaDataUrl) return;
-
-            loadingOverlay.classList.add('show');
-            const caption = postCaptionInput.value.trim();
-            const uniqueId = 'post_' + Date.now();
-
-            setTimeout(() => {
-                // CORREÇÃO: salva no formato NOVO que o app.js entende + mantém o velho pra não perder
-                const tipoNovo = selectedType === 'viral' ? 'VIRAL' : (mediaType === 'video' ? 'VIDEO' : 'FEED');
-                const postNovo = {
-                    id: uniqueId,
-                    media: mediaDataUrl,
-                    url: mediaDataUrl,
-                    tipo: tipoNovo,
-                    type: mediaType,
-                    author: 'Eributtler',
-                    caption: caption,
-                    legenda: caption,
-                    createdAt: Date.now()
-                };
-                const postVelho = {
-                    id: uniqueId,
-                    url: mediaDataUrl,
-                    type: mediaType,
-                    author: 'Eributtler',
-                    caption: caption
-                };
-
-                // 1. Gaveta nova - é essa que o passo1 novo lê
-                const postsNovos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
-                postsNovos.unshift(postNovo);
-                localStorage.setItem('koneat_posts', JSON.stringify(postsNovos));
-
-                // 2. Gaveta velha - pra não sumir se alguma tela ainda ler ela
-                const userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
-                userPosts.unshift(postVelho);
-                localStorage.setItem('koneat_user_posts', JSON.stringify(userPosts));
-
-                if (mediaType === 'video' || selectedType === 'viral') {
-                    const currentVirais = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
-                    currentVirais.unshift(postNovo);
-                    localStorage.setItem('koneat_virais_feed', JSON.stringify(currentVirais));
-                }
-
-                loadingOverlay.classList.remove('show');
-
-                if (mediaType === 'video' || selectedType === 'viral') {
-                    window.location.href = './passo2.html';
-                } else {
-                    window.location.href = './passo1.html';
-                }
-            }, 1200);
-        });
-    </script>
+publishFinalBtn.addEventListener('click', async () => {
+  if (!mediaDataUrl || !selectedFile || isPublishing) return;
+  isPublishing = true;
+  publishFinalBtn.disabled = true;
+  loadingOverlay.classList.add('show');
+  try {
+    const tipoJS = selectedType === 'viral' ? 'VIRAL' : selectedType === 'video' ? 'VIDEO' : 'POST';
+    // Revalida antes de salvar - igual JS
+    const v = validar(selectedFile, selectedDur, tipoJS);
+    if (!v || !v.ok){ alert(v.msg); return; }
+    const midiaFinal = await converter720(mediaDataUrl);
+    // postarPerfil do JS: VIRAL -> passo2, resto -> passo1
+    postarPerfil(tipoJS, midiaFinal, selectedCapa, selectedFormato);
+  } catch(err){
+    alert('Não consegui publicar. Tenta um arquivo menor.');
+  } finally {
+    // Nunca mais infinito
+    loadingOverlay.classList.remove('show');
+    publishFinalBtn.disabled = false;
+    isPublishing = false;
+  }
+});
+</script>
 </body>
     </html>
