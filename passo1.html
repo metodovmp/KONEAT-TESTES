@@ -6,7 +6,6 @@
     <title>Koneat - Perfil</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Correção para evitar corte horizontal na tela */
         html, body {
             margin: 0;
             padding: 0;
@@ -14,8 +13,6 @@
             overflow-x: hidden;
             background-color: #ffffff;
         }
-
-        /* Barra de Navegação Inferior Fixa de Ponta a Ponta */
         .bottom-nav-fixed {
             position: fixed;
             bottom: 0;
@@ -33,7 +30,6 @@
             box-sizing: border-box;
             padding: 0 10px;
         }
-
         .nav-link {
             background: none;
             border: none;
@@ -46,24 +42,17 @@
             width: 48px;
             height: 48px;
         }
-
-        /* Estado do Ícone de Perfil Ativo (Círculo Oco / Borda Branca) */
         .profile-active-circle {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 2px solid #ffffff; /* Linha oca por fora branca */
+            border: 2px solid #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
         }
-
-        .profile-active-circle svg {
-            stroke: #8e8e93; /* Ícone interno cinza */
-        }
-
-        /* Grid de Mídias Postadas no Perfil */
+        .profile-active-circle svg { stroke: #8e8e93; }
         .posts-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -71,21 +60,19 @@
             padding: 2px 0 80px 0;
             width: 100%;
         }
-
         .post-grid-item {
             position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
             background: #222222;
             overflow: hidden;
+            cursor: pointer;
         }
-
         .post-grid-item img, .post-grid-item video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .post-grid-item .badge-video {
             position: absolute;
             top: 6px;
@@ -96,8 +83,6 @@
             display: flex;
             z-index: 2;
         }
-
-        /* Botão de Lixeira (🗑️) Discreto no Canto do Card */
         .btn-delete-post {
             position: absolute;
             top: 6px;
@@ -113,28 +98,18 @@
             justify-content: center;
             cursor: pointer;
             z-index: 10;
-            transition: background 0.2s, transform 0.15s;
         }
-
-        .btn-delete-post:hover {
-            background: rgba(231, 76, 60, 0.9); /* Vermelho ao passar o mouse */
-        }
-
-        .btn-delete-post:active {
-            transform: scale(0.9);
-        }
+        .btn-delete-post:hover { background: rgba(231, 76, 60, 0.9); }
     </style>
 </head>
 <body class="light-theme">
 
 <div class="app-container" style="padding-bottom: 70px;">
-        <!-- Topo Header Estilo Instagram -->
         <header class="profile-header">
             <div class="header-logo" id="headerUsername" style="text-transform: lowercase; font-size: 20px; font-weight: 700; letter-spacing: -0.5px;">
                 koneat_user
             </div>
             <div class="header-actions">
-                <!-- Refino 1: Balãozinho de Mensagens apontando para mensagens.html -->
                 <a href="./mensagens.html" class="icon-btn" aria-label="Mensagens" style="position: relative; width: 22px; height: 16px; background: #8e8e93; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
                     <div style="display: flex; gap: 1.5px;">
                         <span style="width: 2.5px; height: 2.5px; background: #fff; border-radius: 50%;"></span>
@@ -148,24 +123,14 @@
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                     </button>
                     <div class="dropdown-menu" id="dropdownMenu">
-                        <a href="./configuracoes.html" class="dropdown-item">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                            Configurações
-                        </a>
-                        <a href="./privacidade.html" class="dropdown-item">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                            Privacidade
-                        </a>
-                        <a href="./termos.html" class="dropdown-item">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                            Termos
-                        </a>
+                        <a href="./configuracoes.html" class="dropdown-item">Configurações</a>
+                        <a href="./privacidade.html" class="dropdown-item">Privacidade</a>
+                        <a href="./termos.html" class="dropdown-item">Termos</a>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Bloco Superior: Avatar + Métricas -->
         <section class="profile-top-layout">
             <div class="avatar-container">
                 <div class="avatar-circle">
@@ -195,20 +160,17 @@
             </div>
         </section>
 
-        <!-- Bloco de Informações Dinâmicas -->
         <section class="user-details-block">
             <h1 class="user-name" id="profileName">Koneat User</h1>
             <p class="user-tag" id="profileTag">@koneat_user</p>
             <p class="user-bio" id="profileBio"></p>
         </section>
 
-        <!-- Refino 2: Botões de Ação do Perfil (Estilo Pílula) com Compartilhamento Nativo -->
         <section class="action-buttons" style="display: flex; gap: 8px; padding: 12px 16px 0 16px;">
             <a href="./editar-perfil.html" class="btn-secondary" style="flex: 1; height: 32px; background: #efefef; border: none; border-radius: 8px; color: #000; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none;">Editar perfil</a>
             <button type="button" class="btn-secondary" onclick="shareProfile()" style="flex: 1; height: 32px; background: #efefef; border: none; border-radius: 8px; color: #000; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer;">Compartilhar perfil</button>
         </section>
 
-        <!-- Tabs de Conteúdo -->
         <nav class="content-tabs">
             <button class="tab-btn active">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
@@ -228,7 +190,6 @@
             </button>
         </nav>
 
-        <!-- Refino 3: Área Vazia / Feed Painel -->
         <section class="feed-empty-state" id="emptyState" style="padding: 30px 16px; text-align: center;">
             <div class="empty-icon-wrapper" style="margin: 0 auto 8px auto; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
@@ -238,39 +199,29 @@
                     <path d="M15.5 14c2.8 0 5 1.5 5 4"></path>
                 </svg>
             </div>
-            
             <h2 class="empty-title" style="font-size: 13px; font-weight: 400; color: #8e8e93; margin: 0 0 12px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Compartilhe seu primeiro momento com o koneat</h2>
-            <button type="button" onclick="window.location.href='./criar.html'" style="display: inline-block; background: #efefef; color: #000; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; position: relative; z-index: 10;">Crie seu primeiro post</button>
+            <button type="button" onclick="window.location.href='./passo3.html'" style="display: inline-block; background: #efefef; color: #000; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; position: relative; z-index: 10;">Crie seu primeiro post</button>
         </section>
            
-        <!-- Grid das Mídias Salvas - DENTRO do container -->
         <div class="posts-grid" id="userPostsGrid" style="display:none;"></div>
 </div>
 
-    <!-- Barra de Navegação Inferior Original Mantida Intacta -->
     <nav class="bottom-nav-fixed">
-        <!-- 1. Home -->
         <a href="./passo4.html" class="nav-link" aria-label="Home">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
         </a>
-
-        <!-- 2. Criar / Plus -->
         <a href="./passo3.html" class="nav-link" aria-label="Criar">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8">
                 <rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect>
                 <path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
         </a>
-
-        <!-- 3. Vídeos Virais -->
         <a href="./passo2.html" class="nav-link" aria-label="Vídeos">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="4"></rect><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
         </a>
-
-        <!-- 4. Perfil (Ativo) -->
         <a href="./passo1.html" class="nav-link" aria-label="Perfil">
             <div class="profile-active-circle">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -281,9 +232,8 @@
         </a>
     </nav>
     
-    <script src="js/app.js"></script>
     <script>
-        // Função de Compartilhamento Nativo do Perfil
+        // Compartilhamento Nativo - MANTIDO
         function shareProfile() {
             if (navigator.share) {
                 navigator.share({
@@ -296,6 +246,60 @@
                 alert('Link do perfil copiado para a área de transferência!');
             }
         }
+
+        // REFINADO - Perfil lê gaveta única + compat velha
+        function renderPerfil() {
+            const grid = document.getElementById('userPostsGrid');
+            const empty = document.getElementById('emptyState');
+            const countEl = document.getElementById('postsCount');
+            let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
+            // Migra velhos se existirem
+            let velhos = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
+            let velhos2 = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
+            [...velhos, ...velhos2].forEach(v => {
+                if (!todos.some(t => String(t.id) === String(v.id))) {
+                    todos.push({
+                        id: v.id,
+                        tipo: v.tipo || (v.type === 'viral' ? 'VIRAL' : 'FEED'),
+                        type: v.type || (v.tipo === 'VIRAL' ? 'viral' : 'home'),
+                        midia: v.midia || v.url || v.media || '',
+                        url: v.midia || v.url || v.media || '',
+                        capa: v.capa || '',
+                        formato: v.formato || '1:1'
+                    });
+                }
+            });
+            if (countEl) countEl.textContent = todos.length;
+            if (todos.length === 0) {
+                if (empty) empty.style.display = 'block';
+                if (grid) grid.style.display = 'none';
+                return;
+            }
+            if (empty) empty.style.display = 'none';
+            if (grid) grid.style.display = 'grid';
+            grid.innerHTML = todos.map(p => {
+                const midia = p.midia || p.url || '';
+                const capa = p.capa || '';
+                const isVideo = p.tipo === 'VIRAL' || p.type === 'viral' || midia.startsWith('data:video');
+                const isViral = p.tipo === 'VIRAL' || p.type === 'viral';
+                const thumb = capa ? `<img src="${capa}" alt="">` : (isVideo ? `<video src="${midia}" muted playsinline preload="metadata"></video>` : `<img src="${midia}" alt="">`);
+                return `<div class="post-grid-item" onclick="abrirPost('${p.id}')">${thumb}${isVideo ? `<div class="badge-video"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></div>` : ''}${isViral ? `<div style="position:absolute;bottom:6px;right:6px;background:#000;color:#fff;font-size:9px;padding:2px 5px;border-radius:4px;">VIRAL</div>` : ''}<button class="btn-delete-post" onclick="event.stopPropagation(); deletarPost('${p.id}')">🗑️</button></div>`;
+            }).join('');
+        }
+        function deletarPost(id) {
+            let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
+            todos = todos.filter(p => String(p.id) !== String(id));
+            localStorage.setItem('koneat_posts', JSON.stringify(todos));
+            renderPerfil();
+        }
+        function abrirPost(id) {
+            let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
+            let p = todos.find(x => String(x.id) === String(id));
+            if (!p) return;
+            if (p.tipo === 'VIRAL' || p.type === 'viral') window.location.href = './passo2.html';
+            else window.location.href = './passo4.html';
+        }
+        renderPerfil();
     </script>
 </body>
-    </html>
+</html>
