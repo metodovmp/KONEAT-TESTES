@@ -14,7 +14,8 @@
         .video-header-title { font-size: 18px; font-weight: 700; color: #ffffff; margin: 0; }
         .header-actions-right { display: flex; align-items: center; gap: 16px; }
         .icon-btn-top { background: none; border: none; cursor: pointer; color: #ffffff; padding: 4px; }
-        .empty-feed-wrapper { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; color: #8e8e93; font-size: 15px; font-weight: 500; text-align: center; padding: 0 24px; box-sizing: border-box; }
+        .empty-feed-wrapper { width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #8e8e93; font-size: 15px; font-weight: 500; text-align: center; padding: 0 24px; box-sizing: border-box; gap: 12px; }
+        .empty-feed-wrapper button { background: #fff; color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; }
         .reel-card { width: 100vw; height: 100vh; scroll-snap-align: start; position: relative; background: #000000; display: flex; align-items: center; justify-content: center; }
         .reel-video-element { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         .btn-toggle-sound { position: absolute; top: 72px; right: 16px; width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; backdrop-filter: blur(4px); }
@@ -84,10 +85,10 @@
             else mainHeader.classList.remove('hidden');
         });
 
-        // REFINADO - 1 FUNÇÃO SÓ, SEM DUPLICAÇÃO
+        // PASSO 2 - 2ª NAVEGAÇÃO = SÓ VIRAL, SÓ VÍDEO
+        // Perfil -> VIRAL vai pra passo2.html
         function renderViraisFeed() {
           let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
-          // Migra velhos de koneat_virais_feed se existirem
           let velhos = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
           velhos.forEach(v => {
             if (!todos.some(t => String(t.id) === String(v.id))) {
@@ -100,14 +101,20 @@
                 capa: v.capa || '',
                 formato: '9:16',
                 legenda: v.legenda || '',
-                origem: 'perfil'
+                origem: 'perfil',
+                mediaType: 'video'
               });
             }
           });
-          // REFINADO: aceita os 2 campos - ANTIGO type:'viral' + JS tipo:'VIRAL'
-          let viraisFeed = todos.filter(p => p.tipo === 'VIRAL' || p.type === 'viral');
+          // REFINO: só VIRAL e só VÍDEO - foto nunca entra aqui
+          let viraisFeed = todos.filter(p => {
+            const isViral = p.tipo === 'VIRAL' || p.type === 'viral';
+            const midia = p.midia || p.url || '';
+            const isVideo = p.mediaType === 'video' || midia.startsWith('data:video') || midia.endsWith('.mp4') || midia.endsWith('.mov') || midia.endsWith('.webm');
+            return isViral && isVideo && !!midia;
+          });
           if (viraisFeed.length === 0) {
-            reelsContainer.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.<br>Poste um VIRAL no + para ver aqui.</div>`;
+            reelsContainer.innerHTML = `<div class="empty-feed-wrapper"><span>Os vídeos virais aparecerão aqui.</span><button onclick="window.location.href='./passo1.html'">Criar VIRAL no Perfil</button></div>`;
             return;
           }
           reelsContainer.innerHTML = viraisFeed.map((item) => {
@@ -117,7 +124,7 @@
             const authorName = item.author || 'koneat_user';
             const midia = item.midia || item.url || '';
             const capa = item.capa || '';
-            const legenda = item.legenda || '';
+            const legenda = item.legenda || item.caption || '';
             return `
               <article class="reel-card" data-video-id="${item.id}">
                 <video class="reel-video-element" src="${midia}" poster="${capa}" loop muted playsinline preload="metadata"></video>
@@ -149,7 +156,6 @@
             `;
           }).join('');
 
-          // REFINADO: toca só o que tá na tela - antes tocava todos ao mesmo tempo
           const observer = new IntersectionObserver((entries)=>{
             entries.forEach(en=>{
               const v = en.target.querySelector('video');
@@ -183,7 +189,6 @@
               playPauseIndicator.classList.add('show');
               setTimeout(()=> playPauseIndicator.classList.remove('show'), 600);
             });
-            // Like / Save / Repost salvam e refletem na hora
             card.querySelector('.btn-like')?.addEventListener('click', function(){
               const id = this.dataset.id; const on = this.classList.toggle('liked');
               localStorage.setItem(`koneat_like_${id}`, on ? 'true' : 'false');
@@ -202,4 +207,4 @@
         renderViraisFeed();
     </script>
 </body>
-    </html>
+</html>
