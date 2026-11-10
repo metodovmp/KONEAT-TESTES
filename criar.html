@@ -8,7 +8,7 @@
 <style>
 body.dark-create-theme{background:#000;color:#fff;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column;justify-content:space-between}
 .create-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;border-bottom:1px solid rgba(255,255,255,.08)}
-.btn-close{background:none;border:none;color:#fff;cursor:pointer;padding:4px;display:flex}
+.btn-close{background:none;border:none;color:#fff;cursor:pointer;padding:4px;display:flex;text-decoration:none}
 .type-selector-tabs{display:flex;gap:16px}
 .type-tab{background:none;border:none;color:#8e8e93;font-size:14px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;padding:4px 0}
 .type-tab.active{color:#fff;border-bottom:2px solid #fff}
@@ -66,7 +66,13 @@ body.dark-create-theme{background:#000;color:#fff;margin:0;font-family:-apple-sy
 <div class="loading-overlay" id="loadingOverlay"><div class="loading-box"><div class="spinner"></div><span class="loading-text">Sua publicação está sendo postada</span></div></div>
 <input type="file" id="fileInput" accept="image/*,video/*" style="display:none;">
 <script>
-// ===== KONEAT - criar.html REFINADO - ANTIGO + JS FINAL =====
+// CRIAR DO PERFIL - Crie seu primeiro post
+// Perfil -> VIRAL vai pra passo2.html
+// Perfil -> POST / VIDEO vai pra passo4.html
+// Plus -> POST / VIDEO vai pra passo4.html
+// Plus -> STORY e Home -> STORY não trocam de página, salvam em koneat_stories e aparecem na Home por 24h
+// Story NÃO fica salvo no perfil
+
 let selectedType = 'post';
 let mediaDataUrl = null;
 let mediaType = null;
@@ -89,9 +95,9 @@ const modalThumbnail = document.getElementById('modalThumbnail');
 const postCaptionInput = document.getElementById('postCaptionInput');
 const loadingOverlay = document.getElementById('loadingOverlay');
 
-let posts = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
 const userId = localStorage.getItem('koneat_userId')||'user_'+Date.now();
 localStorage.setItem('koneat_userId', userId);
+const username = localStorage.getItem('koneat_username')||'koneat_user';
 
 function getFormato(file, callback){
   if(file.type.startsWith('image')){
@@ -100,57 +106,53 @@ function getFormato(file, callback){
     const v=document.createElement('video'); v.onloadedmetadata=()=>{ let r=v.videoWidth/v.videoHeight; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; v.src=URL.createObjectURL(file);
   }
 }
-// REFINADO: antes recebia dataURL e devolvia File e quebrava o localStorage. Agora devolve o dataURL mesmo.
-async function converter720(dataUrl){ return dataUrl; }
-
-// VALIDAÇÃO - igual ANTIGO + JS
 function validar(file,dur,tipoAba){
   const mb=file.size/1024/1024;
   if(tipoAba==='viral'){
-    if(mb>50) return {ok:false,msg:'🚫 Somente Viral de 1:30 minutos até 50MB'};
+    // VIRAL só aceita vídeo
+    if(!file.type.startsWith('video')) return {ok:false,msg:'VIRAL só aceita vídeo'};
+    if(mb>50) return {ok:false,msg:'Somente Viral de 1:30 minutos até 50MB'};
     if(dur<=90) return {ok:true};
     if(dur>90&&dur<=95) return {ok:true,trim:90};
-    if(dur>95) return {ok:false,msg:'🚫 Somente Viral de 1:30 minutos'};
+    if(dur>95) return {ok:false,msg:'Somente Viral de 1:30 minutos'};
   }
   if(tipoAba==='post'){
-    if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'🚫 POST até 10MB'};
+    if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'POST até 10MB'};
     if(file.type.startsWith('video')){
-      if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
-      if(dur>185) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+      if(mb>100) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+      if(dur>185) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
     }
     return {ok:true};
   }
   if(tipoAba==='video'){
-    if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+    if(!file.type.startsWith('video')) return {ok:false,msg:'VÍDEO só aceita vídeo'};
+    if(mb>100) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
     if(dur<=180) return {ok:true};
     if(dur>180&&dur<=185) return {ok:true,trim:180};
-    if(dur>185) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+    if(dur>185) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
   }
   return {ok:true};
 }
 
-// REFINADO - SALVA 1 VEZ SÓ COM OS 2 CAMPOS - ANTIGO + JS
 function salvar(dados){
-  // MAPEAMENTO UNIFICADO - igual seu ANTIGO guardado:
-  // POST -> tipo FEED / type home -> 4ª HOME + Perfil
-  // VÍDEO -> tipo FEED / type home -> 4ª HOME + Perfil
-  // VIRAL -> tipo VIRAL / type viral -> 2ª VIRAL + Perfil
   const isViral = dados.aba === 'viral';
+  const now = Date.now();
   const novo = {
-    id: Date.now(),
-    // JS final
+    id: now,
     tipo: isViral ? 'VIRAL' : 'FEED',
-    // ANTIGO
     type: isViral ? 'viral' : 'home',
-    // Pra saber se era POST ou VÍDEO dentro do FEED
-    subTipo: dados.aba, // 'post' | 'video' | 'viral'
+    subTipo: dados.aba,
     origem: 'perfil',
     midia: dados.midia,
-    url: dados.midia, // alias pro passo2 velho
+    url: dados.midia,
+    mediaType: dados.midia.startsWith('data:video') ? 'video' : 'image',
     capa: dados.capa || '',
     formato: dados.formato || '1:1',
     legenda: dados.legenda || '',
-    data: Date.now(),
+    caption: dados.legenda || '',
+    data: now,
+    createdAt: now,
+    author: username,
     userId: userId,
     reacoes: { likes: 0, comentarios: [] }
   };
@@ -162,9 +164,10 @@ function salvar(dados){
 
 function postarPerfil(aba, midia, capa, formato, legenda){
   const novo = salvar({aba, midia, capa, formato, legenda});
-  // REDIRECIONA SEMPRE - igual ANTIGO + Manus: VIRAL -> passo2, resto -> passo1
+  // REGRA FINAL DO CRIAR DO PERFIL:
+  // VIRAL -> passo2.html (2ª navegação) | POST / VÍDEO -> passo4.html (4ª navegação)
   if(novo.tipo === 'VIRAL') location.href = 'passo2.html';
-  else location.href = 'passo1.html';
+  else location.href = 'passo4.html';
 }
 
 tabs.forEach(tab => {
@@ -180,7 +183,6 @@ tabs.forEach(tab => {
 previewContainer.addEventListener('click', (e) => {
   if (e.target === previewContainer || placeholderContent.contains(e.target)) fileInput.click();
 });
-
 function getDuracao(file){
   return new Promise((res)=>{
     if(file.type.startsWith('image')) return res(0);
@@ -200,19 +202,17 @@ function gerarCapaVideo(file){
     setTimeout(()=>finish(''),1500);
   });
 }
-
 fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const dur = await getDuracao(file);
   const v = validar(file, dur, selectedType);
   if (!v || !v.ok){ alert(v.msg); fileInput.value=''; return; }
-  if ((selectedType==='viral'||selectedType==='video') && !file.type.startsWith('video')){ alert('🚫 Escolha um vídeo para VÍDEO / VIRAL'); fileInput.value=''; return; }
+  if ((selectedType==='viral'||selectedType==='video') && !file.type.startsWith('video')){ alert('Escolha um vídeo para VÍDEO / VIRAL'); fileInput.value=''; return; }
   selectedFile = file;
   selectedDur = dur;
   getFormato(file, (f)=>{ selectedFormato = f; });
   if (file.type.startsWith('video')) selectedCapa = await gerarCapaVideo(file);
-
   const reader = new FileReader();
   reader.onload = (ev) => {
     mediaDataUrl = ev.target.result;
@@ -231,10 +231,8 @@ fileInput.addEventListener('change', async (e) => {
   };
   reader.readAsDataURL(file);
 });
-
 btnAdvance.addEventListener('click', () => { if (!mediaDataUrl) return; captionModal.classList.add('show'); });
 closeModalBtn.addEventListener('click', () => { captionModal.classList.remove('show'); });
-
 publishFinalBtn.addEventListener('click', async () => {
   if (!mediaDataUrl || !selectedFile || isPublishing) return;
   isPublishing = true;
@@ -243,9 +241,8 @@ publishFinalBtn.addEventListener('click', async () => {
   try {
     const v = validar(selectedFile, selectedDur, selectedType);
     if (!v || !v.ok){ alert(v.msg); return; }
-    const midiaFinal = await converter720(mediaDataUrl);
     const legenda = postCaptionInput.value || '';
-    postarPerfil(selectedType, midiaFinal, selectedCapa, selectedFormato, legenda);
+    postarPerfil(selectedType, mediaDataUrl, selectedCapa, selectedFormato, legenda);
   } catch(err){
     alert('Não consegui publicar. Tenta um arquivo menor.');
   } finally {
@@ -256,4 +253,4 @@ publishFinalBtn.addEventListener('click', async () => {
 });
 </script>
 </body>
-                                                                                                                                                                                                            </html>
+</html>
