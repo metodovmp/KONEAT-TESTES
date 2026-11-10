@@ -35,7 +35,6 @@
         .nav-link svg { width: 22px; height: 22px; }
         .nav-link.active .nav-box-bg { stroke: #ffffff; fill: none; }
         .nav-link.active .nav-icon-inner { stroke: #ffffff; fill: #ffffff; }
-        /* Modal legenda - mesmo estilo do criar, mas só do Passo 3 */
         .caption-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.95); z-index: 100; display: none; flex-direction: column; padding: 20px; box-sizing: border-box; }
         .caption-modal.show { display: flex; }
         .caption-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -103,7 +102,7 @@
 
         let selectedFile = null;
         let currentMediaUrl = null;
-        let selectedType = 'post'; // post | story | video - SÓ DO PASSO 3
+        let selectedType = 'post'; // post | story | video - SÓ DO PLUS (Passo 3)
         let selectedFormato = '1:1';
         let selectedDur = 0;
         let selectedCapa = '';
@@ -111,6 +110,7 @@
         let isPublishing = false;
         const userId = localStorage.getItem('koneat_userId') || 'user_'+Date.now();
         localStorage.setItem('koneat_userId', userId);
+        const username = localStorage.getItem('koneat_username') || 'koneat_user';
 
         document.getElementById("openGallery").addEventListener("click", () => galleryInput.click());
         document.getElementById("openGalleryIcon").addEventListener("click", () => galleryInput.click());
@@ -141,26 +141,25 @@
             setTimeout(()=>finish(''),1500);
           });
         }
-        // VALIDAÇÃO IGUAL CRIAR, MAS PROS 3 TIPOS DO PASSO 3
         function validar(file, dur, aba){
           const mb=file.size/1024/1024;
           if(aba==='post'){
-            if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'🚫 POST até 10MB'};
+            if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'POST até 10MB'};
             if(file.type.startsWith('video')){
-              if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
-              if(dur>185) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+              if(mb>100) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+              if(dur>185) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
             }
             return {ok:true};
           }
           if(aba==='video'){
-            if(!file.type.startsWith('video')) return {ok:false,msg:'🚫 Escolha um vídeo para VÍDEO'};
-            if(mb>100) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
-            if(dur>185) return {ok:false,msg:'🚫 Somente vídeo Feed de até 3:00 minutos'};
+            if(!file.type.startsWith('video')) return {ok:false,msg:'Escolha um vídeo para VÍDEO'};
+            if(mb>100) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
+            if(dur>185) return {ok:false,msg:'Somente vídeo Feed de até 3:00 minutos'};
             return {ok:true};
           }
           if(aba==='story'){
-            if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'🚫 STORY até 10MB'};
-            if(file.type.startsWith('video')&&dur>65) return {ok:false,msg:'🚫 STORY até 1:00 minuto'};
+            if(file.type.startsWith('image')&&mb>10) return {ok:false,msg:'STORY até 10MB'};
+            if(file.type.startsWith('video')&&dur>60) return {ok:false,msg:'STORY até 60s'};
             return {ok:true};
           }
           return {ok:true};
@@ -192,7 +191,6 @@
                 imagePreview.style.display = "block";
                 modalThumbnail.src = currentMediaUrl;
             }
-            // REFINADO: guarda dataURL pra salvar
             const reader = new FileReader();
             reader.onload = (ev)=>{ mediaDataUrl = ev.target.result; };
             reader.readAsDataURL(file);
@@ -219,33 +217,68 @@
         });
         closeModalBtn.addEventListener("click", ()=> captionModal.classList.remove('show'));
 
-        // REFINADO: salva na MESMA gaveta do resto - koneat_posts
+        function resetPlus(){
+          captionModal.classList.remove('show');
+          postCaptionInput.value = '';
+          galleryInput.value = '';
+          cameraInput.value = '';
+          selectedFile = null;
+          mediaDataUrl = null;
+          selectedCapa = '';
+          advanceButton.disabled = true;
+          imagePreview.style.display = 'none';
+          videoPreview.style.display = 'none';
+          videoPreview.pause();
+          emptyState.style.display = 'flex';
+        }
+
+        // PLUS - REGRA FINAL:
+        // Plus -> POST / VIDEO vai pra passo4.html
+        // Plus -> STORY não troca de página, salva em koneat_stories e aparece na Home por 24h
+        // Story NÃO fica salvo no perfil
         publishFinalBtn.addEventListener("click", ()=>{
             if(!mediaDataUrl || !selectedFile || isPublishing) return;
             isPublishing = true;
             const v = validar(selectedFile, selectedDur, selectedType);
             if(!v||!v.ok){ alert(v.msg); isPublishing=false; return; }
+            const now = Date.now();
             const isStory = selectedType==='story';
             const novo = {
-              id: Date.now(),
+              id: now,
               tipo: isStory ? 'STORY' : 'FEED',
               type: isStory ? 'story' : 'home',
-              subTipo: selectedType, // post | story | video
-              origem: 'perfil',
+              subTipo: selectedType,
+              origem: 'plus',
               midia: mediaDataUrl,
               url: mediaDataUrl,
+              mediaType: mediaDataUrl.startsWith('data:video') ? 'video' : 'image',
               capa: selectedCapa || '',
               formato: selectedFormato || '1:1',
               legenda: postCaptionInput.value || '',
-              data: Date.now(),
+              caption: postCaptionInput.value || '',
+              data: now,
+              createdAt: now,
+              expiresAt: isStory ? now + 24*60*60*1000 : null,
+              author: username,
               userId: userId,
               reacoes: { likes: 0, comentarios: [] }
             };
-            let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
-            todos.unshift(novo);
-            localStorage.setItem('koneat_posts', JSON.stringify(todos));
-            window.location.href = "./passo4.html";
+            if(isStory){
+              let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
+              s.unshift(novo);
+              localStorage.setItem('koneat_stories', JSON.stringify(s));
+              isPublishing = false;
+              alert('Story publicado! Vai aparecer na Home por 24h.');
+              resetPlus();
+              // NÃO troca de página - fica no PLUS
+              return;
+            } else {
+              let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
+              todos.unshift(novo);
+              localStorage.setItem('koneat_posts', JSON.stringify(todos));
+              window.location.href = "./passo4.html";
+            }
         });
     </script>
 </body>
-    </html>
+</html>
