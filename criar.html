@@ -413,7 +413,20 @@
             const uniqueId = 'post_' + Date.now();
 
             setTimeout(() => {
-                const postData = {
+                // CORREÇÃO: salva no formato NOVO que o app.js entende + mantém o velho pra não perder
+                const tipoNovo = selectedType === 'viral' ? 'VIRAL' : (mediaType === 'video' ? 'VIDEO' : 'FEED');
+                const postNovo = {
+                    id: uniqueId,
+                    media: mediaDataUrl,
+                    url: mediaDataUrl,
+                    tipo: tipoNovo,
+                    type: mediaType,
+                    author: 'Eributtler',
+                    caption: caption,
+                    legenda: caption,
+                    createdAt: Date.now()
+                };
+                const postVelho = {
                     id: uniqueId,
                     url: mediaDataUrl,
                     type: mediaType,
@@ -421,13 +434,19 @@
                     caption: caption
                 };
 
+                // 1. Gaveta nova - é essa que o passo1 novo lê
+                const postsNovos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
+                postsNovos.unshift(postNovo);
+                localStorage.setItem('koneat_posts', JSON.stringify(postsNovos));
+
+                // 2. Gaveta velha - pra não sumir se alguma tela ainda ler ela
                 const userPosts = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
-                userPosts.unshift(postData);
+                userPosts.unshift(postVelho);
                 localStorage.setItem('koneat_user_posts', JSON.stringify(userPosts));
 
                 if (mediaType === 'video' || selectedType === 'viral') {
                     const currentVirais = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
-                    currentVirais.unshift(postData);
+                    currentVirais.unshift(postNovo);
                     localStorage.setItem('koneat_virais_feed', JSON.stringify(currentVirais));
                 }
 
@@ -442,4 +461,4 @@
         });
     </script>
 </body>
-                </html>
+    </html>
