@@ -79,15 +79,17 @@
         const dropdown = document.getElementById('dropdownDecisions');
         menuBtn?.addEventListener('click', (e)=>{ e.stopPropagation(); dropdown.classList.toggle('show'); });
         document.addEventListener('click', (e)=>{ if(!dropdown.contains(e.target)) dropdown.classList.remove('show'); });
-
         reelsContainer.addEventListener('scroll', () => {
             if (reelsContainer.scrollTop > 50) mainHeader.classList.add('hidden');
             else mainHeader.classList.remove('hidden');
         });
-
+        // --- IndexedDB: mesmo banco do criar.html ---
+        function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+        function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readonly'); const req=tx.objectStore('media').get(id); req.onsuccess=()=>{ if(!req.result) return res(''); res(URL.createObjectURL(req.result)); }; req.onerror=()=>res(''); }catch(e){ res(''); } })); }
+        async function resolveMidia(item){ if(item.mediaId){ const u = await getMediaUrl(item.mediaId); if(u) return u; } return item.midia || item.url || ''; }
         // PASSO 2 - 2ª NAVEGAÇÃO = SÓ VIRAL, SÓ VÍDEO
         // Perfil -> VIRAL vai pra passo2.html
-        function renderViraisFeed() {
+        async function renderViraisFeed() {
           let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
           let velhos = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
           velhos.forEach(v => {
@@ -110,20 +112,21 @@
           let viraisFeed = todos.filter(p => {
             const isViral = p.tipo === 'VIRAL' || p.type === 'viral';
             const midia = p.midia || p.url || '';
-            const isVideo = p.mediaType === 'video' || midia.startsWith('data:video') || midia.endsWith('.mp4') || midia.endsWith('.mov') || midia.endsWith('.webm');
-            return isViral && isVideo && !!midia;
+            const isVideo = p.mediaType === 'video' || midia.startsWith('data:video') || midia.endsWith('.mp4') || midia.endsWith('.mov') || midia.endsWith('.webm') || !!p.mediaId;
+            return isViral && isVideo;
           });
-          if (viraisFeed.length === 0) {
+          // Resolve a mídia do IndexedDB antes de filtrar quem tem mídia de verdade
+          let viraisComMidia = await Promise.all(viraisFeed.map(async item=>({ item, midia: await resolveMidia(item) })));
+          viraisComMidia = viraisComMidia.filter(({midia})=> !!midia);
+          if (viraisComMidia.length === 0) {
               reelsContainer.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.</div>`;
-return;
-    
-         }
-          reelsContainer.innerHTML = viraisFeed.map((item) => {
+              return;
+          }
+          reelsContainer.innerHTML = viraisComMidia.map(({item, midia}) => {
             const isLiked = localStorage.getItem(`koneat_like_${item.id}`) === 'true';
             const isReposted = localStorage.getItem(`koneat_repost_${item.id}`) === 'true';
             const isSaved = localStorage.getItem(`koneat_save_${item.id}`) === 'true';
             const authorName = item.author || 'koneat_user';
-            const midia = item.midia || item.url || '';
             const capa = item.capa || '';
             const legenda = item.legenda || item.caption || '';
             return `
@@ -156,7 +159,6 @@ return;
               </article>
             `;
           }).join('');
-
           const observer = new IntersectionObserver((entries)=>{
             entries.forEach(en=>{
               const v = en.target.querySelector('video');
@@ -204,7 +206,6 @@ return;
             });
           });
         }
-
         renderViraisFeed();
     </script>
 </body>
