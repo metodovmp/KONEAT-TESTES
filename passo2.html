@@ -114,9 +114,10 @@
             return isViral && isVideo && !!midia;
           });
           if (viraisFeed.length === 0) {
-            reelsContainer.innerHTML = `<div class="empty-feed-wrapper"><span>Os vídeos virais aparecerão aqui.</span><button onclick="window.location.href='./passo1.html'">Criar VIRAL no Perfil</button></div>`;
-            return;
-          }
+              reelsContainer.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.</div>`;
+return;
+    
+         }
           reelsContainer.innerHTML = viraisFeed.map((item) => {
             const isLiked = localStorage.getItem(`koneat_like_${item.id}`) === 'true';
             const isReposted = localStorage.getItem(`koneat_repost_${item.id}`) === 'true';
