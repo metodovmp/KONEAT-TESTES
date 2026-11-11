@@ -26,9 +26,8 @@
         .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #e5e5ea; border: 2px solid #00ff88; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
         .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
-        /* SEU STORY - igual a foto: cinza claro, borda fina preta, sem verde */
         .story-avatar-mine { background: #eef0f5; border: 1.5px solid #000000; }
-        .story-add-badge { position: absolute; bottom: 1px; right: 1px; width: 22px; height: 22px; border-radius: 50%; background: #000000; color: #ffffff; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 1; }
+        .story-add-center { font-size: 32px; font-weight: 300; color: #000000; line-height: 1; display: flex; align-items: center; justify-content: center; }
         .story-username { font-size: 12px; color: #1c1c1e; font-weight: 400; }
         .post-card { width: 100%; background: #ffffff; border-bottom: 1px solid #efeff4; margin-bottom: 12px; }
         .post-header { width: 100%; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
@@ -77,11 +76,9 @@
     </div>
     <main class="home-feed-container" id="homeFeedContainer">
         <section class="stories-bar" id="storiesBar">
-            <!-- FIXO NO HTML - sempre aparece, igual a foto -->
             <button class="story-item" id="btnSeuStory" type="button">
                 <div class="story-avatar story-avatar-mine">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <div class="story-add-badge">+</div>
+                    <span class="story-add-center">+</span>
                 </div>
                 <span class="story-username">seu story</span>
             </button>
@@ -109,6 +106,14 @@
         const homeStoryInput = document.getElementById('homeStoryInput');
         const storyViewer = document.getElementById('storyViewer');
         const storyViewerContent = document.getElementById('storyViewerContent');
+        // --- IndexedDB: mesmo banco do criar.html ---
+        function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+        function saveMedia(id, file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file, id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
+        function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readonly'); const req=tx.objectStore('media').get(id); req.onsuccess=()=>{ if(!req.result) return res(''); res(URL.createObjectURL(req.result)); }; req.onerror=()=>res(''); }catch(e){ res(''); } })); }
+        async function resolveMidia(item){
+          if(item.mediaId){ const u = await getMediaUrl(item.mediaId); if(u) return u; }
+          return item.midia || item.url || '';
+        }
         function updateIndicator(tab) {
             if(!tab) return;
             indicator.style.width = `${tab.getBoundingClientRect().width}px`;
@@ -129,6 +134,10 @@
           if(midia.startsWith('data:image')) return false;
           return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(midia);
         }
+        function isVideoItem(item, midia){
+          if(item.mediaType) return item.mediaType === 'video';
+          return isVideoUrl(midia);
+        }
         function abrirGaleriaStory(){ homeStoryInput.click(); }
         if(btnSeuStory) btnSeuStory.addEventListener('click', abrirGaleriaStory);
         function getDuracao(file){
@@ -144,24 +153,22 @@
           const dur = await getDuracao(file);
           if(file.size/1024/1024>10 && file.type.startsWith('image')){ alert('STORY até 10MB'); return; }
           if(file.type.startsWith('video') && dur>60){ alert('STORY até 60s'); return; }
-          const reader = new FileReader();
-          reader.onload = ev=>{
-            const now = Date.now();
-            const novo = { id: now, tipo:'STORY', type:'story', subTipo:'story', origem:'home', midia: ev.target.result, url: ev.target.result, mediaType: file.type.startsWith('video')?'video':'image', capa:'', formato:'9:16', legenda:'', caption:'', data: now, createdAt: now, expiresAt: now + 24*60*60*1000, author: localStorage.getItem('koneat_username')||'koneat_user', userId: localStorage.getItem('koneat_userId')||'user', reacoes:{likes:0, comentarios:[]} };
-            let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
-            s.unshift(novo);
-            localStorage.setItem('koneat_stories', JSON.stringify(s));
-            homeStoryInput.value='';
-            renderHomeFeed();
-          };
-          reader.readAsDataURL(file);
+          const now = Date.now();
+          const mediaId = 'media_' + now;
+          try{ await saveMedia(mediaId, file); }catch(err){ alert('Não consegui salvar o story. Tenta um arquivo menor.'); return; }
+          const novo = { id: now, mediaId: mediaId, tipo:'STORY', type:'story', subTipo:'story', origem:'home', midia:'', url:'', mediaType: file.type.startsWith('video')?'video':'image', capa:'', formato:'9:16', legenda:'', caption:'', data: now, createdAt: now, expiresAt: now + 24*60*60*1000, author: localStorage.getItem('koneat_username')||'koneat_user', userId: localStorage.getItem('koneat_userId')||'user', reacoes:{likes:0, comentarios:[]} };
+          let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
+          s.unshift(novo);
+          localStorage.setItem('koneat_stories', JSON.stringify(s));
+          homeStoryInput.value='';
+          renderHomeFeed();
         });
         document.getElementById('closeStoryViewer').addEventListener('click', ()=>{ storyViewer.classList.remove('show'); storyViewerContent.innerHTML=''; });
-        function openStory(midia){
-          storyViewerContent.innerHTML = isVideoUrl(midia) ? `<video src="${midia}" autoplay controls playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>` : `<img src="${midia}" style="width:100%;height:100%;object-fit:contain">`;
+        function openStory(midia, isVideo){
+          storyViewerContent.innerHTML = isVideo ? `<video src="${midia}" autoplay controls playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>` : `<img src="${midia}" style="width:100%;height:100%;object-fit:contain">`;
           storyViewer.classList.add('show');
         }
-        function renderHomeFeed() {
+        async function renderHomeFeed() {
             let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
             let velhos1 = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
             velhos1.forEach(v=>{
@@ -179,24 +186,24 @@
               const isStory = p.tipo==='STORY' || p.type==='story';
               return isFeed && !isViral && !isStory;
             });
-            // NÃO apaga mais o botão seu story, só atualiza os outros
             if(storiesOthers){
-              storiesOthers.innerHTML = stories.map(s=>{
-                const midia = s.midia || s.url || '';
+              const storiesComMidia = await Promise.all(stories.map(async s=>({ s, midia: await resolveMidia(s) })));
+              storiesOthers.innerHTML = storiesComMidia.map(({s, midia})=>{
                 const capa = s.capa || midia;
-                return `<button class="story-item" data-story-midia="${encodeURIComponent(midia)}"><div class="story-avatar">${isVideoUrl(midia) ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></button>`;
+                const isVideo = isVideoItem(s, midia);
+                return `<button class="story-item" data-story-index="${stories.indexOf(s)}"><div class="story-avatar">${isVideo ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></button>`;
               }).join('');
-              storiesOthers.querySelectorAll('[data-story-midia]').forEach(b=>{
-                b.addEventListener('click', ()=> openStory(decodeURIComponent(b.dataset.storyMidia)));
+              storiesOthers.querySelectorAll('[data-story-index]').forEach(b=>{
+                b.addEventListener('click', async ()=>{ const s = stories[Number(b.dataset.storyIndex)]; if(!s) return; const midia = await resolveMidia(s); openStory(midia, isVideoItem(s, midia)); });
               });
             }
             if (feed.length === 0) {
                 postsDynamicFeed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
                 return;
             }
-            postsDynamicFeed.innerHTML = feed.map(item => {
-                const midia = item.midia || item.url || '';
-                const isVideo = isVideoUrl(midia);
+            const feedComMidia = await Promise.all(feed.map(async item=>({ item, midia: await resolveMidia(item) })));
+            postsDynamicFeed.innerHTML = feedComMidia.map(({item, midia}) => {
+                const isVideo = isVideoItem(item, midia);
                 const authorName = item.author || 'koneat_user';
                 const caption = item.legenda || item.caption || '';
                 const postId = item.id;
@@ -224,4 +231,14 @@
                 `;
             }).join('');
             document.querySelectorAll('.btn-like').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('liked'); localStorage.setItem(`koneat_like_${this.dataset.id}`, on?'true':'false'); }));
-            document.querySelectorAll('.btn-save'
+            document.querySelectorAll('.btn-save').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('saved'); localStorage.setItem(`koneat_save_${this.dataset.id}`, on?'true':'false'); }));
+            document.querySelectorAll('.post-sound-btn').forEach(btn=>{
+              btn.addEventListener('click', ()=>{
+                const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted;
+              });
+            });
+        }
+        document.addEventListener('DOMContentLoaded', renderHomeFeed);
+    </script>
+</body>
+</html>
