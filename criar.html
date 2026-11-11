@@ -92,6 +92,9 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 const userId = localStorage.getItem('koneat_userId')||'user_'+Date.now();
 localStorage.setItem('koneat_userId', userId);
 const username = localStorage.getItem('koneat_username')||'koneat_user';
+// --- IndexedDB: o arquivo vai pra cá, igual vídeo vai pro servidor no TikTok ---
+function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+function saveMedia(id, file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file, id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
 function getFormato(file, callback){
   if(file.type.startsWith('image')){
     const img=new Image(); img.onload=()=>{ let r=img.width/img.height; let f=r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'; callback(f); }; img.src=URL.createObjectURL(file);
@@ -125,18 +128,22 @@ function validar(file,dur,tipoAba){
   }
   return {ok:true};
 }
-function salvar(dados){
+async function salvar(dados){
   const isViral = dados.aba === 'viral';
   const now = Date.now();
+  const mediaId = 'media_' + now;
+  // Salva o arquivo original no IndexedDB, não no localStorage
+  if(dados.file) await saveMedia(mediaId, dados.file);
   const novo = {
     id: now,
+    mediaId: mediaId,
     tipo: isViral ? 'VIRAL' : 'FEED',
     type: isViral ? 'viral' : 'home',
     subTipo: dados.aba,
     origem: 'perfil',
-    midia: dados.midia,
-    url: dados.midia,
-    mediaType: dados.midia.startsWith('data:video') ? 'video' : 'image',
+    midia: '',
+    url: '',
+    mediaType: dados.file ? (dados.file.type.startsWith('video') ? 'video' : 'image') : (dados.midia && dados.midia.startsWith('data:video') ? 'video' : 'image'),
     capa: dados.capa || '',
     formato: dados.formato || '1:1',
     legenda: dados.legenda || '',
@@ -152,8 +159,8 @@ function salvar(dados){
   localStorage.setItem('koneat_posts', JSON.stringify(todos));
   return novo;
 }
-function postarPerfil(aba, midia, capa, formato, legenda){
-  const novo = salvar({aba, midia, capa, formato, legenda});
+async function postarPerfil(aba, midia, capa, formato, legenda){
+  const novo = await salvar({aba, midia, capa, formato, legenda, file: selectedFile});
   if(novo.tipo === 'VIRAL') location.href = 'passo2.html';
   else location.href = 'passo4.html';
 }
@@ -202,23 +209,21 @@ fileInput.addEventListener('change', async (e) => {
   selectedDur = dur;
   getFormato(file, (f)=>{ selectedFormato = f; });
   if (file.type.startsWith('video')) selectedCapa = await gerarCapaVideo(file);
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    mediaDataUrl = ev.target.result;
-    mediaType = file.type.startsWith('video') ? 'video' : 'image';
-    if (placeholderContent) placeholderContent.remove();
-    const old = previewContainer.querySelector('video, img');
-    if (old) old.remove();
-    if (mediaType === 'video'){
-      const el=document.createElement('video'); el.src=mediaDataUrl; el.controls=true; el.autoplay=true; el.playsInline=true; previewContainer.appendChild(el);
-      modalThumbnail.src = selectedCapa || '';
-    } else {
-      const el=document.createElement('img'); el.src=mediaDataUrl; previewContainer.appendChild(el);
-      modalThumbnail.src = mediaDataUrl;
-    }
-    btnAdvance.classList.add('active');
-  };
-  reader.readAsDataURL(file);
+  // Prévia com URL temporária, sem base64, sem encher o localStorage
+  if(mediaDataUrl) URL.revokeObjectURL(mediaDataUrl);
+  mediaDataUrl = URL.createObjectURL(file);
+  mediaType = file.type.startsWith('video') ? 'video' : 'image';
+  if (placeholderContent) placeholderContent.remove();
+  const old = previewContainer.querySelector('video, img');
+  if (old) old.remove();
+  if (mediaType === 'video'){
+    const el=document.createElement('video'); el.src=mediaDataUrl; el.controls=true; el.autoplay=true; el.playsInline=true; previewContainer.appendChild(el);
+    modalThumbnail.src = selectedCapa || '';
+  } else {
+    const el=document.createElement('img'); el.src=mediaDataUrl; previewContainer.appendChild(el);
+    modalThumbnail.src = mediaDataUrl;
+  }
+  btnAdvance.classList.add('active');
 });
 btnAdvance.addEventListener('click', () => { if (!mediaDataUrl) return; captionModal.classList.add('show'); });
 closeModalBtn.addEventListener('click', () => { captionModal.classList.remove('show'); });
@@ -231,7 +236,7 @@ publishFinalBtn.addEventListener('click', async () => {
     const v = validar(selectedFile, selectedDur, selectedType);
     if (!v || !v.ok){ alert(v.msg); return; }
     const legenda = postCaptionInput.value || '';
-    postarPerfil(selectedType, mediaDataUrl, selectedCapa, selectedFormato, legenda);
+    await postarPerfil(selectedType, mediaDataUrl, selectedCapa, selectedFormato, legenda);
   } catch(err){
     alert('Não consegui publicar. Tenta um arquivo menor.');
   } finally {
