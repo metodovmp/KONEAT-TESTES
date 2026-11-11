@@ -100,13 +100,16 @@
         const modalThumbnail = document.getElementById("modalThumbnail");
         const postCaptionInput = document.getElementById("postCaptionInput");
 
+        // --- IndexedDB: mesmo banco do app.js ---
+        function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+        function saveMedia(id,file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file,id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
+
         let selectedFile = null;
         let currentMediaUrl = null;
-        let selectedType = 'post'; // post | story | video - SÓ DO PLUS (Passo 3)
+        let selectedType = 'post';
         let selectedFormato = '1:1';
         let selectedDur = 0;
         let selectedCapa = '';
-        let mediaDataUrl = null;
         let isPublishing = false;
         const userId = localStorage.getItem('koneat_userId') || 'user_'+Date.now();
         localStorage.setItem('koneat_userId', userId);
@@ -191,9 +194,6 @@
                 imagePreview.style.display = "block";
                 modalThumbnail.src = currentMediaUrl;
             }
-            const reader = new FileReader();
-            reader.onload = (ev)=>{ mediaDataUrl = ev.target.result; };
-            reader.readAsDataURL(file);
             advanceButton.disabled = false;
         }
 
@@ -223,7 +223,6 @@
           galleryInput.value = '';
           cameraInput.value = '';
           selectedFile = null;
-          mediaDataUrl = null;
           selectedCapa = '';
           advanceButton.disabled = true;
           imagePreview.style.display = 'none';
@@ -232,53 +231,56 @@
           emptyState.style.display = 'flex';
         }
 
-        // PLUS - REGRA FINAL:
-        // Plus -> POST / VIDEO vai pra passo4.html
-        // Plus -> STORY não troca de página, salva em koneat_stories e aparece na Home por 24h
-        // Story NÃO fica salvo no perfil
-        publishFinalBtn.addEventListener("click", ()=>{
-            if(!mediaDataUrl || !selectedFile || isPublishing) return;
+        publishFinalBtn.addEventListener("click", async ()=>{
+            if(!selectedFile || isPublishing) return;
             isPublishing = true;
             const v = validar(selectedFile, selectedDur, selectedType);
             if(!v||!v.ok){ alert(v.msg); isPublishing=false; return; }
-            const now = Date.now();
-            const isStory = selectedType==='story';
-            const novo = {
-              id: now,
-              tipo: isStory ? 'STORY' : 'FEED',
-              type: isStory ? 'story' : 'home',
-              subTipo: selectedType,
-              origem: 'plus',
-              midia: mediaDataUrl,
-              url: mediaDataUrl,
-              mediaType: mediaDataUrl.startsWith('data:video') ? 'video' : 'image',
-              capa: selectedCapa || '',
-              formato: selectedFormato || '1:1',
-              legenda: postCaptionInput.value || '',
-              caption: postCaptionInput.value || '',
-              data: now,
-              createdAt: now,
-              expiresAt: isStory ? now + 24*60*60*1000 : null,
-              author: username,
-              userId: userId,
-              reacoes: { likes: 0, comentarios: [] }
-            };
-            if(isStory){
-              let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
-              s.unshift(novo);
-              localStorage.setItem('koneat_stories', JSON.stringify(s));
+            try{
+              const now = Date.now();
+              const isStory = selectedType==='story';
+              const mediaId = 'media_'+now;
+              await saveMedia(mediaId, selectedFile);
+              const novo = {
+                id: now,
+                mediaId: mediaId,
+                tipo: isStory ? 'STORY' : 'FEED',
+                type: isStory ? 'story' : 'home',
+                subTipo: selectedType,
+                origem: 'plus',
+                midia: '',
+                url: '',
+                mediaType: selectedFile.type.startsWith('video') ? 'video' : 'image',
+                capa: selectedCapa || '',
+                formato: selectedFormato || '1:1',
+                legenda: postCaptionInput.value || '',
+                caption: postCaptionInput.value || '',
+                data: now,
+                createdAt: now,
+                expiresAt: isStory ? now + 24*60*60*1000 : null,
+                author: username,
+                userId: userId,
+                reacoes: { likes: 0, comentarios: [] }
+              };
+              if(isStory){
+                let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
+                s.unshift(novo);
+                localStorage.setItem('koneat_stories', JSON.stringify(s));
+                isPublishing = false;
+                alert('Story publicado! Vai aparecer na Home por 24h.');
+                resetPlus();
+                return;
+              } else {
+                let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
+                todos.unshift(novo);
+                localStorage.setItem('koneat_posts', JSON.stringify(todos));
+                window.location.href = "./passo4.html";
+              }
+            }catch(e){
               isPublishing = false;
-              alert('Story publicado! Vai aparecer na Home por 24h.');
-              resetPlus();
-              // NÃO troca de página - fica no PLUS
-              return;
-            } else {
-              let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
-              todos.unshift(novo);
-              localStorage.setItem('koneat_posts', JSON.stringify(todos));
-              window.location.href = "./passo4.html";
+              alert('Não deu pra salvar esse arquivo. Tenta um menor.');
             }
         });
     </script>
 </body>
-</html>
+    </html>
