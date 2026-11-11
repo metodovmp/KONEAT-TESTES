@@ -1,9 +1,15 @@
 // ===== KONEAT - app.js PARTE 1/3 =====
 // Cola a PARTE 2 embaixo dessa, depois a PARTE 3
 
+// --- IndexedDB: mesmo banco do criar.html ---
+function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+function saveMedia(id,file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file,id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
+function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readonly'); const req=tx.objectStore('media').get(id); req.onsuccess=()=>{ if(!req.result) return res(''); res(URL.createObjectURL(req.result)); }; req.onerror=()=>res(''); }catch(e){ res(''); } })); }
+function deleteMedia(id){ if(!id) return Promise.resolve(); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>res(); }catch(e){ res(); } })); }
+async function resolveMidia(item){ if(item.mediaId){ const u=await getMediaUrl(item.mediaId); if(u) return u; } return item.midia || item.url || ''; }
+
 function getPosts(){
   let posts = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
-  // MIGRAÇÃO automática dos bancos antigos - não apaga seus posts antigos
   let old1 = JSON.parse(localStorage.getItem('koneat_user_posts')||'[]');
   let old2 = JSON.parse(localStorage.getItem('koneat_virais_feed')||'[]');
   let todos = [...old1, ...old2];
@@ -16,9 +22,11 @@ function getPosts(){
     else if(p.type==='video') tipo = 'FEED';
     posts.unshift({
       id: p.id || ('post_'+Date.now()+Math.random()),
+      mediaId: p.mediaId || '',
       url: p.url,
+      midia: p.midia || p.url,
       mediaType: p.mediaType || (p.type==='video'?'video':'image'),
-      tipo: tipo, // POST | STORY | VIRAL | FEED
+      tipo: tipo,
       author: p.author || localStorage.getItem('koneat_username') || 'koneat_user',
       caption: p.caption || '',
       createdAt: p.createdAt || Date.now()
@@ -62,7 +70,6 @@ function initLogin(){
     const pw = document.getElementById('passwordField').value;
     if(!email||!pw){ alert('Preencha o e-mail e a senha.'); return; }
     localStorage.setItem('koneat_email', email);
-    // Sem Supabase ainda - só local, Base44 troca depois
     window.location.href='passo1.html';
   });
   const g = document.getElementById('btnGoogle');
@@ -120,7 +127,6 @@ function initMensagens(){
     const u = getUser();
     header.textContent = '@' + u;
   }
-  // Barrinha preta
   const btns = document.querySelectorAll('.tab-msg-btn');
   const ind = document.getElementById('tabIndicator');
   if(btns.length && ind){
@@ -142,7 +148,6 @@ function initMensagens(){
       });
     });
   }
-  // Filtro de pesquisa
   const search = document.querySelector('.search-input-msg');
   if(search){
     search.addEventListener('input', ()=>{
@@ -153,7 +158,6 @@ function initMensagens(){
       });
     });
   }
-  // Função global que o HTML chama no onclick - deixa igual
   window.switchMsgTab = function(index, paneId){
     const buttons = document.querySelectorAll('.tab-msg-btn');
     buttons.forEach(btn=>btn.classList.remove('active'));
@@ -177,9 +181,7 @@ function initChat(){
   const sendBtn = document.querySelector('button[aria-label="Encaminhar"]');
   const KEY = 'koneat_chat_koneat';
   const msgs = JSON.parse(localStorage.getItem(KEY) || '[]');
-
   function render(){
-    // Limpa o "Suas mensagens aparecerão aqui" se já tem mensagem
     if(msgs.length===0) return;
     box.innerHTML = '';
     box.style.justifyContent = 'flex-start';
@@ -203,7 +205,6 @@ function initChat(){
   }
   if(sendBtn) sendBtn.addEventListener('click', send);
   if(input) input.addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
-  // Botões sem função ainda - não quebra, só avisa
   document.querySelectorAll('button[aria-label="Câmera"], button[aria-label="Gravar áudio"], button[aria-label="Galeria"]').forEach(b=>{
     b.addEventListener('click', ()=> alert('Em breve no Koneat'));
   });
@@ -221,8 +222,6 @@ function initPasso1(){
   const pn = document.getElementById('profileName'); if(pn) pn.textContent = name;
   const pt = document.getElementById('profileTag'); if(pt) pt.textContent = '@' + u;
   const pb = document.getElementById('profileBio'); if(pb) pb.textContent = bio;
-
-  // Menu 3 pontinhos
   const menuBtn = document.getElementById('menuBtn');
   const menu = document.getElementById('dropdownMenu');
   if(menuBtn && menu){
@@ -232,8 +231,7 @@ function initPasso1(){
     });
     document.addEventListener('click', ()=>{ menu.style.display='none'; });
   }
-
-  function render(){
+  async function render(){
     const posts = getPosts().filter(p=>p.author===u || p.author==='koneat_user');
     const empty = document.getElementById('emptyState');
     const count = document.getElementById('postsCount');
@@ -246,24 +244,28 @@ function initPasso1(){
     }
     if(empty) empty.style.display = 'none';
     grid.style.display = 'grid';
-    grid.innerHTML = posts.map(post=>{
+    const comMidia = await Promise.all(posts.map(async post=>({ post, midia: await resolveMidia(post) })));
+    grid.innerHTML = comMidia.map(({post, midia})=>{
       const isVideo = post.mediaType==='video';
       return `<div class="post-grid-item" data-id="${post.id}">
         <button type="button" class="btn-delete-post" data-del="${post.id}" title="Excluir">🗑️</button>
-        ${isVideo ? `<video src="${post.url}"></video><div class="badge-video">▶</div>` : `<img src="${post.url}" alt="Post">`}
+        ${isVideo ? `<video src="${midia}"></video><div class="badge-video">▶</div>` : `<img src="${midia}" alt="Post">`}
       </div>`;
     }).join('');
     grid.querySelectorAll('[data-del]').forEach(b=>{
-      b.addEventListener('click', ()=>{
+      b.addEventListener('click', async ()=>{
         if(!confirm('Deseja realmente excluir esta publicação?')) return;
-        let all = getPosts().filter(p=>String(p.id)!==String(b.dataset.del));
-        savePosts(all);
+        const alvo = getPosts().find(p=>String(p.id)===String(b.dataset.del));
+        if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
+        savePosts(getPosts().filter(p=>String(p.id)!==String(b.dataset.del)));
         render();
       });
     });
   }
-  window.deletePost = function(id){
+  window.deletePost = async function(id){
     if(!confirm('Deseja realmente excluir esta publicação?')) return;
+    const alvo = getPosts().find(p=>String(p.id)===String(id));
+    if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
     savePosts(getPosts().filter(p=>String(p.id)!==String(id)));
     render();
   };
@@ -273,9 +275,8 @@ function initPasso1(){
     else { navigator.clipboard.writeText(link); alert('Link do perfil copiado!'); }
   };
   render();
-    }
 
-// ===== KONEAT - app.js PARTE 3/3 =====
+  // ===== KONEAT - app.js PARTE 3/3 =====
 // Passo2 + Passo3 + Passo4 + Inicialização
 
 // ===== AJUDANTE LIKE / SAVE / REPOST =====
@@ -287,7 +288,7 @@ function toggleState(key){
 function isOn(key){ return localStorage.getItem(key)==='true'; }
 
 // ===== PASSO 2 - VIRAIS =====
-function initPasso2(){
+async function initPasso2(){
   const container = document.getElementById('reelsContainer');
   if(!container) return;
   const header = document.getElementById('mainHeader');
@@ -297,25 +298,24 @@ function initPasso2(){
       else header.classList.remove('hidden');
     });
   }
-  // Menu Decisões
   const mBtn = document.getElementById('menuDecisionsBtn');
   const mMenu = document.getElementById('dropdownDecisions');
   if(mBtn && mMenu){
     mBtn.addEventListener('click', e=>{ e.stopPropagation(); mMenu.classList.toggle('show'); });
     document.addEventListener('click', ()=> mMenu.classList.remove('show'));
   }
-
   const virais = getPosts().filter(p=>p.tipo==='VIRAL' && p.mediaType==='video');
   if(virais.length===0){
     container.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.<br>Poste um vídeo na aba VÍDEO do criar.</div>`;
     return;
   }
-  container.innerHTML = virais.map(item=>{
+  const comMidia = await Promise.all(virais.map(async item=>({ item, midia: await resolveMidia(item) })));
+  container.innerHTML = comMidia.map(({item, midia})=>{
     const liked = isOn(`koneat_like_${item.id}`);
     const reposted = isOn(`koneat_repost_${item.id}`);
     const saved = isOn(`koneat_save_${item.id}`);
     return `<article class="reel-card" data-video-id="${item.id}">
-      <video class="reel-video-element" src="${item.url}" autoplay loop muted playsinline preload="auto"></video>
+      <video class="reel-video-element" src="${midia}" autoplay loop muted playsinline preload="auto"></video>
       <button type="button" class="btn-toggle-sound" aria-label="Som">🔊</button>
       <div class="video-progress-bar-container"><div class="video-progress-bar-fill"></div></div>
       <div class="video-footer-info"><div class="creator-row">
@@ -332,7 +332,6 @@ function initPasso2(){
       </div>
     </article>`;
   }).join('');
-
   container.querySelectorAll('.reel-card').forEach(card=>{
     const video = card.querySelector('.reel-video-element');
     const fill = card.querySelector('.video-progress-bar-fill');
@@ -363,13 +362,11 @@ function initPasso3(){
   const advanceBtn = document.getElementById('advanceButton');
   let selectedFile = null;
   let currentUrl = null;
-  let currentTipo = 'FEED'; // FEED | STORY | VIRAL
-
+  let currentTipo = 'FEED';
   const open = id => document.getElementById(id);
   if(open('openGallery')) open('openGallery').addEventListener('click', ()=> galleryInput.click());
   if(open('openGalleryIcon')) open('openGalleryIcon').addEventListener('click', ()=> galleryInput.click());
   if(open('openCamera')) open('openCamera').addEventListener('click', ()=> cameraInput && cameraInput.click());
-
   function show(file){
     if(!file) return;
     selectedFile = file;
@@ -387,7 +384,6 @@ function initPasso3(){
   }
   galleryInput.addEventListener('change', e=> show(e.target.files[0]));
   if(cameraInput) cameraInput.addEventListener('change', e=> show(e.target.files[0]));
-
   document.querySelectorAll('.create-tab').forEach(tab=>{
     tab.addEventListener('click', ()=>{
       document.querySelectorAll('.create-tab').forEach(t=>t.classList.remove('active'));
@@ -398,29 +394,19 @@ function initPasso3(){
       else currentTipo='FEED';
     });
   });
-
-  if(advanceBtn) advanceBtn.addEventListener('click', ()=>{
+  if(advanceBtn) advanceBtn.addEventListener('click', async ()=>{
     if(!selectedFile){ galleryInput.click(); return; }
-    // Validação simples - não trava o app
     if(currentTipo==='VIRAL' && selectedFile.size > 50*1024*1024){ alert('Vídeo viral muito grande. Use até 50MB.'); return; }
     if(currentTipo==='FEED' && selectedFile.size > 100*1024*1024){ alert('Arquivo muito grande. Use até 100MB.'); return; }
-    const reader = new FileReader();
-    reader.onload = e=>{
+    try{
+      const id = 'post_'+Date.now();
+      const mediaId = 'media_'+id;
+      await saveMedia(mediaId, selectedFile);
       const posts = getPosts();
-      posts.unshift({
-        id: 'post_'+Date.now(),
-        url: e.target.result,
-        mediaType: selectedFile.type.startsWith('video/') ? 'video' : 'image',
-        tipo: currentTipo,
-        author: getUser(),
-        caption: '',
-        createdAt: Date.now()
-      });
+      posts.unshift({ id, mediaId, url: '', midia: '', mediaType: selectedFile.type.startsWith('video/') ? 'video' : 'image', tipo: currentTipo, author: getUser(), caption: '', createdAt: Date.now() });
       savePosts(posts);
-      // VIRAL vai pro passo2, resto vai pra home
       window.location.href = currentTipo==='VIRAL' ? './passo2.html' : './passo4.html';
-    };
-    reader.readAsDataURL(selectedFile);
+    }catch(e){ alert('Não deu pra salvar esse arquivo. Tenta um menor.'); }
   });
 }
 
@@ -428,7 +414,6 @@ function initPasso3(){
 function initPasso4(){
   const feed = document.getElementById('postsDynamicFeed');
   if(!feed) return;
-  // Subnav
   const tabs = document.querySelectorAll('.subnav-tab');
   const ind = document.getElementById('subnavIndicator');
   function moveInd(tab){
@@ -442,34 +427,33 @@ function initPasso4(){
   }));
   window.addEventListener('load', ()=> moveInd(document.querySelector('.subnav-tab.active')));
   setTimeout(()=> moveInd(document.querySelector('.subnav-tab.active')), 100);
-
-  // Stories - mostra os STORY reais
   const storiesBar = document.querySelector('.stories-bar');
   if(storiesBar){
-    const stories = getPosts().filter(p=>p.tipo==='STORY');
-    if(stories.length>0){
-      stories.forEach(s=>{
+    (async ()=>{
+      const stories = getPosts().filter(p=>p.tipo==='STORY');
+      for(const s of stories){
+        const midia = await resolveMidia(s);
         const div = document.createElement('div');
         div.className='story-item';
-        div.innerHTML = `<div class="story-avatar" style="padding:0;overflow:hidden;border:2px solid #000;"><img src="${s.url}" style="width:100%;height:100%;object-fit:cover;"></div><span class="story-username">${s.author||'você'}</span>`;
+        div.innerHTML = `<div class="story-avatar" style="padding:0;overflow:hidden;border:2px solid #000;"><img src="${midia}" style="width:100%;height:100%;object-fit:cover;"></div><span class="story-username">${s.author||'você'}</span>`;
         storiesBar.appendChild(div);
-      });
-    }
+      }
+    })();
   }
-
-  function render(filter){
+  async function render(filter){
     let posts = getPosts().filter(p=>p.tipo==='FEED' || p.tipo==='POST' || !p.tipo);
     if(filter==='following') posts = posts.filter(p=>p.author===getUser());
     if(posts.length===0){
       feed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
       return;
     }
-    feed.innerHTML = posts.map(item=>{
+    const comMidia = await Promise.all(posts.map(async item=>({ item, midia: await resolveMidia(item) })));
+    feed.innerHTML = comMidia.map(({item, midia})=>{
       const isVideo = item.mediaType==='video';
       const liked = isOn(`koneat_like_${item.id}`);
       return `<article class="post-card" data-post-id="${item.id}">
         <div class="post-header"><div class="post-author-info"><div class="author-avatar">${(item.author||'K').charAt(0).toUpperCase()}</div><span class="author-name">${item.author||'koneat_user'}</span></div><button type="button" class="btn-follow-home">Seguir</button></div>
-        <div class="post-media-wrapper">${isVideo ? `<video src="${item.url}" autoplay loop muted playsinline></video>` : `<img src="${item.url}" alt="Publicação">`}</div>
+        <div class="post-media-wrapper">${isVideo ? `<video src="${midia}" autoplay loop muted playsinline></video>` : `<img src="${midia}" alt="Publicação">`}</div>
         <div class="post-actions-bar"><div class="post-actions-left">
           <button type="button" class="post-action-btn btn-like-home" data-id="${item.id}" style="${liked?'color:#e74c3c':''}">❤️</button>
           <button type="button" class="post-action-btn">💬</button>
@@ -518,7 +502,7 @@ function initPasso1(){
     if(navigator.share) navigator.share({title:'Perfil no Koneat', url:link}).catch(()=>{});
     else { navigator.clipboard.writeText(link); alert('Link copiado!'); }
   };
-  function render(){
+  async function render(){
     const posts = getPosts().filter(p=>p.tipo!=='STORY');
     const empty = document.getElementById('emptyState');
     const count = document.getElementById('postsCount');
@@ -531,20 +515,28 @@ function initPasso1(){
     }
     if(empty){ empty.style.display='block'; if(btn){ btn.textContent='Crie outro post'; btn.href='./passo3.html'; } }
     grid.style.display='grid';
-    grid.innerHTML = posts.map(post=>`<div class="post-grid-item" data-id="${post.id}">
+    const comMidia = await Promise.all(posts.map(async post=>({ post, midia: await resolveMidia(post) })));
+    grid.innerHTML = comMidia.map(({post, midia})=>`<div class="post-grid-item" data-id="${post.id}">
       <button type="button" class="btn-delete-post" data-del="${post.id}">🗑️</button>
-      ${post.mediaType==='video' ? `<video src="${post.url}" muted playsinline></video><div class="badge-video">▶</div>` : `<img src="${post.url}">`}
+      ${post.mediaType==='video' ? `<video src="${midia}" muted playsinline></video><div class="badge-video">▶</div>` : `<img src="${midia}">`}
     </div>`).join('');
     grid.querySelectorAll('[data-del]').forEach(b=>{
-      b.onclick = ()=>{
+      b.onclick = async ()=>{
         if(!confirm('Excluir esta publicação?')) return;
+        const alvo = getPosts().find(p=>String(p.id)===String(b.dataset.del));
+        if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
         savePosts(getPosts().filter(p=>String(p.id)!==String(b.dataset.del)));
         render();
       };
     });
   }
-  window.deletePost = function(id){ savePosts(getPosts().filter(p=>String(p.id)!==String(id))); render(); };
+  window.deletePost = async function(id){
+    const alvo = getPosts().find(p=>String(p.id)===String(id));
+    if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
+    savePosts(getPosts().filter(p=>String(p.id)!==String(id))); render();
+  };
   render();
-}
+    }
 
-
+  
+                        }
