@@ -17,9 +17,10 @@ function getPosts(){
   todos.forEach(p=>{
     if(!p || !p.url) return;
     if(posts.some(x=>String(x.id)===String(p.id))) return;
-    let tipo = 'FEED';
-    if(p.tipo) tipo = p.tipo;
-    else if(p.type==='video') tipo = 'FEED';
+    let tipo = p.tipo || 'FEED';
+    // REFINO: não transforma VIRAL em FEED
+    if(tipo==='video') tipo='VIRAL';
+    if(tipo==='post') tipo='FEED';
     posts.unshift({
       id: p.id || ('post_'+Date.now()+Math.random()),
       mediaId: p.mediaId || '',
@@ -27,12 +28,19 @@ function getPosts(){
       midia: p.midia || p.url,
       mediaType: p.mediaType || (p.type==='video'?'video':'image'),
       tipo: tipo,
+      type: p.type || '',
       author: p.author || localStorage.getItem('koneat_username') || 'koneat_user',
-      caption: p.caption || '',
-      createdAt: p.createdAt || Date.now()
+      caption: p.caption || p.legenda || '',
+      createdAt: p.createdAt || p.data || Date.now(),
+      expiresAt: p.expiresAt || null
     });
     mudou = true;
   });
+  // REFINO: remove STORY expirado (24h) do painel
+  const agora = Date.now();
+  const antes = posts.length;
+  posts = posts.filter(p=> !(p.tipo==='STORY' && p.expiresAt && p.expiresAt < agora));
+  if(posts.length!==antes) mudou=true;
   if(mudou) localStorage.setItem('koneat_posts', JSON.stringify(posts));
   return posts;
 }
@@ -211,7 +219,7 @@ function initChat(){
   render();
 }
 
-// ===== PASSO 1 - PERFIL =====
+// ===== PASSO 1 - PERFIL - REFINADO =====
 function initPasso1(){
   const grid = document.getElementById('userPostsGrid');
   if(!grid) return;
@@ -231,12 +239,45 @@ function initPasso1(){
     });
     document.addEventListener('click', ()=>{ menu.style.display='none'; });
   }
+
+  // --- ABAS Todos / Reposts / Marcações + cetinha que desliza ---
+  let abaAtual = 'todos';
+  const tabBtns = document.querySelectorAll('.profile-tab, [data-tab], .tab-perfil-btn');
+  const indicator = document.getElementById('profileTabIndicator') || document.getElementById('tabIndicatorPerfil') || document.querySelector('.profile-tab-indicator');
+  function moveIndicator(){
+    if(!indicator) return;
+    const act = document.querySelector('.profile-tab.active, [data-tab].active, .tab-perfil-btn.active') || tabBtns[0];
+    if(!act) return;
+    indicator.style.width = act.offsetWidth + 'px';
+    indicator.style.transform = `translateX(${act.offsetLeft}px)`;
+  }
+  tabBtns.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      tabBtns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      abaAtual = (b.dataset.tab || b.textContent.trim().toLowerCase()).toLowerCase();
+      if(abaAtual.includes('repost')) abaAtual='reposts';
+      else if(abaAtual.includes('marca')) abaAtual='marcacoes';
+      else abaAtual='todos';
+      moveIndicator();
+      render();
+    });
+  });
+  window.addEventListener('load', moveIndicator);
+  setTimeout(moveIndicator, 80);
+
   async function render(){
-    const posts = getPosts().filter(p=>p.author===u || p.author==='koneat_user');
+    // TODOS = FEED + VIRAL + POST. STORY nunca fica no painel
+    let todos = getPosts().filter(p=>p.tipo!=='STORY' && p.type!=='story');
+    // Se o post for do usuário atual ou sem autor, mostra. Não trava por author diferente
+    todos = todos.filter(p=>!p.author || p.author===u || p.author==='koneat_user' || p.author===localStorage.getItem('koneat_name'));
+    let lista = todos;
+    if(abaAtual==='reposts') lista = todos.filter(p=>p.isRepost===true);
+    if(abaAtual==='marcacoes') lista = todos.filter(p=>p.marcado===true);
     const empty = document.getElementById('emptyState');
     const count = document.getElementById('postsCount');
-    if(count) count.textContent = posts.length;
-    if(posts.length===0){
+    if(count) count.textContent = todos.length;
+    if(lista.length===0){
       if(empty) empty.style.display = 'flex';
       grid.style.display = 'none';
       grid.innerHTML = '';
@@ -244,12 +285,13 @@ function initPasso1(){
     }
     if(empty) empty.style.display = 'none';
     grid.style.display = 'grid';
-    const comMidia = await Promise.all(posts.map(async post=>({ post, midia: await resolveMidia(post) })));
+    const comMidia = await Promise.all(lista.map(async post=>({ post, midia: await resolveMidia(post) })));
     grid.innerHTML = comMidia.map(({post, midia})=>{
       const isVideo = post.mediaType==='video';
       return `<div class="post-grid-item" data-id="${post.id}">
         <button type="button" class="btn-delete-post" data-del="${post.id}" title="Excluir">🗑️</button>
-        ${isVideo ? `<video src="${midia}"></video><div class="badge-video">▶</div>` : `<img src="${midia}" alt="Post">`}
+        <a class="btn-download-post" href="${midia}" download="koneat_${post.id}" title="Baixar">⬇️</a>
+        ${isVideo ? `<video src="${midia}" muted playsinline></video><div class="badge-video">▶</div>` : `<img src="${midia}" alt="Post">`}
       </div>`;
     }).join('');
     grid.querySelectorAll('[data-del]').forEach(b=>{
@@ -275,268 +317,5 @@ function initPasso1(){
     else { navigator.clipboard.writeText(link); alert('Link do perfil copiado!'); }
   };
   render();
-
-  // ===== KONEAT - app.js PARTE 3/3 =====
-// Passo2 + Passo3 + Passo4 + Inicialização
-
-// ===== AJUDANTE LIKE / SAVE / REPOST =====
-function toggleState(key){
-  const v = localStorage.getItem(key)==='true';
-  localStorage.setItem(key, v ? 'false' : 'true');
-  return !v;
+  setTimeout(moveIndicator, 150);
 }
-function isOn(key){ return localStorage.getItem(key)==='true'; }
-
-// ===== PASSO 2 - VIRAIS =====
-async function initPasso2(){
-  const container = document.getElementById('reelsContainer');
-  if(!container) return;
-  const header = document.getElementById('mainHeader');
-  if(header){
-    container.addEventListener('scroll', ()=>{
-      if(container.scrollTop > 50) header.classList.add('hidden');
-      else header.classList.remove('hidden');
-    });
-  }
-  const mBtn = document.getElementById('menuDecisionsBtn');
-  const mMenu = document.getElementById('dropdownDecisions');
-  if(mBtn && mMenu){
-    mBtn.addEventListener('click', e=>{ e.stopPropagation(); mMenu.classList.toggle('show'); });
-    document.addEventListener('click', ()=> mMenu.classList.remove('show'));
-  }
-  const virais = getPosts().filter(p=>p.tipo==='VIRAL' && p.mediaType==='video');
-  if(virais.length===0){
-    container.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.<br>Poste um vídeo na aba VÍDEO do criar.</div>`;
-    return;
-  }
-  const comMidia = await Promise.all(virais.map(async item=>({ item, midia: await resolveMidia(item) })));
-  container.innerHTML = comMidia.map(({item, midia})=>{
-    const liked = isOn(`koneat_like_${item.id}`);
-    const reposted = isOn(`koneat_repost_${item.id}`);
-    const saved = isOn(`koneat_save_${item.id}`);
-    return `<article class="reel-card" data-video-id="${item.id}">
-      <video class="reel-video-element" src="${midia}" autoplay loop muted playsinline preload="auto"></video>
-      <button type="button" class="btn-toggle-sound" aria-label="Som">🔊</button>
-      <div class="video-progress-bar-container"><div class="video-progress-bar-fill"></div></div>
-      <div class="video-footer-info"><div class="creator-row">
-        <div class="creator-avatar-circle">${(item.author||'K').charAt(0).toUpperCase()}</div>
-        <span class="creator-name">${item.author||'koneat_user'}</span>
-        <button type="button" class="btn-follow">Seguir</button>
-      </div></div>
-      <div class="video-actions-sidebar">
-        <button type="button" class="action-item btn-like ${liked?'liked':''}" data-id="${item.id}">❤️</button>
-        <button type="button" class="action-item btn-comment" data-id="${item.id}">💬</button>
-        <button type="button" class="action-item btn-repost ${reposted?'reposted':''}" data-id="${item.id}">🔁</button>
-        <button type="button" class="action-item btn-save ${saved?'saved':''}" data-id="${item.id}">🔖</button>
-        <button type="button" class="action-item btn-share" data-id="${item.id}">↗️</button>
-      </div>
-    </article>`;
-  }).join('');
-  container.querySelectorAll('.reel-card').forEach(card=>{
-    const video = card.querySelector('.reel-video-element');
-    const fill = card.querySelector('.video-progress-bar-fill');
-    const soundBtn = card.querySelector('.btn-toggle-sound');
-    if(video){
-      video.play().catch(()=>{});
-      video.addEventListener('timeupdate', ()=>{ if(video.duration && fill) fill.style.width = (video.currentTime/video.duration*100)+'%'; });
-      video.addEventListener('click', ()=>{ video.paused ? video.play() : video.pause(); });
-    }
-    if(soundBtn && video) soundBtn.addEventListener('click', e=>{ e.stopPropagation(); video.muted = !video.muted; soundBtn.textContent = video.muted ? '🔇' : '🔊'; });
-  });
-  container.querySelectorAll('.btn-like').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleState(`koneat_like_${b.dataset.id}`); b.classList.toggle('liked', on); }));
-  container.querySelectorAll('.btn-repost').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleState(`koneat_repost_${b.dataset.id}`); b.classList.toggle('reposted', on); }));
-  container.querySelectorAll('.btn-save').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleState(`koneat_save_${b.dataset.id}`); b.classList.toggle('saved', on); }));
-  container.querySelectorAll('.btn-comment').forEach(b=> b.addEventListener('click', ()=> alert('Comentários em breve')));
-  container.querySelectorAll('.btn-share').forEach(b=> b.addEventListener('click', ()=>{ if(navigator.share) navigator.share({title:'Koneat', url: location.href}); else alert('Link copiado!'); }));
-  container.querySelectorAll('.btn-follow').forEach(b=> b.addEventListener('click', ()=>{ b.textContent = b.textContent==='Seguir' ? 'Seguindo' : 'Seguir'; }));
-}
-
-// ===== PASSO 3 - CRIAR =====
-function initPasso3(){
-  const galleryInput = document.getElementById('galleryInput');
-  if(!galleryInput) return;
-  const cameraInput = document.getElementById('cameraInput');
-  const emptyState = document.getElementById('emptyState');
-  const imagePreview = document.getElementById('imagePreview');
-  const videoPreview = document.getElementById('videoPreview');
-  const advanceBtn = document.getElementById('advanceButton');
-  let selectedFile = null;
-  let currentUrl = null;
-  let currentTipo = 'FEED';
-  const open = id => document.getElementById(id);
-  if(open('openGallery')) open('openGallery').addEventListener('click', ()=> galleryInput.click());
-  if(open('openGalleryIcon')) open('openGalleryIcon').addEventListener('click', ()=> galleryInput.click());
-  if(open('openCamera')) open('openCamera').addEventListener('click', ()=> cameraInput && cameraInput.click());
-  function show(file){
-    if(!file) return;
-    selectedFile = file;
-    if(currentUrl) URL.revokeObjectURL(currentUrl);
-    currentUrl = URL.createObjectURL(file);
-    if(emptyState) emptyState.style.display='none';
-    if(imagePreview) imagePreview.style.display='none';
-    if(videoPreview) videoPreview.style.display='none';
-    if(file.type.startsWith('video/')){
-      if(videoPreview){ videoPreview.src=currentUrl; videoPreview.style.display='block'; }
-    } else {
-      if(videoPreview){ videoPreview.pause(); videoPreview.removeAttribute('src'); }
-      if(imagePreview){ imagePreview.src=currentUrl; imagePreview.style.display='block'; }
-    }
-  }
-  galleryInput.addEventListener('change', e=> show(e.target.files[0]));
-  if(cameraInput) cameraInput.addEventListener('change', e=> show(e.target.files[0]));
-  document.querySelectorAll('.create-tab').forEach(tab=>{
-    tab.addEventListener('click', ()=>{
-      document.querySelectorAll('.create-tab').forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
-      const t = tab.dataset.type;
-      if(t==='video') currentTipo='VIRAL';
-      else if(t==='story') currentTipo='STORY';
-      else currentTipo='FEED';
-    });
-  });
-  if(advanceBtn) advanceBtn.addEventListener('click', async ()=>{
-    if(!selectedFile){ galleryInput.click(); return; }
-    if(currentTipo==='VIRAL' && selectedFile.size > 50*1024*1024){ alert('Vídeo viral muito grande. Use até 50MB.'); return; }
-    if(currentTipo==='FEED' && selectedFile.size > 100*1024*1024){ alert('Arquivo muito grande. Use até 100MB.'); return; }
-    try{
-      const id = 'post_'+Date.now();
-      const mediaId = 'media_'+id;
-      await saveMedia(mediaId, selectedFile);
-      const posts = getPosts();
-      posts.unshift({ id, mediaId, url: '', midia: '', mediaType: selectedFile.type.startsWith('video/') ? 'video' : 'image', tipo: currentTipo, author: getUser(), caption: '', createdAt: Date.now() });
-      savePosts(posts);
-      window.location.href = currentTipo==='VIRAL' ? './passo2.html' : './passo4.html';
-    }catch(e){ alert('Não deu pra salvar esse arquivo. Tenta um menor.'); }
-  });
-}
-
-// ===== PASSO 4 - HOME =====
-function initPasso4(){
-  const feed = document.getElementById('postsDynamicFeed');
-  if(!feed) return;
-  const tabs = document.querySelectorAll('.subnav-tab');
-  const ind = document.getElementById('subnavIndicator');
-  function moveInd(tab){
-    if(!ind || !tab) return;
-    ind.style.width = tab.offsetWidth+'px';
-    ind.style.left = tab.offsetLeft+'px';
-  }
-  tabs.forEach(t=> t.addEventListener('click', ()=>{
-    tabs.forEach(x=>x.classList.remove('active'));
-    t.classList.add('active'); moveInd(t); render(t.dataset.target);
-  }));
-  window.addEventListener('load', ()=> moveInd(document.querySelector('.subnav-tab.active')));
-  setTimeout(()=> moveInd(document.querySelector('.subnav-tab.active')), 100);
-  const storiesBar = document.querySelector('.stories-bar');
-  if(storiesBar){
-    (async ()=>{
-      const stories = getPosts().filter(p=>p.tipo==='STORY');
-      for(const s of stories){
-        const midia = await resolveMidia(s);
-        const div = document.createElement('div');
-        div.className='story-item';
-        div.innerHTML = `<div class="story-avatar" style="padding:0;overflow:hidden;border:2px solid #000;"><img src="${midia}" style="width:100%;height:100%;object-fit:cover;"></div><span class="story-username">${s.author||'você'}</span>`;
-        storiesBar.appendChild(div);
-      }
-    })();
-  }
-  async function render(filter){
-    let posts = getPosts().filter(p=>p.tipo==='FEED' || p.tipo==='POST' || !p.tipo);
-    if(filter==='following') posts = posts.filter(p=>p.author===getUser());
-    if(posts.length===0){
-      feed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
-      return;
-    }
-    const comMidia = await Promise.all(posts.map(async item=>({ item, midia: await resolveMidia(item) })));
-    feed.innerHTML = comMidia.map(({item, midia})=>{
-      const isVideo = item.mediaType==='video';
-      const liked = isOn(`koneat_like_${item.id}`);
-      return `<article class="post-card" data-post-id="${item.id}">
-        <div class="post-header"><div class="post-author-info"><div class="author-avatar">${(item.author||'K').charAt(0).toUpperCase()}</div><span class="author-name">${item.author||'koneat_user'}</span></div><button type="button" class="btn-follow-home">Seguir</button></div>
-        <div class="post-media-wrapper">${isVideo ? `<video src="${midia}" autoplay loop muted playsinline></video>` : `<img src="${midia}" alt="Publicação">`}</div>
-        <div class="post-actions-bar"><div class="post-actions-left">
-          <button type="button" class="post-action-btn btn-like-home" data-id="${item.id}" style="${liked?'color:#e74c3c':''}">❤️</button>
-          <button type="button" class="post-action-btn">💬</button>
-          <button type="button" class="post-action-btn">↗️</button>
-        </div><button type="button" class="post-action-btn btn-save-home" data-id="${item.id}">🔖</button></div>
-      </article>`;
-    }).join('');
-    feed.querySelectorAll('.btn-like-home').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleState(`koneat_like_${b.dataset.id}`); b.style.color = on ? '#e74c3c' : '#000'; }));
-    feed.querySelectorAll('.btn-save-home').forEach(b=> b.addEventListener('click', ()=>{ toggleState(`koneat_save_${b.dataset.id}`); alert('Salvo!'); }));
-    feed.querySelectorAll('.btn-follow-home').forEach(b=> b.addEventListener('click', ()=>{ b.textContent = b.textContent==='Seguir' ? 'Seguindo' : 'Seguir'; }));
-  }
-  render('for-you');
-}
-
-// ===== LIGA TUDO =====
-document.addEventListener('DOMContentLoaded', ()=>{
-  initOlho();
-  initLogin();
-  initCadastro();
-  initRecuperar();
-  initMensagens();
-  initChat();
-  initPasso1();
-  initPasso2();
-  initPasso3();
-  initPasso4();
-});
-
-// ===== CORREÇÃO 10/11 - Sobrescreve as funções velhas =====
-function initPasso1(){
-  const grid = document.getElementById('userPostsGrid');
-  if(!grid) return;
-  const u = getUser();
-  const h = document.getElementById('headerUsername'); if(h) h.textContent = u;
-  const pn = document.getElementById('profileName'); if(pn) pn.textContent = localStorage.getItem('koneat_name')||u;
-  const pt = document.getElementById('profileTag'); if(pt) pt.textContent = '@'+u;
-  const pb = document.getElementById('profileBio'); if(pb) pb.textContent = localStorage.getItem('koneat_bio')||'';
-  const menuBtn = document.getElementById('menuBtn');
-  const menu = document.getElementById('dropdownMenu');
-  if(menuBtn && menu){
-    menuBtn.onclick = e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; };
-    document.addEventListener('click', ()=>{ menu.style.display='none'; });
-  }
-  window.shareProfile = function(){
-    const link = location.href;
-    if(navigator.share) navigator.share({title:'Perfil no Koneat', url:link}).catch(()=>{});
-    else { navigator.clipboard.writeText(link); alert('Link copiado!'); }
-  };
-  async function render(){
-    const posts = getPosts().filter(p=>p.tipo!=='STORY');
-    const empty = document.getElementById('emptyState');
-    const count = document.getElementById('postsCount');
-    if(count) count.textContent = posts.length;
-    const btn = empty ? empty.querySelector('.btn-create-post') : null;
-    if(posts.length===0){
-      if(empty){ empty.style.display='block'; if(btn){ btn.textContent='Crie seu primeiro post'; btn.href='./passo3.html'; } }
-      grid.style.display='none'; grid.innerHTML='';
-      return;
-    }
-    if(empty){ empty.style.display='block'; if(btn){ btn.textContent='Crie outro post'; btn.href='./passo3.html'; } }
-    grid.style.display='grid';
-    const comMidia = await Promise.all(posts.map(async post=>({ post, midia: await resolveMidia(post) })));
-    grid.innerHTML = comMidia.map(({post, midia})=>`<div class="post-grid-item" data-id="${post.id}">
-      <button type="button" class="btn-delete-post" data-del="${post.id}">🗑️</button>
-      ${post.mediaType==='video' ? `<video src="${midia}" muted playsinline></video><div class="badge-video">▶</div>` : `<img src="${midia}">`}
-    </div>`).join('');
-    grid.querySelectorAll('[data-del]').forEach(b=>{
-      b.onclick = async ()=>{
-        if(!confirm('Excluir esta publicação?')) return;
-        const alvo = getPosts().find(p=>String(p.id)===String(b.dataset.del));
-        if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
-        savePosts(getPosts().filter(p=>String(p.id)!==String(b.dataset.del)));
-        render();
-      };
-    });
-  }
-  window.deletePost = async function(id){
-    const alvo = getPosts().find(p=>String(p.id)===String(id));
-    if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
-    savePosts(getPosts().filter(p=>String(p.id)!==String(id))); render();
-  };
-  render();
-    }
-
-  
-                        }
