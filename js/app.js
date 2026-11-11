@@ -7,24 +7,40 @@ function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().th
 function deleteMedia(id){ if(!id) return Promise.resolve(); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>res(); }catch(e){ res(); } })); }
 async function resolveMidia(item){ if(item.mediaId){ const u=await getMediaUrl(item.mediaId); if(u) return u; } return item.midia || item.url || ''; }
 
+// ===== REFINO - REGRA DO PERFIL =====
+// POST, VÍDEO, VIRAL ficam no perfil. Só STORY não fica.
+function normalizarTipo(t){
+  const s = String(t || 'FEED').toLowerCase().trim();
+  if(s.includes('story')) return 'STORY';
+  if(s.includes('video') || s.includes('viral') || s.includes('reel')) return 'VIRAL';
+  return 'FEED'; // POST, post, feed, foto, imagem -> FEED
+}
+function ficaNoPerfil(p){
+  const tipo = normalizarTipo(p.tipo || p.type);
+  return tipo !== 'STORY';
+}
+
 function getPosts(){
   let posts = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
   let old1 = JSON.parse(localStorage.getItem('koneat_user_posts')||'[]');
   let old2 = JSON.parse(localStorage.getItem('koneat_virais_feed')||'[]');
   let todos = [...old1, ...old2];
   let mudou = false;
+  // Normaliza os que já existem - se veio como video/post, vira VIRAL/FEED certo
+  posts.forEach(p=>{
+    const nt = normalizarTipo(p.tipo || p.type);
+    if(p.tipo !== nt){ p.tipo = nt; mudou = true; }
+  });
   todos.forEach(p=>{
     if(!p || (!p.url && !p.midia && !p.mediaId)) return;
     if(posts.some(x=>String(x.id)===String(p.id))) return;
-    let tipo = p.tipo || 'FEED';
-    if(tipo==='video') tipo='VIRAL';
-    if(tipo==='post') tipo='FEED';
+    const tipo = normalizarTipo(p.tipo || p.type);
     posts.unshift({
       id: p.id || ('post_'+Date.now()+Math.random()),
       mediaId: p.mediaId || '',
       url: p.url || '',
       midia: p.midia || p.url || '',
-      mediaType: p.mediaType || (p.type==='video'?'video':'image'),
+      mediaType: p.mediaType || (String(p.type||'').toLowerCase()==='video' ? 'video' : 'image'),
       tipo: tipo,
       type: p.type || '',
       author: p.author || localStorage.getItem('koneat_username') || 'koneat_user',
@@ -36,7 +52,7 @@ function getPosts(){
   });
   const agora = Date.now();
   const antes = posts.length;
-  posts = posts.filter(p=> !(p.tipo==='STORY' && p.expiresAt && p.expiresAt < agora));
+  posts = posts.filter(p=> !(normalizarTipo(p.tipo||p.type)==='STORY' && p.expiresAt && p.expiresAt < agora));
   if(posts.length!==antes) mudou=true;
   if(mudou) localStorage.setItem('koneat_posts', JSON.stringify(posts));
   return posts;
@@ -120,7 +136,7 @@ function initRecuperar(){
   });
   const back = document.getElementById('btnLoginRedirect');
   if(back) back.addEventListener('click', ()=> window.location.href='index.html');
-}
+  }
 
 // ===== KONEAT - app.js PARTE 2/3 =====
 
@@ -211,7 +227,7 @@ function initChat(){
   render();
 }
 
-// ===== PASSO 1 - PERFIL - ÚNICO, NÃO DUPLICAR =====
+// ===== PASSO 1 - PERFIL =====
 function initPasso1(){
   const grid = document.getElementById('userPostsGrid');
   if(!grid) return;
@@ -232,24 +248,53 @@ function initPasso1(){
     document.addEventListener('click', ()=>{ menu.style.display='none'; });
   }
 
-  // ABAS Todos / Reposts / Marcações + setinha
+  // MODAL - abre QUALQUER post do painel: POST, VÍDEO, VIRAL
+  let modal = document.getElementById('koneatPostModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'koneatPostModal';
+    modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;align-items:center;justify-content:center;padding:16px;';
+    modal.innerHTML = `<div style="position:relative;max-width:520px;width:100%;"><button id="koneatModalClose" style="position:absolute;top:-10px;right:-10px;background:#fff;border:none;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;z-index:2;">✕</button><div id="koneatModalMidia"></div><p id="koneatModalAutor" style="color:#fff;text-align:center;margin-top:10px;"></p></div>`;
+    document.body.appendChild(modal);
+    modal.querySelector('#koneatModalClose').addEventListener('click', ()=> modal.style.display='none');
+    modal.addEventListener('click', e=>{ if(e.target===modal) modal.style.display='none'; });
+  }
+  function abrirPost(post, midia){
+    const box = document.getElementById('koneatModalMidia');
+    const autor = document.getElementById('koneatModalAutor');
+    if(post.mediaType==='video') box.innerHTML = `<video src="${midia}" controls autoplay loop style="width:100%;max-height:75vh;border-radius:12px;background:#000;"></video>`;
+    else box.innerHTML = `<img src="${midia}" style="width:100%;max-height:75vh;object-fit:contain;border-radius:12px;">`;
+    if(autor) autor.textContent = '@' + (post.author || u);
+    modal.style.display = 'flex';
+  }
+
+  // ABAS - acha pelo texto, não depende de class/id
   let abaAtual = 'todos';
-  const tabBtns = document.querySelectorAll('.profile-tab, [data-tab], .tab-perfil-btn');
-  const indicator = document.getElementById('profileTabIndicator') || document.getElementById('tabIndicatorPerfil') || document.querySelector('.profile-tab-indicator');
+  const tabBtns = Array.from(document.querySelectorAll('button')).filter(b=> /todos|repost|marca/i.test(b.textContent));
+  let indicator = document.getElementById('profileTabIndicator') || document.getElementById('tabIndicatorPerfil') || document.querySelector('.profile-tab-indicator');
+  if(!indicator && tabBtns[0] && tabBtns[0].parentElement){
+    indicator = document.createElement('div');
+    indicator.id = 'profileTabIndicator';
+    indicator.style.cssText = 'position:absolute;bottom:0;left:0;height:2px;background:#000;transition:transform .25s ease,width .25s ease;';
+    const pai = tabBtns[0].parentElement;
+    if(getComputedStyle(pai).position==='static') pai.style.position='relative';
+    pai.appendChild(indicator);
+  }
   function moveIndicator(){
     if(!indicator) return;
-    const act = document.querySelector('.profile-tab.active, [data-tab].active, .tab-perfil-btn.active') || tabBtns[0];
+    const act = tabBtns.find(b=>b.classList.contains('active')) || tabBtns[0];
     if(!act) return;
     indicator.style.width = act.offsetWidth + 'px';
-    indicator.style.transform = `translateX(${act.offsetLeft}px)`;
+    const paiLeft = act.parentElement ? act.parentElement.getBoundingClientRect().left : 0;
+    indicator.style.transform = `translateX(${act.getBoundingClientRect().left - paiLeft}px)`;
   }
   tabBtns.forEach(b=>{
     b.addEventListener('click', ()=>{
       tabBtns.forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
-      abaAtual = (b.dataset.tab || b.textContent.trim().toLowerCase()).toLowerCase();
-      if(abaAtual.includes('repost')) abaAtual='reposts';
-      else if(abaAtual.includes('marca')) abaAtual='marcacoes';
+      const t = b.textContent.toLowerCase();
+      if(t.includes('repost')) abaAtual='reposts';
+      else if(t.includes('marca')) abaAtual='marcacoes';
       else abaAtual='todos';
       moveIndicator();
       render();
@@ -257,10 +302,11 @@ function initPasso1(){
   });
   window.addEventListener('load', moveIndicator);
   setTimeout(moveIndicator, 80);
+  setTimeout(moveIndicator, 300);
 
   async function render(){
-    // TODOS = FEED + VIRAL + POST. STORY NUNCA fica no painel
-    let todos = getPosts().filter(p=>p.tipo!=='STORY' && p.type!=='story');
+    // USA A REGRA DA PARTE 1: POST + VÍDEO + VIRAL ficam. STORY não.
+    let todos = getPosts().filter(p=>ficaNoPerfil(p));
     todos = todos.filter(p=>!p.author || p.author===u || p.author==='koneat_user' || p.author===localStorage.getItem('koneat_name'));
     let lista = todos;
     if(abaAtual==='reposts') lista = todos.filter(p=>p.isRepost===true);
@@ -268,25 +314,50 @@ function initPasso1(){
     const empty = document.getElementById('emptyState');
     const count = document.getElementById('postsCount');
     if(count) count.textContent = todos.length;
+
+    // BOTÃO SEMPRE VISÍVEL, EM SCROLL, DEPOIS DO GRID
+    if(empty){
+      empty.style.display = 'flex';
+      empty.style.flexDirection = 'column';
+      empty.style.alignItems = 'center';
+      empty.style.marginTop = '24px';
+      const btn = empty.querySelector('.btn-create-post, a, button');
+      const txt = empty.querySelector('p, span, h3, h4');
+      if(lista.length===0){
+        if(btn){ btn.textContent='Crie seu primeiro post'; btn.href='./passo3.html'; }
+        if(txt) txt.textContent = 'Nenhuma publicação ainda.';
+      } else {
+        if(btn){ btn.textContent='Crie outro post'; btn.href='./passo3.html'; }
+        if(txt) txt.textContent = '';
+      }
+      if(grid.parentElement) grid.parentElement.appendChild(empty);
+    }
     if(lista.length===0){
-      if(empty) empty.style.display = 'flex';
       grid.style.display = 'none';
       grid.innerHTML = '';
+      moveIndicator();
       return;
     }
-    if(empty) empty.style.display = 'none';
     grid.style.display = 'grid';
     const comMidia = await Promise.all(lista.map(async post=>({ post, midia: await resolveMidia(post) })));
     grid.innerHTML = comMidia.map(({post, midia})=>{
       const isVideo = post.mediaType==='video';
-      return `<div class="post-grid-item" data-id="${post.id}">
+      return `<div class="post-grid-item" data-id="${post.id}" data-midia="${midia}" style="cursor:pointer;">
         <button type="button" class="btn-delete-post" data-del="${post.id}" title="Excluir">🗑️</button>
         <a class="btn-download-post" href="${midia}" download="koneat_${post.id}" title="Baixar">⬇️</a>
         ${isVideo ? `<video src="${midia}" muted playsinline></video><div class="badge-video">▶</div>` : `<img src="${midia}" alt="Post">`}
       </div>`;
     }).join('');
+    grid.querySelectorAll('.post-grid-item').forEach(el=>{
+      el.addEventListener('click', e=>{
+        if(e.target.closest('[data-del]') || e.target.closest('.btn-download-post')) return;
+        const post = lista.find(p=>String(p.id)===String(el.dataset.id));
+        if(post) abrirPost(post, el.dataset.midia);
+      });
+    });
     grid.querySelectorAll('[data-del]').forEach(b=>{
-      b.addEventListener('click', async ()=>{
+      b.addEventListener('click', async (e)=>{
+        e.stopPropagation();
         if(!confirm('Deseja realmente excluir esta publicação?')) return;
         const alvo = getPosts().find(p=>String(p.id)===String(b.dataset.del));
         if(alvo && alvo.mediaId) await deleteMedia(alvo.mediaId);
@@ -294,6 +365,7 @@ function initPasso1(){
         render();
       });
     });
+    moveIndicator();
   }
   window.deletePost = async function(id){
     if(!confirm('Deseja realmente excluir esta publicação?')) return;
@@ -308,8 +380,7 @@ function initPasso1(){
     else { navigator.clipboard.writeText(link); alert('Link do perfil copiado!'); }
   };
   render();
-  setTimeout(moveIndicator, 150);
-                        }
+      }
 
 // ===== KONEAT - app.js PARTE 3/3 =====
 
@@ -337,8 +408,7 @@ async function initPasso2(){
     mBtn.addEventListener('click', e=>{ e.stopPropagation(); mMenu.classList.toggle('show'); });
     document.addEventListener('click', ()=> mMenu.classList.remove('show'));
   }
-
-  const virais = getPosts().filter(p=>p.tipo==='VIRAL' && p.mediaType==='video');
+  const virais = getPosts().filter(p=>normalizarTipo(p.tipo||p.type)==='VIRAL' && p.mediaType==='video');
   if(virais.length===0){
     container.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.<br>Poste um vídeo na aba VÍDEO do criar.</div>`;
     return;
@@ -366,7 +436,6 @@ async function initPasso2(){
       </div>
     </article>`;
   }).join('');
-
   container.querySelectorAll('.reel-card').forEach(card=>{
     const video = card.querySelector('.reel-video-element');
     const fill = card.querySelector('.video-progress-bar-fill');
@@ -386,7 +455,7 @@ async function initPasso2(){
   container.querySelectorAll('.btn-follow').forEach(b=> b.addEventListener('click', ()=>{ b.textContent = b.textContent==='Seguir' ? 'Seguindo' : 'Seguir'; }));
 }
 
-// ===== PASSO 3 - CRIAR =====
+// ===== PASSO 3 - CRIAR - 3 ABAS: POST / STORY / VÍDEO =====
 function initPasso3(){
   const galleryInput = document.getElementById('galleryInput');
   if(!galleryInput) return;
@@ -398,12 +467,10 @@ function initPasso3(){
   let selectedFile = null;
   let currentUrl = null;
   let currentTipo = 'FEED';
-
   const open = id => document.getElementById(id);
   if(open('openGallery')) open('openGallery').addEventListener('click', ()=> galleryInput.click());
   if(open('openGalleryIcon')) open('openGalleryIcon').addEventListener('click', ()=> galleryInput.click());
   if(open('openCamera')) open('openCamera').addEventListener('click', ()=> cameraInput && cameraInput.click());
-
   function show(file){
     if(!file) return;
     selectedFile = file;
@@ -421,23 +488,21 @@ function initPasso3(){
   }
   galleryInput.addEventListener('change', e=> show(e.target.files[0]));
   if(cameraInput) cameraInput.addEventListener('change', e=> show(e.target.files[0]));
-
   document.querySelectorAll('.create-tab').forEach(tab=>{
     tab.addEventListener('click', ()=>{
       document.querySelectorAll('.create-tab').forEach(t=>t.classList.remove('active'));
       tab.classList.add('active');
-      const t = tab.dataset.type;
-      if(t==='video') currentTipo='VIRAL';
-      else if(t==='story') currentTipo='STORY';
-      else currentTipo='FEED';
+      // Usa a mesma regra da Parte 1 - lê data-type OU texto
+      const t = (tab.dataset.type || tab.textContent || '').toLowerCase();
+      if(t.includes('story')) currentTipo='STORY';
+      else if(t.includes('video') || t.includes('viral')) currentTipo='VIRAL';
+      else currentTipo='FEED'; // POST
     });
   });
-
   if(advanceBtn) advanceBtn.addEventListener('click', async ()=>{
     if(!selectedFile){ galleryInput.click(); return; }
     if(currentTipo==='VIRAL' && selectedFile.size > 50*1024*1024){ alert('Vídeo viral muito grande. Use até 50MB.'); return; }
     if(currentTipo==='FEED' && selectedFile.size > 100*1024*1024){ alert('Arquivo muito grande. Use até 100MB.'); return; }
-    // Salva no IndexedDB igual ao criar.html - não estoura o localStorage
     const mediaId = 'media_'+Date.now();
     try{ await saveMedia(mediaId, selectedFile); }catch(e){}
     const posts = getPosts();
@@ -475,10 +540,9 @@ async function initPasso4(){
   }));
   window.addEventListener('load', ()=> moveInd(document.querySelector('.subnav-tab.active')));
   setTimeout(()=> moveInd(document.querySelector('.subnav-tab.active')), 100);
-
   const storiesBar = document.querySelector('.stories-bar');
   if(storiesBar){
-    const stories = getPosts().filter(p=>p.tipo==='STORY');
+    const stories = getPosts().filter(p=>normalizarTipo(p.tipo||p.type)==='STORY');
     for(const s of stories){
       const midia = await resolveMidia(s);
       const div = document.createElement('div');
@@ -487,9 +551,8 @@ async function initPasso4(){
       storiesBar.appendChild(div);
     }
   }
-
   async function render(filter){
-    let posts = getPosts().filter(p=>p.tipo==='FEED' || p.tipo==='POST' || !p.tipo);
+    let posts = getPosts().filter(p=>normalizarTipo(p.tipo||p.type)==='FEED');
     if(filter==='following') posts = posts.filter(p=>p.author===getUser());
     if(posts.length===0){
       feed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
