@@ -135,7 +135,7 @@ function initRecuperar(){
   const form = document.getElementById('recoveryForm'); if(!form) return;
   form.addEventListener('submit', e=>{ e.preventDefault(); const email = document.getElementById('emailField').value.trim(); if(!email){ alert('Digite o e-mail da conta.'); return; } alert('Código de recuperação enviado para '+email); window.location.href='index.html'; });
   const back = document.getElementById('btnLoginRedirect'); if(back) back.addEventListener('click', ()=> window.location.href='index.html');
-                                                                   }
+  }
 
 // ===== KONEAT - app.js PARTE 2/3 =====
 
@@ -396,7 +396,6 @@ function initPasso1(){
   render();
 }
 
-
 // ===== KONEAT - app.js PARTE 3/3 =====
 
 // ===== PASSO 2 - VIRAIS - 6 ÍCONES VERTICAL À DIREITA =====
@@ -562,7 +561,7 @@ async function initPasso4(){
         meuEl.onclick = ()=> window.location.href='./passo3.html';
       }
     }
-        // 2) OUTROS - 1 bolha por pessoa, fora do (+)
+       // 2) OUTROS - 1 bolha por pessoa, fora do (+)
     for(const autor of outrosAutores){
       const lista = porAutor[autor];
       const midia = await resolveMidia(lista[0]);
@@ -629,5 +628,5 @@ async function initPasso4(){
 // ===== LIGA TUDO =====
 document.addEventListener('DOMContentLoaded', ()=>{
   initOlho(); initLogin(); initCadastro(); initRecuperar(); initMensagens(); initChat(); initPasso1(); initPasso2(); initPasso3(); initPasso4();
-})
-
+});
+    
