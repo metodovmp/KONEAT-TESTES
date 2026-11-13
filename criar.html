@@ -92,7 +92,6 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 const userId = localStorage.getItem('koneat_userId')||'user_'+Date.now();
 localStorage.setItem('koneat_userId', userId);
 const username = localStorage.getItem('koneat_username')||'koneat_user';
-// --- IndexedDB: o arquivo vai pra cá, igual vídeo vai pro servidor no TikTok ---
 function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
 function saveMedia(id, file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file, id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
 function getFormato(file, callback){
@@ -132,7 +131,6 @@ async function salvar(dados){
   const isViral = dados.aba === 'viral';
   const now = Date.now();
   const mediaId = 'media_' + now;
-  // Salva o arquivo original no IndexedDB, não no localStorage
   if(dados.file) await saveMedia(mediaId, dados.file);
   const novo = {
     id: now,
@@ -151,8 +149,7 @@ async function salvar(dados){
     data: now,
     createdAt: now,
     author: username,
-    userId: userId,
-    reacoes: { likes: 0, comentarios: [] }
+    userId: userId
   };
   let todos = JSON.parse(localStorage.getItem('koneat_posts')||'[]');
   todos.unshift(novo);
@@ -174,7 +171,6 @@ tabs.forEach(tab => {
     if (selectedType === 'viral') previewText.textContent = 'Crie um vídeo viral (até 1m30s)';
   });
 });
-// Galeria abre nos 2 lugares: no botão Galeria v e no SVG / meio da tela
 if(btnGaleria) btnGaleria.addEventListener('click', ()=> fileInput.click());
 previewContainer.addEventListener('click', (e) => {
   if (e.target === previewContainer || placeholderContent.contains(e.target)) fileInput.click();
@@ -209,7 +205,6 @@ fileInput.addEventListener('change', async (e) => {
   selectedDur = dur;
   getFormato(file, (f)=>{ selectedFormato = f; });
   if (file.type.startsWith('video')) selectedCapa = await gerarCapaVideo(file);
-  // Prévia com URL temporária, sem base64, sem encher o localStorage
   if(mediaDataUrl) URL.revokeObjectURL(mediaDataUrl);
   mediaDataUrl = URL.createObjectURL(file);
   mediaType = file.type.startsWith('video') ? 'video' : 'image';
