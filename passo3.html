@@ -45,6 +45,8 @@
         .caption-thumbnail { width: 84px; height: 84px; border-radius: 12px; object-fit: cover; background: #222; }
         .caption-textarea { flex: 1; height: 120px; background: transparent; border: none; color: #fff; font-size: 15px; resize: none; outline: none; font-family: inherit; }
         .caption-textarea::placeholder { color: #8e8e93; }
+        .toast-plus { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%) translateY(10px); background: #fff; color: #000; padding: 12px 18px; border-radius: 20px; font-size: 14px; font-weight: 700; z-index: 200; opacity: 0; pointer-events: none; transition: .25s; }
+        .toast-plus.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -86,6 +88,7 @@
         <a href="./passo2.html" class="nav-link" aria-label="Vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><polygon points="10,8 16,12 10,16"/></svg></a>
         <a href="./passo1.html" class="nav-link" aria-label="Perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
     </nav>
+    <div class="toast-plus" id="toastPlus"></div>
     <script>
         const galleryInput = document.getElementById("galleryInput");
         const cameraInput = document.getElementById("cameraInput");
@@ -99,6 +102,7 @@
         const publishFinalBtn = document.getElementById("publishFinalBtn");
         const modalThumbnail = document.getElementById("modalThumbnail");
         const postCaptionInput = document.getElementById("postCaptionInput");
+        function showToast(msg){ const t=document.getElementById('toastPlus'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
         function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
         function saveMedia(id,file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file,id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
         let selectedFile = null;
@@ -166,7 +170,7 @@
             if (!file) return;
             const dur = await getDuracao(file);
             const v = validar(file, dur, selectedType);
-            if(!v||!v.ok){ alert(v.msg); galleryInput.value=''; cameraInput.value=''; return; }
+            if(!v||!v.ok){ showToast(v.msg); galleryInput.value=''; cameraInput.value=''; return; }
             selectedFile = file;
             selectedDur = dur;
             getFormato(file, (f)=>{ selectedFormato=f; });
@@ -224,7 +228,7 @@
             if(!selectedFile || isPublishing) return;
             isPublishing = true;
             const v = validar(selectedFile, selectedDur, selectedType);
-            if(!v||!v.ok){ alert(v.msg); isPublishing=false; return; }
+            if(!v||!v.ok){ showToast(v.msg); isPublishing=false; return; }
             try{
               const now = Date.now();
               const isStory = selectedType==='story';
@@ -256,7 +260,7 @@
                 s.unshift(novo);
                 localStorage.setItem('koneat_stories', JSON.stringify(s));
                 isPublishing = false;
-                alert('Story publicado! Vai aparecer na Home por 24h.');
+                showToast('Story publicado! Vai aparecer na Home por 24h.');
                 resetPlus();
                 return;
               } else {
@@ -267,11 +271,10 @@
               }
             }catch(e){
               isPublishing = false;
-              alert('Não deu pra salvar esse arquivo. Tenta um menor.');
+              showToast('Não deu pra salvar esse arquivo. Tenta um menor.');
             }
         });
     </script>
-    <!-- REFINO: passo3 agora também carrega o app.js global -->
     <script src="js/app.js"></script>
 </body>
 </html>
