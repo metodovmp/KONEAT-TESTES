@@ -165,7 +165,7 @@
 
     <section class="action-buttons" style="display: flex; gap: 8px; padding: 12px 16px 0 16px;">
         <a href="./editar-perfil.html" class="btn-secondary" style="flex: 1; height: 32px; background: #efefef; border: none; border-radius: 8px; color: #000; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none;">Editar perfil</a>
-        <button type="button" class="btn-secondary" onclick="shareProfile()" style="flex: 1; height: 32px; background: #efefef; border: none; border-radius: 8px; color: #000; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer;">Compartilhar perfil</button>
+        <button type="button" class="btn-secondary" onclick="if(window.doShare) doShare({id:'profile'})" style="flex: 1; height: 32px; background: #efefef; border: none; border-radius: 8px; color: #000; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer;">Compartilhar perfil</button>
     </section>
 
     <nav class="content-tabs">
@@ -208,7 +208,7 @@
     <a href="./passo4.html" class="nav-link" aria-label="Home">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
     </a>
-    <a href="./passo3.html" class="nav-link" aria-label="Criar">
+    <a href="./criar.html" class="nav-link" aria-label="Criar">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg>
     </a>
     <a href="./passo2.html" class="nav-link" aria-label="Vídeos">
@@ -224,4 +224,4 @@
 <!-- REFINO: sem script inline duplicado, só o app.js que já tem initPasso1 -->
 <script src="js/app.js"></script>
 </body>
-                    </html>
+    </html>
