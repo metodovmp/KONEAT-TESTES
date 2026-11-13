@@ -29,12 +29,14 @@
         .creator-name { font-size: 15px; font-weight: 700; color: #ffffff; }
         .btn-follow { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.6); color: #ffffff; padding: 4px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; backdrop-filter: blur(4px); }
         .video-caption { font-size: 13px; color: #fff; opacity: .9; line-height: 1.4; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .video-actions-sidebar { position: absolute; right: 16px; bottom: 85px; display: flex; flex-direction: column; align-items: center; gap: 22px; z-index: 10; }
+        /* REFINO VIRAL: grupo vertical à direita, ⋮ 10px abaixo do grupo, 40px até a barra */
+        .video-actions-sidebar { position: absolute; right: 16px; bottom: 110px; display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 10; }
         .action-item { background: none; border: none; cursor: pointer; color: #ffffff; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .action-item svg { width: 26px; height: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
         .action-item.liked svg { fill: #e74c3c; stroke: #e74c3c; }
         .action-item.saved svg { fill: #ffffff; stroke: #ffffff; }
         .action-item.reposted svg { stroke: #00ff88; }
+        .action-more { margin-top: 10px; font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: 2px; }
         .dropdown-menu-decisions { position: fixed; top: 50px; right: 16px; background: #ffffff; width: 200px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: none; flex-direction: column; padding: 8px 0; z-index: 100; color: #000000; }
         .dropdown-menu-decisions.show { display: flex; }
         .decision-header { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 14px; font-weight: 700; border-bottom: 1px solid #f0f0f0; }
@@ -68,7 +70,7 @@
     <main class="reels-feed-container" id="reelsContainer"></main>
     <nav class="bottom-nav-fixed">
         <a href="./passo4.html" class="nav-link"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
-        <a href="./passo3.html" class="nav-link"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg></a>
+        <a href="./criar.html" class="nav-link"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg></a>
         <a href="./passo2.html" class="nav-link active-video"><svg width="24" height="24" viewBox="0 0 24 24"><rect class="video-box-filled" x="2" y="2" width="20" height="20" rx="5" fill="#ffffff"></rect><polygon class="video-play-inner" points="10,8 16,12 10,16" fill="#121214"></polygon></svg></a>
         <a href="./passo1.html" class="nav-link"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
     </nav>
@@ -83,43 +85,27 @@
             if (reelsContainer.scrollTop > 50) mainHeader.classList.add('hidden');
             else mainHeader.classList.remove('hidden');
         });
-        // --- IndexedDB: mesmo banco do criar.html ---
         function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
         function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readonly'); const req=tx.objectStore('media').get(id); req.onsuccess=()=>{ if(!req.result) return res(''); res(URL.createObjectURL(req.result)); }; req.onerror=()=>res(''); }catch(e){ res(''); } })); }
         async function resolveMidia(item){ if(item.mediaId){ const u = await getMediaUrl(item.mediaId); if(u) return u; } return item.midia || item.url || ''; }
-        // PASSO 2 - 2ª NAVEGAÇÃO = SÓ VIRAL, SÓ VÍDEO
-        // Perfil -> VIRAL vai pra passo2.html
         async function renderViraisFeed() {
           let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
           let velhos = JSON.parse(localStorage.getItem('koneat_virais_feed') || '[]');
           velhos.forEach(v => {
             if (!todos.some(t => String(t.id) === String(v.id))) {
-              todos.push({
-                id: v.id,
-                tipo: 'VIRAL',
-                type: 'viral',
-                midia: v.midia || v.url || v.media || '',
-                url: v.midia || v.url || v.media || '',
-                capa: v.capa || '',
-                formato: '9:16',
-                legenda: v.legenda || '',
-                origem: 'perfil',
-                mediaType: 'video'
-              });
+              todos.push({ id: v.id, tipo: 'VIRAL', type: 'viral', midia: v.midia || v.url || v.media || '', url: v.midia || v.url || v.media || '', capa: v.capa || '', formato: '9:16', legenda: v.legenda || '', origem: 'perfil', mediaType: 'video' });
             }
           });
-          // REFINO: só VIRAL e só VÍDEO - foto nunca entra aqui
           let viraisFeed = todos.filter(p => {
             const isViral = p.tipo === 'VIRAL' || p.type === 'viral';
             const midia = p.midia || p.url || '';
             const isVideo = p.mediaType === 'video' || midia.startsWith('data:video') || midia.endsWith('.mp4') || midia.endsWith('.mov') || midia.endsWith('.webm') || !!p.mediaId;
             return isViral && isVideo;
           });
-          // Resolve a mídia do IndexedDB antes de filtrar quem tem mídia de verdade
           let viraisComMidia = await Promise.all(viraisFeed.map(async item=>({ item, midia: await resolveMidia(item) })));
           viraisComMidia = viraisComMidia.filter(({midia})=> !!midia);
           if (viraisComMidia.length === 0) {
-              reelsContainer.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.</div>`;
+              reelsContainer.innerHTML = `<div class="empty-feed-wrapper">Os vídeos virais aparecerão aqui.<button type="button" onclick="location.href='./criar.html'">Criar viral</button></div>`;
               return;
           }
           reelsContainer.innerHTML = viraisComMidia.map(({item, midia}) => {
@@ -150,11 +136,12 @@
                   ${legenda ? `<p class="video-caption">${legenda}</p>` : ''}
                 </div>
                 <div class="video-actions-sidebar">
-                  <button type="button" class="action-item btn-like ${isLiked ? 'liked' : ''}" data-id="${item.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
-                  <button type="button" class="action-item btn-comment" data-id="${item.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-                  <button type="button" class="action-item btn-repost ${isReposted ? 'reposted' : ''}" data-id="${item.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg></button>
-                  <button type="button" class="action-item btn-save ${isSaved ? 'saved' : ''}" data-id="${item.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
-                  <button type="button" class="action-item btn-share" data-id="${item.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v-1a7 7 0 0 1 7-7h9"></path><polyline points="16 8 20 4 16 0"></polyline></svg></button>
+                  <button type="button" class="action-item btn-like ${isLiked ? 'liked' : ''}" data-id="${item.id}" aria-label="Curtir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+                  <button type="button" class="action-item btn-comment" data-id="${item.id}" aria-label="Comentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
+                  <button type="button" class="action-item btn-repost ${isReposted ? 'reposted' : ''}" data-id="${item.id}" aria-label="Repostar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg></button>
+                  <button type="button" class="action-item btn-save ${isSaved ? 'saved' : ''}" data-id="${item.id}" aria-label="Marcar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                  <button type="button" class="action-item btn-share" data-id="${item.id}" aria-label="Encaminhar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v-1a7 7 0 0 1 7-7h9"></path><polyline points="16 8 20 4 16 0"></polyline></svg></button>
+                  <button type="button" class="action-item action-more btn-more" data-id="${item.id}" aria-label="Mais opções">⋮</button>
                 </div>
               </article>
             `;
@@ -204,9 +191,25 @@
               const id = this.dataset.id; const on = this.classList.toggle('reposted');
               localStorage.setItem(`koneat_repost_${id}`, on ? 'true' : 'false');
             });
+            card.querySelector('.btn-comment')?.addEventListener('click', function(){
+              const id = this.dataset.id;
+              if(window.openComments) window.openComments(id);
+              else if(window.openPostMenu) window.openPostMenu({id});
+            });
+            card.querySelector('.btn-share')?.addEventListener('click', function(){
+              const id = this.dataset.id;
+              if(window.doShare) window.doShare({id});
+              else if(navigator.share) navigator.share({title:'Koneat', url: location.href});
+            });
+            card.querySelector('.btn-more')?.addEventListener('click', function(){
+              const id = this.dataset.id;
+              if(window.openPostMenu) window.openPostMenu({id});
+              else dropdown.classList.add('show');
+            });
           });
         }
         renderViraisFeed();
     </script>
+    <script src="js/app.js"></script>
 </body>
 </html>
