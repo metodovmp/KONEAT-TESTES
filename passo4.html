@@ -16,7 +16,7 @@
         .icon-top-btn svg { width: 24px; height: 24px; }
         .subnav-wrapper { position: sticky; top: 56px; background: #ffffff; z-index: 90; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
         .home-subnav-inner { display: flex; align-items: center; gap: 24px; padding: 0 16px; height: 42px; position: relative; }
-        .subnav-tab { position: relative; background: none; border: none; padding: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #8e8e93; cursor: pointer; transition: color 0.2s ease; white-space: nowrap; }
+        .subnav-tab { position: relative; background: none; border: none; padding: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #8e8e93; cursor: pointer; white-space: nowrap; }
         .subnav-tab.active { color: #000000; font-weight: 700; }
         .subnav-indicator { position: absolute; bottom: 0; left: 0; height: 2px; background: #000000; border-radius: 2px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .home-feed-container { width: 100%; padding-bottom: 80px; }
@@ -27,35 +27,55 @@
         .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
         .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
         .story-avatar-mine { background: #eef0f5; border: 1.5px solid #000000; }
+        .story-avatar-mine.has-story { border: 2px solid #00ff88; }
         .story-add-center { font-size: 32px; font-weight: 300; color: #000000; line-height: 1; display: flex; align-items: center; justify-content: center; }
+        .story-add-badge { position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-radius: 50%; background: #000; color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
         .story-username { font-size: 12px; color: #1c1c1e; font-weight: 400; }
         .post-card { width: 100%; background: #ffffff; border-bottom: 1px solid #efeff4; margin-bottom: 12px; }
         .post-header { width: 100%; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
         .post-author-info { display: flex; align-items: center; gap: 10px; }
         .author-avatar { width: 32px; height: 32px; border-radius: 50%; background: #000000; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
         .author-name { font-size: 14px; font-weight: 600; color: #000000; }
+        .post-header-right { display: flex; align-items: center; gap: 8px; }
         .btn-follow-home { background: #000000; color: #ffffff; border: none; padding: 6px 16px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .post-media-wrapper { width: 100%; aspect-ratio: 1 / 1; background: #f2f2f7; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .btn-post-more { background: none; border: none; font-size: 22px; font-weight: 700; cursor: pointer; padding: 4px 6px; line-height: 1; color: #000; }
+        /* REFINO HOME: mídia tela cheia, não fechada */
+        .post-media-wrapper { width: 100%; aspect-ratio: 4 / 5; background: #000; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .post-media-wrapper img, .post-media-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        .post-media-wrapper video { object-fit: contain; background: #000; }
         .post-sound-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0, 0, 0, 0.6); border: none; color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
         .post-sound-btn svg { width: 16px; height: 16px; }
-        .post-actions-bar { width: 100%; height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+        .play-pause-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 64px; height: 64px; background: rgba(0,0,0,.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 9; font-size: 28px; }
+        .play-pause-indicator.show { opacity: 1; }
+        /* REFINO HOME: 5 ícones, 6px abaixo do post */
+        .post-actions-bar { width: 100%; height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; margin-top: 6px; }
         .post-actions-left { display: flex; align-items: center; gap: 16px; }
         .post-action-btn { background: none; border: none; padding: 0; color: #000000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .post-action-btn svg { width: 24px; height: 24px; }
         .post-action-btn.liked svg { fill: #e74c3c; stroke: #e74c3c; }
         .post-action-btn.saved svg { fill: #000; }
+        .post-action-btn.reposted svg { stroke: #00ff88; }
         .post-caption-area { padding: 0 16px 12px; font-size: 14px; color: #262626; }
         .post-caption-author { font-weight: 600; margin-right: 6px; }
         .empty-home-feed { text-align: center; padding: 60px 20px; color: #8e8e93; font-size: 14px; line-height: 1.5; }
         .bottom-nav-fixed { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 62px; background: #121214; border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; align-items: center; justify-content: space-around; z-index: 999; box-sizing: border-box; padding: 0 10px; }
         .nav-link { width: 48px; height: 48px; background: none; border: none; color: #8e8e93; display: flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; }
         .nav-link svg { width: 24px; height: 24px; }
-        .story-viewer { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .story-viewer { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; }
         .story-viewer.show { display: flex; }
         .story-viewer img, .story-viewer video { width: 100%; height: 100%; object-fit: contain; }
-        .story-viewer-close { position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10; }
+        .story-viewer-top { position: absolute; top: 0; left: 0; right: 0; padding: 12px 12px 0; z-index: 10; }
+        .story-progress-track { display: flex; gap: 4px; }
+        .story-progress-seg { flex: 1; height: 3px; background: rgba(255,255,255,.3); border-radius: 3px; overflow: hidden; }
+        .story-progress-fill { height: 100%; width: 0%; background: #fff; }
+        .story-viewer-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; color: #fff; }
+        .story-viewer-user { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+        .story-viewer-actions { display: flex; gap: 8px; }
+        .story-viewer-close, .story-viewer-trash { background: rgba(0,0,0,.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .story-viewer-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; display: flex; gap: 10px; align-items: center; z-index: 10; background: linear-gradient(transparent, rgba(0,0,0,.7)); }
+        .story-reply-input { flex: 1; height: 44px; border-radius: 22px; border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; padding: 0 16px; outline: none; font-size: 14px; }
+        .story-reply-input::placeholder { color: rgba(255,255,255,.7); }
+        .story-like-btn { background: none; border: none; font-size: 28px; cursor: pointer; line-height: 1; }
+        .story-like-btn.liked { filter: drop-shadow(0 0 6px #e74c3c); }
     </style>
 </head>
 <body>
@@ -77,8 +97,9 @@
     <main class="home-feed-container" id="homeFeedContainer">
         <section class="stories-bar" id="storiesBar">
             <button class="story-item" id="btnSeuStory" type="button">
-                <div class="story-avatar story-avatar-mine">
-                    <span class="story-add-center">+</span>
+                <div class="story-avatar story-avatar-mine" id="meuStoryAvatar">
+                    <span class="story-add-center" id="meuStoryPlus">+</span>
+                    <span class="story-add-badge" id="meuStoryBadge">+</span>
                 </div>
                 <span class="story-username">seu story</span>
             </button>
@@ -88,8 +109,21 @@
     </main>
     <input type="file" id="homeStoryInput" accept="image/*,video/*" style="display:none">
     <div class="story-viewer" id="storyViewer">
-      <button class="story-viewer-close" id="closeStoryViewer">×</button>
+      <div class="story-viewer-top">
+        <div class="story-progress-track" id="storyProgressTrack"></div>
+        <div class="story-viewer-head">
+          <div class="story-viewer-user" id="storyViewerUser"></div>
+          <div class="story-viewer-actions">
+            <button class="story-viewer-trash" id="deleteStoryBtn" style="display:none;">🗑️</button>
+            <button class="story-viewer-close" id="closeStoryViewer">×</button>
+          </div>
+        </div>
+      </div>
       <div id="storyViewerContent" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
+      <div class="story-viewer-bottom" id="storyViewerBottom">
+        <input class="story-reply-input" id="storyReplyInput" placeholder="Enviar mensagem...">
+        <button class="story-like-btn" id="storyLikeBtn">♡</button>
+      </div>
     </div>
     <nav class="bottom-nav-fixed">
         <a href="./passo4.html" class="nav-link" aria-label="Home"><svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff"><path d="M22 20v-7.826a2 2 0 0 0-.613-1.43l-8-7.826a2 2 0 0 0-2.774 0l-8 7.826A2 2 0 0 0 2 12.174V20a2 2 0 0 0 2 2h4.5a.5.5 0 0 0 .5-.5v-5a2.5 2.5 0 0 1 5 0v5a.5.5 0 0 0 .5.5H19a2 2 0 0 0 2-2z"/></svg></a>
@@ -106,125 +140,134 @@
         const homeStoryInput = document.getElementById('homeStoryInput');
         const storyViewer = document.getElementById('storyViewer');
         const storyViewerContent = document.getElementById('storyViewerContent');
-        // --- IndexedDB: mesmo banco do criar.html ---
+        const storyProgressTrack = document.getElementById('storyProgressTrack');
+        const storyViewerUser = document.getElementById('storyViewerUser');
+        const deleteStoryBtn = document.getElementById('deleteStoryBtn');
+        const storyViewerBottom = document.getElementById('storyViewerBottom');
+        const storyReplyInput = document.getElementById('storyReplyInput');
+        const storyLikeBtn = document.getElementById('storyLikeBtn');
         function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
         function saveMedia(id, file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file, id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
         function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readonly'); const req=tx.objectStore('media').get(id); req.onsuccess=()=>{ if(!req.result) return res(''); res(URL.createObjectURL(req.result)); }; req.onerror=()=>res(''); }catch(e){ res(''); } })); }
-        async function resolveMidia(item){
-          if(item.mediaId){ const u = await getMediaUrl(item.mediaId); if(u) return u; }
-          return item.midia || item.url || '';
-        }
-        function updateIndicator(tab) {
-            if(!tab) return;
-            indicator.style.width = `${tab.getBoundingClientRect().width}px`;
-            indicator.style.left = `${tab.offsetLeft}px`;
-        }
+        async function resolveMidia(item){ if(item.mediaId){ const u = await getMediaUrl(item.mediaId); if(u) return u; } return item.midia || item.url || ''; }
+        function meId(){ return localStorage.getItem('koneat_userId')||'user'; }
+        function meName(){ return localStorage.getItem('koneat_username')||'koneat_user'; }
+        function isMine(s){ return String(s.userId||'')===String(meId()) || String(s.author||'')===String(meName()); }
+        function updateIndicator(tab){ if(!tab) return; indicator.style.width = `${tab.getBoundingClientRect().width}px`; indicator.style.left = `${tab.offsetLeft}px`; }
         window.addEventListener('load', () => updateIndicator(document.querySelector('.subnav-tab.active')));
         window.addEventListener('resize', () => updateIndicator(document.querySelector('.subnav-tab.active')));
-        subnavTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                subnavTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                updateIndicator(tab);
-            });
-        });
-        function isVideoUrl(midia){
-          if(!midia) return false;
-          if(midia.startsWith('data:video')) return true;
-          if(midia.startsWith('data:image')) return false;
-          return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(midia);
-        }
-        function isVideoItem(item, midia){
-          if(item.mediaType) return item.mediaType === 'video';
-          return isVideoUrl(midia);
-        }
-        function abrirGaleriaStory(){ homeStoryInput.click(); }
-        if(btnSeuStory) btnSeuStory.addEventListener('click', abrirGaleriaStory);
-        function getDuracao(file){
-          return new Promise(res=>{
-            if(file.type.startsWith('image')) return res(0);
-            const v=document.createElement('video'); v.preload='metadata';
-            v.onloadedmetadata=()=>{ URL.revokeObjectURL(v.src); res(v.duration||0); };
-            v.onerror=()=>res(0); v.src=URL.createObjectURL(file);
-          });
-        }
+        subnavTabs.forEach(tab => { tab.addEventListener('click', () => { subnavTabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); updateIndicator(tab); }); });
+        function isVideoUrl(midia){ if(!midia) return false; if(midia.startsWith('data:video')) return true; if(midia.startsWith('data:image')) return false; return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(midia); }
+        function isVideoItem(item, midia){ if(item.mediaType) return item.mediaType === 'video'; return isVideoUrl(midia); }
+        function getDuracao(file){ return new Promise(res=>{ if(file.type.startsWith('image')) return res(0); const v=document.createElement('video'); v.preload='metadata'; v.onloadedmetadata=()=>{ URL.revokeObjectURL(v.src); res(v.duration||0); }; v.onerror=()=>res(0); v.src=URL.createObjectURL(file); }); }
         homeStoryInput.addEventListener('change', async e=>{
           const file = e.target.files[0]; if(!file) return;
           const dur = await getDuracao(file);
           if(file.size/1024/1024>10 && file.type.startsWith('image')){ alert('STORY até 10MB'); return; }
           if(file.type.startsWith('video') && dur>60){ alert('STORY até 60s'); return; }
-          const now = Date.now();
-          const mediaId = 'media_' + now;
+          const now = Date.now(); const mediaId = 'media_' + now;
           try{ await saveMedia(mediaId, file); }catch(err){ alert('Não consegui salvar o story. Tenta um arquivo menor.'); return; }
-          const novo = { id: now, mediaId: mediaId, tipo:'STORY', type:'story', subTipo:'story', origem:'home', midia:'', url:'', mediaType: file.type.startsWith('video')?'video':'image', capa:'', formato:'9:16', legenda:'', caption:'', data: now, createdAt: now, expiresAt: now + 24*60*60*1000, author: localStorage.getItem('koneat_username')||'koneat_user', userId: localStorage.getItem('koneat_userId')||'user', reacoes:{likes:0, comentarios:[]} };
-          let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
-          s.unshift(novo);
-          localStorage.setItem('koneat_stories', JSON.stringify(s));
-          homeStoryInput.value='';
-          renderHomeFeed();
+          const novo = { id: now, mediaId: mediaId, tipo:'STORY', type:'story', subTipo:'story', origem:'home', midia:'', url:'', mediaType: file.type.startsWith('video')?'video':'image', capa:'', formato:'9:16', legenda:'', caption:'', data: now, createdAt: now, expiresAt: now + 24*60*60*1000, author: meName(), userId: meId(), reacoes:{likes:0, comentarios:[]} };
+          let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]'); s.unshift(novo); localStorage.setItem('koneat_stories', JSON.stringify(s));
+          homeStoryInput.value=''; renderHomeFeed();
         });
-        document.getElementById('closeStoryViewer').addEventListener('click', ()=>{ storyViewer.classList.remove('show'); storyViewerContent.innerHTML=''; });
-        function openStory(midia, isVideo){
-          storyViewerContent.innerHTML = isVideo ? `<video src="${midia}" autoplay controls playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>` : `<img src="${midia}" style="width:100%;height:100%;object-fit:contain">`;
+        // --- STORY VIEWER: agrupa por autor, barra 30s, lixeira / msg + coração ---
+        let viewerGroup = [], viewerIndex = 0, viewerTimer = null, viewerStart = 0, viewerDur = 30000;
+        function stopViewerTimer(){ if(viewerTimer) clearInterval(viewerTimer); viewerTimer=null; }
+        function closeStoryViewer(){ stopViewerTimer(); storyViewer.classList.remove('show'); storyViewerContent.innerHTML=''; }
+        document.getElementById('closeStoryViewer').addEventListener('click', closeStoryViewer);
+        storyViewer.addEventListener('click', (e)=>{ if(e.target===storyViewer) closeStoryViewer(); });
+        async function showStoryAt(i){
+          stopViewerTimer(); if(i>=viewerGroup.length){ closeStoryViewer(); renderHomeFeed(); return; } if(i<0) i=0;
+          viewerIndex=i; const s=viewerGroup[i]; const midia=await resolveMidia(s); const isVideo=isVideoItem(s,midia); const mine=isMine(s);
+          storyProgressTrack.innerHTML = viewerGroup.map((_,idx)=>`<div class="story-progress-seg"><div class="story-progress-fill" id="seg-${idx}" style="width:${idx< i ? 100 : 0}%"></div></div>`).join('');
+          storyViewerUser.textContent = '@'+(s.author||'você');
+          deleteStoryBtn.style.display = mine ? 'flex' : 'none';
+          storyViewerBottom.style.display = mine ? 'none' : 'flex';
+          const liked = localStorage.getItem(`koneat_story_like_${s.id}`)==='true';
+          storyLikeBtn.textContent = liked ? '❤️' : '♡'; storyLikeBtn.classList.toggle('liked', liked);
+          storyReplyInput.value='';
+          storyViewerContent.innerHTML = isVideo ? `<video src="${midia}" autoplay playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>` : `<img src="${midia}" style="width:100%;height:100%;object-fit:contain">`;
           storyViewer.classList.add('show');
+          viewerStart = Date.now();
+          viewerTimer = setInterval(()=>{
+            const el=document.getElementById(`seg-${i}`); if(el) el.style.width = Math.min(100, ((Date.now()-viewerStart)/viewerDur)*100)+'%';
+            if(Date.now()-viewerStart>=viewerDur) showStoryAt(i+1);
+          }, 50);
+          // clica esquerda volta, direita avança
+          storyViewerContent.onclick = (e)=>{ const r=storyViewerContent.getBoundingClientRect(); if(e.clientX - r.left < r.width/2) showStoryAt(i-1); else showStoryAt(i+1); };
         }
+        async function openStoryGroup(group, startIndex){
+          viewerGroup=group; await showStoryAt(startIndex||0);
+        }
+        deleteStoryBtn.addEventListener('click', ()=>{
+          const s=viewerGroup[viewerIndex]; if(!s) return;
+          let all=JSON.parse(localStorage.getItem('koneat_stories')||'[]'); all=all.filter(x=>String(x.id)!==String(s.id)); localStorage.setItem('koneat_stories', JSON.stringify(all));
+          viewerGroup=viewerGroup.filter(x=>String(x.id)!==String(s.id)); if(viewerGroup.length===0){ closeStoryViewer(); renderHomeFeed(); return; } showStoryAt(Math.min(viewerIndex, viewerGroup.length-1));
+        });
+        storyLikeBtn.addEventListener('click', ()=>{
+          const s=viewerGroup[viewerIndex]; if(!s) return; const k=`koneat_story_like_${s.id}`; const on=localStorage.getItem(k)!=='true'; localStorage.setItem(k, on?'true':'false'); storyLikeBtn.textContent=on?'❤️':'♡';
+        });
+        storyReplyInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && storyReplyInput.value.trim()){ alert('Mensagem enviada!'); storyReplyInput.value=''; } });
+        // Clique no (+) : se eu já tenho story, abre meus stories. Se não, abre galeria. Botão + do badge sempre abre galeria.
+        let meuGrupoAtual = [];
+        btnSeuStory.addEventListener('click', (e)=>{
+          if(meuGrupoAtual.length>0){ openStoryGroup(meuGrupoAtual, 0); }
+          else homeStoryInput.click();
+        });
         async function renderHomeFeed() {
             let todos = JSON.parse(localStorage.getItem('koneat_posts') || '[]');
             let velhos1 = JSON.parse(localStorage.getItem('koneat_user_posts') || '[]');
-            velhos1.forEach(v=>{
-              if(!todos.some(t=>String(t.id)===String(v.id))){
-                todos.push({id:v.id, tipo:'FEED', type:'home', midia:v.url||v.midia||'', url:v.url||v.midia||'', legenda:v.caption||v.legenda||'', capa:'', data:Date.now(), userId:'user'});
-              }
-            });
+            velhos1.forEach(v=>{ if(!todos.some(t=>String(t.id)===String(v.id))){ todos.push({id:v.id, tipo:'FEED', type:'home', midia:v.url||v.midia||'', url:v.url||v.midia||'', legenda:v.caption||v.legenda||'', capa:'', data:Date.now(), userId:'user'}); } });
             let stories = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
-            const now = Date.now();
-            stories = stories.filter(s => !s.expiresAt || s.expiresAt > now);
-            localStorage.setItem('koneat_stories', JSON.stringify(stories));
-            let feed = todos.filter(p => {
-              const isFeed = p.tipo==='FEED' || p.type==='home';
-              const isViral = p.tipo==='VIRAL' || p.type==='viral';
-              const isStory = p.tipo==='STORY' || p.type==='story';
-              return isFeed && !isViral && !isStory;
-            });
+            const now = Date.now(); stories = stories.filter(s => !s.expiresAt || s.expiresAt > now); localStorage.setItem('koneat_stories', JSON.stringify(stories));
+            let feed = todos.filter(p => { const isFeed = p.tipo==='FEED' || p.type==='home'; const isViral = p.tipo==='VIRAL' || p.type==='viral'; const isStory = p.tipo==='STORY' || p.type==='story'; return isFeed && !isViral && !isStory; });
+            // STORY: meus dentro do (+), outros fora. Agrupa por autor.
+            const meus = stories.filter(isMine); const outros = stories.filter(s=>!isMine(s));
+            meuGrupoAtual = meus;
+            const meuAvatar = document.getElementById('meuStoryAvatar'); const meuPlus = document.getElementById('meuStoryPlus'); const meuBadge = document.getElementById('meuStoryBadge');
+            if(meus.length>0){
+              const midiaMeu = await resolveMidia(meus[0]);
+              meuAvatar.classList.add('has-story'); meuPlus.style.display='none'; meuBadge.style.display='flex';
+              if(!meuAvatar.querySelector('img,video')){ const el = isVideoItem(meus[0],midiaMeu) ? document.createElement('video') : document.createElement('img'); el.src=midiaMeu; el.muted=true; el.playsInline=true; meuAvatar.insertBefore(el, meuPlus); }
+              meuBadge.onclick = (e)=>{ e.stopPropagation(); homeStoryInput.click(); };
+            } else {
+              meuAvatar.classList.remove('has-story'); meuPlus.style.display='flex'; meuBadge.style.display='none';
+              const old = meuAvatar.querySelector('img,video'); if(old) old.remove();
+            }
             if(storiesOthers){
-              const storiesComMidia = await Promise.all(stories.map(async s=>({ s, midia: await resolveMidia(s) })));
-              storiesOthers.innerHTML = storiesComMidia.map(({s, midia})=>{
-                const capa = s.capa || midia;
-                const isVideo = isVideoItem(s, midia);
-                return `<button class="story-item" data-story-index="${stories.indexOf(s)}"><div class="story-avatar">${isVideo ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></button>`;
-              }).join('');
-              storiesOthers.querySelectorAll('[data-story-index]').forEach(b=>{
-                b.addEventListener('click', async ()=>{ const s = stories[Number(b.dataset.storyIndex)]; if(!s) return; const midia = await resolveMidia(s); openStory(midia, isVideoItem(s, midia)); });
-              });
+              // agrupa outros por autor pra 1 bolha por pessoa
+              const grupos = {}; outros.forEach(s=>{ const k=s.userId||s.author||'outro'; if(!grupos[k]) grupos[k]=[]; grupos[k].push(s); });
+              const chaves = Object.keys(grupos);
+              const html = await Promise.all(chaves.map(async k=>{ const g=grupos[k]; const s=g[0]; const midia=await resolveMidia(s); const capa=s.capa||midia; const isVideo=isVideoItem(s,midia); return `<button class="story-item" data-story-group="${k}"><div class="story-avatar">${isVideo ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></button>`; }));
+              storiesOthers.innerHTML = html.join('');
+              storiesOthers.querySelectorAll('[data-story-group]').forEach(b=>{ b.addEventListener('click', ()=>{ openStoryGroup(grupos[b.dataset.storyGroup], 0); }); });
             }
-            if (feed.length === 0) {
-                postsDynamicFeed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`;
-                return;
-            }
+            if (feed.length === 0) { postsDynamicFeed.innerHTML = `<div class="empty-home-feed">Nenhuma publicação no momento.<br>Crie um post para começar!</div>`; return; }
             const feedComMidia = await Promise.all(feed.map(async item=>({ item, midia: await resolveMidia(item) })));
             postsDynamicFeed.innerHTML = feedComMidia.map(({item, midia}) => {
-                const isVideo = isVideoItem(item, midia);
-                const authorName = item.author || 'koneat_user';
-                const caption = item.legenda || item.caption || '';
-                const postId = item.id;
-                const isLiked = localStorage.getItem(`koneat_like_${postId}`)==='true';
-                const isSaved = localStorage.getItem(`koneat_save_${postId}`)==='true';
+                const isVideo = isVideoItem(item, midia); const authorName = item.author || 'koneat_user'; const caption = item.legenda || item.caption || ''; const postId = item.id;
+                const isLiked = localStorage.getItem(`koneat_like_${postId}`)==='true'; const isSaved = localStorage.getItem(`koneat_save_${postId}`)==='true'; const isReposted = localStorage.getItem(`koneat_repost_${postId}`)==='true';
                 return `
                     <article class="post-card" data-post-id="${postId}">
                         <div class="post-header">
                             <div class="post-author-info"><div class="author-avatar">${authorName.charAt(0).toUpperCase()}</div><span class="author-name">@${authorName}</span></div>
-                            <button type="button" class="btn-follow-home">Seguir</button>
+                            <div class="post-header-right">
+                              <button type="button" class="btn-follow-home">Seguir</button>
+                              <button type="button" class="btn-post-more" data-id="${postId}" aria-label="Mais opções">⋮</button>
+                            </div>
                         </div>
                         <div class="post-media-wrapper">
-                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><button type="button" class="post-sound-btn" aria-label="Som"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
+                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><div class="play-pause-indicator">⏸</div><button type="button" class="post-sound-btn" aria-label="Som"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
                         </div>
                         <div class="post-actions-bar">
                             <div class="post-actions-left">
                                 <button type="button" class="post-action-btn btn-like ${isLiked?'liked':''}" data-id="${postId}" aria-label="Curtir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
-                                <button type="button" class="post-action-btn" aria-label="Comentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                                <button type="button" class="post-action-btn" aria-label="Compartilhar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v-1a7 7 0 0 1 7-7h9"/><polyline points="16 8 20 4 16 0"/></svg></button>
+                                <button type="button" class="post-action-btn btn-comment" data-id="${postId}" aria-label="Comentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                                <button type="button" class="post-action-btn btn-repost ${isReposted?'reposted':''}" data-id="${postId}" aria-label="Repostar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg></button>
+                                <button type="button" class="post-action-btn btn-share" data-id="${postId}" aria-label="Encaminhar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v-1a7 7 0 0 1 7-7h9"/><polyline points="16 8 20 4 16 0"/></svg></button>
                             </div>
-                            <button type="button" class="post-action-btn btn-save ${isSaved?'saved':''}" data-id="${postId}" aria-label="Salvar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+                            <button type="button" class="post-action-btn btn-save ${isSaved?'saved':''}" data-id="${postId}" aria-label="Marcar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
                         </div>
                         ${caption ? `<div class="post-caption-area"><span class="post-caption-author">@${authorName}</span><span class="post-caption-text">${caption}</span></div>` : ''}
                     </article>
@@ -232,13 +275,21 @@
             }).join('');
             document.querySelectorAll('.btn-like').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('liked'); localStorage.setItem(`koneat_like_${this.dataset.id}`, on?'true':'false'); }));
             document.querySelectorAll('.btn-save').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('saved'); localStorage.setItem(`koneat_save_${this.dataset.id}`, on?'true':'false'); }));
-            document.querySelectorAll('.post-sound-btn').forEach(btn=>{
-              btn.addEventListener('click', ()=>{
-                const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted;
+            document.querySelectorAll('.btn-repost').forEach(b=>b.addEventListener('click', function(){ const on=this.classList.toggle('reposted'); localStorage.setItem(`koneat_repost_${this.dataset.id}`, on?'true':'false'); }));
+            document.querySelectorAll('.btn-comment').forEach(b=>b.addEventListener('click', function(){ if(window.openComments) window.openComments(this.dataset.id); }));
+            document.querySelectorAll('.btn-share').forEach(b=>b.addEventListener('click', function(){ if(window.doShare) window.doShare({id:this.dataset.id}); else if(navigator.share) navigator.share({title:'Koneat', url: location.href}); }));
+            document.querySelectorAll('.btn-post-more').forEach(b=>b.addEventListener('click', function(){ if(window.openPostMenu) window.openPostMenu({id:this.dataset.id}); else if(window.doShare) window.doShare({id:this.dataset.id}); }));
+            document.querySelectorAll('.post-sound-btn').forEach(btn=>{ btn.addEventListener('click', (e)=>{ e.stopPropagation(); const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted; }); });
+            document.querySelectorAll('.post-media-wrapper video').forEach(v=>{
+              v.addEventListener('click', ()=>{
+                const ind = v.parentElement.querySelector('.play-pause-indicator');
+                if(v.paused){ v.play(); if(ind){ ind.textContent='▶'; ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
+                else { v.pause(); if(ind){ ind.textContent='⏸'; ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
               });
             });
         }
         document.addEventListener('DOMContentLoaded', renderHomeFeed);
     </script>
+    <script src="js/app.js"></script>
 </body>
 </html>
