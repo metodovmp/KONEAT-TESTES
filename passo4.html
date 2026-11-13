@@ -23,13 +23,12 @@
         .stories-bar { width: 100%; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); overflow-x: auto; scrollbar-width: none; }
         .stories-bar::-webkit-scrollbar { display: none; }
         .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; background: none; border: none; padding: 0; }
-        .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #e5e5ea; border: 2px solid #00ff88; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #eef0f5; border: 1.5px solid #000000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
         .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
-        .story-avatar-mine { background: #eef0f5; border: 1.5px solid #000000; }
         .story-avatar-mine.has-story { border: 2px solid #00ff88; }
-        .story-add-center { font-size: 32px; font-weight: 300; color: #000000; line-height: 1; display: flex; align-items: center; justify-content: center; }
-        .story-add-badge { position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-radius: 50%; background: #000; color: #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+        .story-add-badge { position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; z-index: 2; cursor: pointer; }
+        .story-add-badge svg { width: 12px; height: 12px; }
         .story-username { font-size: 12px; color: #1c1c1e; font-weight: 400; }
         .post-card { width: 100%; background: #ffffff; border-bottom: 1px solid #efeff4; margin-bottom: 12px; }
         .post-header { width: 100%; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
@@ -38,15 +37,15 @@
         .author-name { font-size: 14px; font-weight: 600; color: #000000; }
         .post-header-right { display: flex; align-items: center; gap: 8px; }
         .btn-follow-home { background: #000000; color: #ffffff; border: none; padding: 6px 16px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .btn-post-more { background: none; border: none; font-size: 22px; font-weight: 700; cursor: pointer; padding: 4px 6px; line-height: 1; color: #000; }
-        /* REFINO HOME: mídia tela cheia, não fechada */
+        .btn-post-more { background: none; border: none; cursor: pointer; padding: 4px 6px; color: #000; display: flex; align-items: center; justify-content: center; }
+        .btn-post-more svg { width: 20px; height: 20px; }
         .post-media-wrapper { width: 100%; aspect-ratio: 4 / 5; background: #000; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .post-media-wrapper img, .post-media-wrapper video { width: 100%; height: 100%; object-fit: cover; }
         .post-sound-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0, 0, 0, 0.6); border: none; color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
         .post-sound-btn svg { width: 16px; height: 16px; }
-        .play-pause-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 64px; height: 64px; background: rgba(0,0,0,.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 9; font-size: 28px; }
+        .play-pause-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 64px; height: 64px; background: rgba(0,0,0,.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 9; }
+        .play-pause-indicator svg { width: 28px; height: 28px; }
         .play-pause-indicator.show { opacity: 1; }
-        /* REFINO HOME: 5 ícones, 6px abaixo do post */
         .post-actions-bar { width: 100%; height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; margin-top: 6px; }
         .post-actions-left { display: flex; align-items: center; gap: 16px; }
         .post-action-btn { background: none; border: none; padding: 0; color: #000000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -70,12 +69,16 @@
         .story-viewer-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; color: #fff; }
         .story-viewer-user { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
         .story-viewer-actions { display: flex; gap: 8px; }
-        .story-viewer-close, .story-viewer-trash { background: rgba(0,0,0,.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .story-viewer-close, .story-viewer-trash { background: rgba(0,0,0,.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .story-viewer-close svg, .story-viewer-trash svg { width: 18px; height: 18px; }
         .story-viewer-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; display: flex; gap: 10px; align-items: center; z-index: 10; background: linear-gradient(transparent, rgba(0,0,0,.7)); }
         .story-reply-input { flex: 1; height: 44px; border-radius: 22px; border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; padding: 0 16px; outline: none; font-size: 14px; }
         .story-reply-input::placeholder { color: rgba(255,255,255,.7); }
-        .story-like-btn { background: none; border: none; font-size: 28px; cursor: pointer; line-height: 1; }
-        .story-like-btn.liked { filter: drop-shadow(0 0 6px #e74c3c); }
+        .story-like-btn { background: none; border: none; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center; color: #fff; }
+        .story-like-btn svg { width: 28px; height: 28px; }
+        .story-like-btn.liked svg { fill: #e74c3c; stroke: #e74c3c; }
+        .toast-home { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%) translateY(10px); background: #000; color: #fff; padding: 12px 18px; border-radius: 20px; font-size: 14px; font-weight: 700; z-index: 2000; opacity: 0; pointer-events: none; transition: .25s; }
+        .toast-home.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -98,8 +101,7 @@
         <section class="stories-bar" id="storiesBar">
             <button class="story-item" id="btnSeuStory" type="button">
                 <div class="story-avatar story-avatar-mine" id="meuStoryAvatar">
-                    <span class="story-add-center" id="meuStoryPlus">+</span>
-                    <span class="story-add-badge" id="meuStoryBadge">+</span>
+                    <span class="story-add-badge" id="meuStoryBadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
                 </div>
                 <span class="story-username">seu story</span>
             </button>
@@ -114,17 +116,18 @@
         <div class="story-viewer-head">
           <div class="story-viewer-user" id="storyViewerUser"></div>
           <div class="story-viewer-actions">
-            <button class="story-viewer-trash" id="deleteStoryBtn" style="display:none;">🗑️</button>
-            <button class="story-viewer-close" id="closeStoryViewer">×</button>
+            <button class="story-viewer-trash" id="deleteStoryBtn" style="display:none;" aria-label="Excluir story"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            <button class="story-viewer-close" id="closeStoryViewer" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </div>
         </div>
       </div>
       <div id="storyViewerContent" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
       <div class="story-viewer-bottom" id="storyViewerBottom">
         <input class="story-reply-input" id="storyReplyInput" placeholder="Enviar mensagem...">
-        <button class="story-like-btn" id="storyLikeBtn">♡</button>
+        <button class="story-like-btn" id="storyLikeBtn" aria-label="Curtir story"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
       </div>
     </div>
+    <div class="toast-home" id="toastHome"></div>
     <nav class="bottom-nav-fixed">
         <a href="./passo4.html" class="nav-link" aria-label="Home"><svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff"><path d="M22 20v-7.826a2 2 0 0 0-.613-1.43l-8-7.826a2 2 0 0 0-2.774 0l-8 7.826A2 2 0 0 0 2 12.174V20a2 2 0 0 0 2 2h4.5a.5.5 0 0 0 .5-.5v-5a2.5 2.5 0 0 1 5 0v5a.5.5 0 0 0 .5.5H19a2 2 0 0 0 2-2z"/></svg></a>
         <a href="./passo3.html" class="nav-link" aria-label="Criar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#8e8e93" stroke-width="1.8" fill="none"></rect><path d="M12 7v10M7 12h10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg></a>
@@ -146,6 +149,7 @@
         const storyViewerBottom = document.getElementById('storyViewerBottom');
         const storyReplyInput = document.getElementById('storyReplyInput');
         const storyLikeBtn = document.getElementById('storyLikeBtn');
+        function showToast(msg){ const t=document.getElementById('toastHome'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
         function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
         function saveMedia(id, file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file, id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
         function getMediaUrl(id){ if(!id) return Promise.resolve(''); return openDB().then(db=> new Promise((res)=>{ try{ const tx=db.transaction('media','readonly'); const req=tx.objectStore('media').get(id); req.onsuccess=()=>{ if(!req.result) return res(''); res(URL.createObjectURL(req.result)); }; req.onerror=()=>res(''); }catch(e){ res(''); } })); }
@@ -163,15 +167,14 @@
         homeStoryInput.addEventListener('change', async e=>{
           const file = e.target.files[0]; if(!file) return;
           const dur = await getDuracao(file);
-          if(file.size/1024/1024>10 && file.type.startsWith('image')){ alert('STORY até 10MB'); return; }
-          if(file.type.startsWith('video') && dur>60){ alert('STORY até 60s'); return; }
+          if(file.size/1024/1024>10 && file.type.startsWith('image')){ showToast('STORY até 10MB'); return; }
+          if(file.type.startsWith('video') && dur>60){ showToast('STORY até 60s'); return; }
           const now = Date.now(); const mediaId = 'media_' + now;
-          try{ await saveMedia(mediaId, file); }catch(err){ alert('Não consegui salvar o story. Tenta um arquivo menor.'); return; }
+          try{ await saveMedia(mediaId, file); }catch(err){ showToast('Não consegui salvar o story. Tenta um arquivo menor.'); return; }
           const novo = { id: now, mediaId: mediaId, tipo:'STORY', type:'story', subTipo:'story', origem:'home', midia:'', url:'', mediaType: file.type.startsWith('video')?'video':'image', capa:'', formato:'9:16', legenda:'', caption:'', data: now, createdAt: now, expiresAt: now + 24*60*60*1000, author: meName(), userId: meId(), reacoes:{likes:0, comentarios:[]} };
           let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]'); s.unshift(novo); localStorage.setItem('koneat_stories', JSON.stringify(s));
           homeStoryInput.value=''; renderHomeFeed();
         });
-        // --- STORY VIEWER: agrupa por autor, barra 30s, lixeira / msg + coração ---
         let viewerGroup = [], viewerIndex = 0, viewerTimer = null, viewerStart = 0, viewerDur = 30000;
         function stopViewerTimer(){ if(viewerTimer) clearInterval(viewerTimer); viewerTimer=null; }
         function closeStoryViewer(){ stopViewerTimer(); storyViewer.classList.remove('show'); storyViewerContent.innerHTML=''; }
@@ -185,7 +188,7 @@
           deleteStoryBtn.style.display = mine ? 'flex' : 'none';
           storyViewerBottom.style.display = mine ? 'none' : 'flex';
           const liked = localStorage.getItem(`koneat_story_like_${s.id}`)==='true';
-          storyLikeBtn.textContent = liked ? '❤️' : '♡'; storyLikeBtn.classList.toggle('liked', liked);
+          storyLikeBtn.classList.toggle('liked', liked);
           storyReplyInput.value='';
           storyViewerContent.innerHTML = isVideo ? `<video src="${midia}" autoplay playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>` : `<img src="${midia}" style="width:100%;height:100%;object-fit:contain">`;
           storyViewer.classList.add('show');
@@ -194,7 +197,6 @@
             const el=document.getElementById(`seg-${i}`); if(el) el.style.width = Math.min(100, ((Date.now()-viewerStart)/viewerDur)*100)+'%';
             if(Date.now()-viewerStart>=viewerDur) showStoryAt(i+1);
           }, 50);
-          // clica esquerda volta, direita avança
           storyViewerContent.onclick = (e)=>{ const r=storyViewerContent.getBoundingClientRect(); if(e.clientX - r.left < r.width/2) showStoryAt(i-1); else showStoryAt(i+1); };
         }
         async function openStoryGroup(group, startIndex){
@@ -206,10 +208,9 @@
           viewerGroup=viewerGroup.filter(x=>String(x.id)!==String(s.id)); if(viewerGroup.length===0){ closeStoryViewer(); renderHomeFeed(); return; } showStoryAt(Math.min(viewerIndex, viewerGroup.length-1));
         });
         storyLikeBtn.addEventListener('click', ()=>{
-          const s=viewerGroup[viewerIndex]; if(!s) return; const k=`koneat_story_like_${s.id}`; const on=localStorage.getItem(k)!=='true'; localStorage.setItem(k, on?'true':'false'); storyLikeBtn.textContent=on?'❤️':'♡';
+          const s=viewerGroup[viewerIndex]; if(!s) return; const k=`koneat_story_like_${s.id}`; const on=localStorage.getItem(k)!=='true'; localStorage.setItem(k, on?'true':'false'); storyLikeBtn.classList.toggle('liked', on);
         });
-        storyReplyInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && storyReplyInput.value.trim()){ alert('Mensagem enviada!'); storyReplyInput.value=''; } });
-        // Clique no (+) : se eu já tenho story, abre meus stories. Se não, abre galeria. Botão + do badge sempre abre galeria.
+        storyReplyInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && storyReplyInput.value.trim()){ showToast('Mensagem enviada!'); storyReplyInput.value=''; } });
         let meuGrupoAtual = [];
         btnSeuStory.addEventListener('click', (e)=>{
           if(meuGrupoAtual.length>0){ openStoryGroup(meuGrupoAtual, 0); }
@@ -222,21 +223,19 @@
             let stories = JSON.parse(localStorage.getItem('koneat_stories')||'[]');
             const now = Date.now(); stories = stories.filter(s => !s.expiresAt || s.expiresAt > now); localStorage.setItem('koneat_stories', JSON.stringify(stories));
             let feed = todos.filter(p => { const isFeed = p.tipo==='FEED' || p.type==='home'; const isViral = p.tipo==='VIRAL' || p.type==='viral'; const isStory = p.tipo==='STORY' || p.type==='story'; return isFeed && !isViral && !isStory; });
-            // STORY: meus dentro do (+), outros fora. Agrupa por autor.
             const meus = stories.filter(isMine); const outros = stories.filter(s=>!isMine(s));
             meuGrupoAtual = meus;
-            const meuAvatar = document.getElementById('meuStoryAvatar'); const meuPlus = document.getElementById('meuStoryPlus'); const meuBadge = document.getElementById('meuStoryBadge');
+            const meuAvatar = document.getElementById('meuStoryAvatar'); const meuBadge = document.getElementById('meuStoryBadge');
             if(meus.length>0){
               const midiaMeu = await resolveMidia(meus[0]);
-              meuAvatar.classList.add('has-story'); meuPlus.style.display='none'; meuBadge.style.display='flex';
-              if(!meuAvatar.querySelector('img,video')){ const el = isVideoItem(meus[0],midiaMeu) ? document.createElement('video') : document.createElement('img'); el.src=midiaMeu; el.muted=true; el.playsInline=true; meuAvatar.insertBefore(el, meuPlus); }
-              meuBadge.onclick = (e)=>{ e.stopPropagation(); homeStoryInput.click(); };
+              meuAvatar.classList.add('has-story');
+              if(!meuAvatar.querySelector('img,video')){ const el = isVideoItem(meus[0],midiaMeu) ? document.createElement('video') : document.createElement('img'); el.src=midiaMeu; el.muted=true; el.playsInline=true; meuAvatar.insertBefore(el, meuBadge); }
             } else {
-              meuAvatar.classList.remove('has-story'); meuPlus.style.display='flex'; meuBadge.style.display='none';
+              meuAvatar.classList.remove('has-story');
               const old = meuAvatar.querySelector('img,video'); if(old) old.remove();
             }
+            meuBadge.onclick = (e)=>{ e.stopPropagation(); homeStoryInput.click(); };
             if(storiesOthers){
-              // agrupa outros por autor pra 1 bolha por pessoa
               const grupos = {}; outros.forEach(s=>{ const k=s.userId||s.author||'outro'; if(!grupos[k]) grupos[k]=[]; grupos[k].push(s); });
               const chaves = Object.keys(grupos);
               const html = await Promise.all(chaves.map(async k=>{ const g=grupos[k]; const s=g[0]; const midia=await resolveMidia(s); const capa=s.capa||midia; const isVideo=isVideoItem(s,midia); return `<button class="story-item" data-story-group="${k}"><div class="story-avatar">${isVideo ? `<video src="${midia}" poster="${capa}" muted playsinline></video>` : `<img src="${midia}" alt="story">`}</div><span class="story-username">${s.author||'você'}</span></button>`; }));
@@ -254,11 +253,11 @@
                             <div class="post-author-info"><div class="author-avatar">${authorName.charAt(0).toUpperCase()}</div><span class="author-name">@${authorName}</span></div>
                             <div class="post-header-right">
                               <button type="button" class="btn-follow-home">Seguir</button>
-                              <button type="button" class="btn-post-more" data-id="${postId}" aria-label="Mais opções">⋮</button>
+                              <button type="button" class="btn-post-more" data-id="${postId}" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
                             </div>
                         </div>
                         <div class="post-media-wrapper">
-                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><div class="play-pause-indicator">⏸</div><button type="button" class="post-sound-btn" aria-label="Som"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
+                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><div class="play-pause-indicator"><svg class="icon-pause-svg" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><svg class="icon-play-svg" viewBox="0 0 24 24" fill="#fff" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><button type="button" class="post-sound-btn" aria-label="Som"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
                         </div>
                         <div class="post-actions-bar">
                             <div class="post-actions-left">
@@ -283,8 +282,10 @@
             document.querySelectorAll('.post-media-wrapper video').forEach(v=>{
               v.addEventListener('click', ()=>{
                 const ind = v.parentElement.querySelector('.play-pause-indicator');
-                if(v.paused){ v.play(); if(ind){ ind.textContent='▶'; ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
-                else { v.pause(); if(ind){ ind.textContent='⏸'; ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
+                const playSvg = ind ? ind.querySelector('.icon-play-svg') : null;
+                const pauseSvg = ind ? ind.querySelector('.icon-pause-svg') : null;
+                if(v.paused){ v.play(); if(playSvg && pauseSvg){ playSvg.style.display='none'; pauseSvg.style.display='block'; } if(ind){ ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
+                else { v.pause(); if(playSvg && pauseSvg){ playSvg.style.display='block'; pauseSvg.style.display='none'; } if(ind){ ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
               });
             });
         }
