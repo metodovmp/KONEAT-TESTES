@@ -99,11 +99,8 @@
         const publishFinalBtn = document.getElementById("publishFinalBtn");
         const modalThumbnail = document.getElementById("modalThumbnail");
         const postCaptionInput = document.getElementById("postCaptionInput");
-
-        // --- IndexedDB: mesmo banco do app.js ---
         function openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open('koneat_db',1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('media')) r.result.createObjectStore('media'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
         function saveMedia(id,file){ return openDB().then(db=> new Promise((res,rej)=>{ const tx=db.transaction('media','readwrite'); tx.objectStore('media').put(file,id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
-
         let selectedFile = null;
         let currentMediaUrl = null;
         let selectedType = 'post';
@@ -114,11 +111,9 @@
         const userId = localStorage.getItem('koneat_userId') || 'user_'+Date.now();
         localStorage.setItem('koneat_userId', userId);
         const username = localStorage.getItem('koneat_username') || 'koneat_user';
-
         document.getElementById("openGallery").addEventListener("click", () => galleryInput.click());
         document.getElementById("openGalleryIcon").addEventListener("click", () => galleryInput.click());
         document.getElementById("openCamera").addEventListener("click", () => cameraInput.click());
-
         function getFormato(file, cb){
           if(file.type.startsWith('image')){
             const img=new Image(); img.onload=()=>{ let r=img.width/img.height; cb(r>1.6?'16:9':r>1.1?'4:3':r>0.9?'1:1':'4:5'); }; img.src=URL.createObjectURL(file);
@@ -167,7 +162,6 @@
           }
           return {ok:true};
         }
-
         async function showSelectedMedia(file) {
             if (!file) return;
             const dur = await getDuracao(file);
@@ -196,10 +190,8 @@
             }
             advanceButton.disabled = false;
         }
-
         galleryInput.addEventListener("change", e => showSelectedMedia(e.target.files[0]));
         cameraInput.addEventListener("change", e => showSelectedMedia(e.target.files[0]));
-
         document.querySelectorAll(".create-tab").forEach(tab => {
             tab.addEventListener("click", () => {
                 document.querySelectorAll(".create-tab").forEach(item => item.classList.remove("active"));
@@ -210,13 +202,11 @@
                 if(selectedType==='video') emptyText.textContent='Selecione um vídeo (até 3 min)';
             });
         });
-
         advanceButton.addEventListener("click", () => {
             if (!selectedFile) { galleryInput.click(); return; }
             captionModal.classList.add('show');
         });
         closeModalBtn.addEventListener("click", ()=> captionModal.classList.remove('show'));
-
         function resetPlus(){
           captionModal.classList.remove('show');
           postCaptionInput.value = '';
@@ -230,7 +220,6 @@
           videoPreview.pause();
           emptyState.style.display = 'flex';
         }
-
         publishFinalBtn.addEventListener("click", async ()=>{
             if(!selectedFile || isPublishing) return;
             isPublishing = true;
@@ -282,5 +271,7 @@
             }
         });
     </script>
+    <!-- REFINO: passo3 agora também carrega o app.js global -->
+    <script src="js/app.js"></script>
 </body>
-    </html>
+</html>
