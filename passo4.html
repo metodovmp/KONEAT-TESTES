@@ -22,12 +22,14 @@
         .home-feed-container { width: 100%; padding-bottom: 80px; }
         .stories-bar { width: 100%; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); overflow-x: auto; scrollbar-width: none; }
         .stories-bar::-webkit-scrollbar { display: none; }
-        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; background: none; border: none; padding: 0; }
+        /* + EM CIMA DA BORDA - story-item tem que ser relative e overflow visible */
+        .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; background: none; border: none; padding: 0; position: relative; overflow: visible; }
         .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #eef0f5; border: 1.5px solid #000000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
         .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
         .story-avatar-mine.has-story { border: 2px solid #00ff88; }
-        .story-add-badge { position: absolute; bottom: 0; right: 0; width: 22px; height: 22px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; z-index: 2; cursor: pointer; }
+        /* BADGE FORA DO AVATAR, EM CIMA DA BORDA - bottom 18px + right 0px */
+        .story-add-badge { position: absolute; bottom: 18px; right: 0px; width: 26px; height: 26px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; z-index: 3; cursor: pointer; }
         .story-add-badge svg { width: 12px; height: 12px; }
         .story-username { font-size: 12px; color: #1c1c1e; font-weight: 400; }
         .post-card { width: 100%; background: #ffffff; border-bottom: 1px solid #efeff4; margin-bottom: 12px; }
@@ -100,9 +102,8 @@
     <main class="home-feed-container" id="homeFeedContainer">
         <section class="stories-bar" id="storiesBar">
             <button class="story-item" id="btnSeuStory" type="button">
-                <div class="story-avatar story-avatar-mine" id="meuStoryAvatar">
-                    <span class="story-add-badge" id="meuStoryBadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-                </div>
+                <div class="story-avatar story-avatar-mine" id="meuStoryAvatar"></div>
+                <span class="story-add-badge" id="meuStoryBadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
                 <span class="story-username">seu story</span>
             </button>
             <div id="storiesOthers" style="display:contents;"></div>
@@ -175,7 +176,7 @@
           let s = JSON.parse(localStorage.getItem('koneat_stories')||'[]'); s.unshift(novo); localStorage.setItem('koneat_stories', JSON.stringify(s));
           homeStoryInput.value=''; renderHomeFeed();
         });
-        let viewerGroup = [], viewerIndex = 0, viewerTimer = null, viewerStart = 0, viewerDur = 30000;
+        let viewerGroup = [], viewerIndex = 0, viewerTimer = null, viewerStart = 0, viewerDur = 3000;
         function stopViewerTimer(){ if(viewerTimer) clearInterval(viewerTimer); viewerTimer=null; }
         function closeStoryViewer(){ stopViewerTimer(); storyViewer.classList.remove('show'); storyViewerContent.innerHTML=''; }
         document.getElementById('closeStoryViewer').addEventListener('click', closeStoryViewer);
@@ -234,6 +235,7 @@
               meuAvatar.classList.remove('has-story');
               const old = meuAvatar.querySelector('img,video'); if(old) old.remove();
             }
+            // + ABRE GALERIA, NÃO VAI PRA NAVE 3 - e não deixa o clique vazar pra bolha
             meuBadge.onclick = (e)=>{ e.stopPropagation(); homeStoryInput.click(); };
             if(storiesOthers){
               const grupos = {}; outros.forEach(s=>{ const k=s.userId||s.author||'outro'; if(!grupos[k]) grupos[k]=[]; grupos[k].push(s); });
@@ -257,7 +259,7 @@
                             </div>
                         </div>
                         <div class="post-media-wrapper">
-                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><div class="play-pause-indicator"><svg class="icon-pause-svg" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><svg class="icon-play-svg" viewBox="0 0 24 24" fill="#fff" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><button type="button" class="post-sound-btn" aria-label="Som"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
+                            ${isVideo ? `<video src="${midia}" poster="${item.capa||''}" autoplay loop muted playsinline></video><div class="play-pause-indicator"><svg class="icon-pause-svg" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><svg class="icon-play-svg" viewBox="0 0 24 24" fill="#fff" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><button type="button" class="post-sound-btn" aria-label="Som"><svg class="svg-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg><svg class="svg-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>` : `<img src="${midia}" alt="Publicação">`}
                         </div>
                         <div class="post-actions-bar">
                             <div class="post-actions-left">
@@ -278,15 +280,27 @@
             document.querySelectorAll('.btn-comment').forEach(b=>b.addEventListener('click', function(){ if(window.openComments) window.openComments(this.dataset.id); }));
             document.querySelectorAll('.btn-share').forEach(b=>b.addEventListener('click', function(){ if(window.doShare) window.doShare({id:this.dataset.id}); else if(navigator.share) navigator.share({title:'Koneat', url: location.href}); }));
             document.querySelectorAll('.btn-post-more').forEach(b=>b.addEventListener('click', function(){ if(window.openPostMenu) window.openPostMenu({id:this.dataset.id}); else if(window.doShare) window.doShare({id:this.dataset.id}); }));
-            document.querySelectorAll('.post-sound-btn').forEach(btn=>{ btn.addEventListener('click', (e)=>{ e.stopPropagation(); const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted; }); });
+            // SOM - 2 SVGs: off -> on, o navegador só libera depois do toque
+            document.querySelectorAll('.post-sound-btn').forEach(btn=>{ btn.addEventListener('click', (e)=>{ e.stopPropagation(); const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted; const off = btn.querySelector('.svg-sound-off'); const on = btn.querySelector('.svg-sound-on'); if(off && on){ off.style.display = v.muted ? 'block' : 'none'; on.style.display = v.muted ? 'none' : 'block'; } }); });
+            // PAUSE AUTOMÁTICO: só o que tá na tela toca, o que subiu pausa, pausado na mão fica em pause
             document.querySelectorAll('.post-media-wrapper video').forEach(v=>{
+              v.dataset.manualPause = '0';
+              const ind = v.parentElement.querySelector('.play-pause-indicator');
+              const playSvg = ind ? ind.querySelector('.icon-play-svg') : null;
+              const pauseSvg = ind ? ind.querySelector('.icon-pause-svg') : null;
+              const showInd = ()=>{ if(ind){ ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } };
               v.addEventListener('click', ()=>{
-                const ind = v.parentElement.querySelector('.play-pause-indicator');
-                const playSvg = ind ? ind.querySelector('.icon-play-svg') : null;
-                const pauseSvg = ind ? ind.querySelector('.icon-pause-svg') : null;
-                if(v.paused){ v.play(); if(playSvg && pauseSvg){ playSvg.style.display='none'; pauseSvg.style.display='block'; } if(ind){ ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
-                else { v.pause(); if(playSvg && pauseSvg){ playSvg.style.display='block'; pauseSvg.style.display='none'; } if(ind){ ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),600); } }
+                if(v.paused){ v.dataset.manualPause='0'; v.play(); if(playSvg && pauseSvg){ playSvg.style.display='none'; pauseSvg.style.display='block'; } showInd(); }
+                else { v.dataset.manualPause='1'; v.pause(); if(playSvg && pauseSvg){ playSvg.style.display='block'; pauseSvg.style.display='none'; } showInd(); }
               });
+              const io = new IntersectionObserver((entries)=>{
+                entries.forEach(en=>{
+                  if(en.isIntersecting && en.intersectionRatio >= 0.6){
+                    if(v.dataset.manualPause!=='1') v.play().catch(()=>{});
+                  } else { v.pause(); }
+                });
+              }, { threshold: [0, 0.6] });
+              io.observe(v);
             });
         }
         document.addEventListener('DOMContentLoaded', renderHomeFeed);
