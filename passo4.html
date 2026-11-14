@@ -22,14 +22,13 @@
         .home-feed-container { width: 100%; padding-bottom: 80px; }
         .stories-bar { width: 100%; display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); overflow-x: auto; scrollbar-width: none; }
         .stories-bar::-webkit-scrollbar { display: none; }
-        /* + EM CIMA DA BORDA - story-item tem que ser relative e overflow visible */
         .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; background: none; border: none; padding: 0; position: relative; overflow: visible; }
         .story-avatar { width: 66px; height: 66px; border-radius: 50%; background: #eef0f5; border: 1.5px solid #000000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .story-avatar img, .story-avatar video { width: 100%; height: 100%; object-fit: cover; }
         .story-avatar svg { width: 30px; height: 30px; color: #8e8e93; }
         .story-avatar-mine.has-story { border: 2px solid #00ff88; }
-        /* BADGE FORA DO AVATAR, EM CIMA DA BORDA - bottom 18px + right 0px */
-        .story-add-badge { position: absolute; bottom: 18px; right: 0px; width: 26px; height: 26px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; z-index: 3; cursor: pointer; }
+        /* O + é criado pelo JS - já nasce em cima da borda */
+        .story-add-badge, .story-plus-fixed { position: absolute; bottom: 18px; right: 0px; width: 26px; height: 26px; border-radius: 50%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; z-index: 3; cursor: pointer; font-size: 18px; font-weight: 700; line-height: 1; }
         .story-add-badge svg { width: 12px; height: 12px; }
         .story-username { font-size: 12px; color: #1c1c1e; font-weight: 400; }
         .post-card { width: 100%; background: #ffffff; border-bottom: 1px solid #efeff4; margin-bottom: 12px; }
@@ -83,7 +82,7 @@
         .toast-home.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
-<body>
+<body class="light-theme">
     <header class="home-header">
         <h1 class="home-logo">koneat</h1>
         <div class="home-header-icons">
@@ -103,7 +102,6 @@
         <section class="stories-bar" id="storiesBar">
             <button class="story-item" id="btnSeuStory" type="button">
                 <div class="story-avatar story-avatar-mine" id="meuStoryAvatar"></div>
-                <span class="story-add-badge" id="meuStoryBadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
                 <span class="story-username">seu story</span>
             </button>
             <div id="storiesOthers" style="display:contents;"></div>
@@ -226,17 +224,17 @@
             let feed = todos.filter(p => { const isFeed = p.tipo==='FEED' || p.type==='home'; const isViral = p.tipo==='VIRAL' || p.type==='viral'; const isStory = p.tipo==='STORY' || p.type==='story'; return isFeed && !isViral && !isStory; });
             const meus = stories.filter(isMine); const outros = stories.filter(s=>!isMine(s));
             meuGrupoAtual = meus;
-            const meuAvatar = document.getElementById('meuStoryAvatar'); const meuBadge = document.getElementById('meuStoryBadge');
+            const meuAvatar = document.getElementById('meuStoryAvatar');
+            const meuBadge = document.getElementById('meuStoryBadge');
             if(meus.length>0){
               const midiaMeu = await resolveMidia(meus[0]);
               meuAvatar.classList.add('has-story');
-              if(!meuAvatar.querySelector('img,video')){ const el = isVideoItem(meus[0],midiaMeu) ? document.createElement('video') : document.createElement('img'); el.src=midiaMeu; el.muted=true; el.playsInline=true; meuAvatar.insertBefore(el, meuBadge); }
+              if(!meuAvatar.querySelector('img,video')){ const el = isVideoItem(meus[0],midiaMeu) ? document.createElement('video') : document.createElement('img'); el.src=midiaMeu; el.muted=true; el.playsInline=true; meuAvatar.appendChild(el); }
             } else {
               meuAvatar.classList.remove('has-story');
               const old = meuAvatar.querySelector('img,video'); if(old) old.remove();
             }
-            // + ABRE GALERIA, NÃO VAI PRA NAVE 3 - e não deixa o clique vazar pra bolha
-            meuBadge.onclick = (e)=>{ e.stopPropagation(); homeStoryInput.click(); };
+            if(meuBadge){ meuBadge.onclick = (e)=>{ e.stopPropagation(); homeStoryInput.click(); }; }
             if(storiesOthers){
               const grupos = {}; outros.forEach(s=>{ const k=s.userId||s.author||'outro'; if(!grupos[k]) grupos[k]=[]; grupos[k].push(s); });
               const chaves = Object.keys(grupos);
@@ -280,9 +278,7 @@
             document.querySelectorAll('.btn-comment').forEach(b=>b.addEventListener('click', function(){ if(window.openComments) window.openComments(this.dataset.id); }));
             document.querySelectorAll('.btn-share').forEach(b=>b.addEventListener('click', function(){ if(window.doShare) window.doShare({id:this.dataset.id}); else if(navigator.share) navigator.share({title:'Koneat', url: location.href}); }));
             document.querySelectorAll('.btn-post-more').forEach(b=>b.addEventListener('click', function(){ if(window.openPostMenu) window.openPostMenu({id:this.dataset.id}); else if(window.doShare) window.doShare({id:this.dataset.id}); }));
-            // SOM - 2 SVGs: off -> on, o navegador só libera depois do toque
             document.querySelectorAll('.post-sound-btn').forEach(btn=>{ btn.addEventListener('click', (e)=>{ e.stopPropagation(); const v = btn.parentElement.querySelector('video'); if(!v) return; v.muted=!v.muted; const off = btn.querySelector('.svg-sound-off'); const on = btn.querySelector('.svg-sound-on'); if(off && on){ off.style.display = v.muted ? 'block' : 'none'; on.style.display = v.muted ? 'none' : 'block'; } }); });
-            // PAUSE AUTOMÁTICO: só o que tá na tela toca, o que subiu pausa, pausado na mão fica em pause
             document.querySelectorAll('.post-media-wrapper video').forEach(v=>{
               v.dataset.manualPause = '0';
               const ind = v.parentElement.querySelector('.play-pause-indicator');
