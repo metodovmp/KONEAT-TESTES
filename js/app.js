@@ -160,9 +160,8 @@ function initRecuperar(){
   const form = document.getElementById('recoveryForm'); if(!form) return;
   form.addEventListener('submit', e=>{ e.preventDefault(); const email = document.getElementById('emailField').value.trim(); if(!email){ showToast('Digite o e-mail da conta.'); return; } showToast('Código enviado para '+email); window.location.href='index.html'; });
   const back = document.getElementById('btnLoginRedirect'); if(back) back.addEventListener('click', ()=> window.location.href='index.html');
-                                                                                                                                                                                                                              }
-
-// ===== KONEAT - app.js LIMPO - PARTE 2/3 =====
+   
+  // ===== KONEAT - app.js LIMPO - PARTE 2/3 =====
 
 // ===== MENSAGENS =====
 function initMensagens(){
@@ -329,10 +328,10 @@ function initPasso1(){
       const btn = empty.querySelector('.btn-create-post, a, button');
       const txt = empty.querySelector('p, span, h3, h4');
       if(lista.length===0){
-        if(btn){ btn.textContent='Crie seu primeiro post'; btn.href='./passo3.html'; }
+        if(btn){ btn.textContent='Crie seu primeiro post'; btn.href='./criar.html'; }
         if(txt) txt.textContent = 'Nenhuma publicação ainda.';
       } else {
-        if(btn){ btn.textContent='Crie outro post'; btn.href='./passo3.html'; }
+        if(btn){ btn.textContent='Crie outro post'; btn.href='./criar.html'; }
         if(txt) txt.textContent = '';
       }
       if(grid.parentElement) grid.parentElement.appendChild(empty);
@@ -379,10 +378,42 @@ function initPasso1(){
     else { navigator.clipboard.writeText(link).then(()=> showToast('Link do perfil copiado')); }
   };
   render();
-    }
+}
 
+  
+  // ===== KONEAT - app.js LIMPO - PARTE 3/3 =====
 
-// ===== KONEAT - app.js LIMPO - PARTE 3/3 =====
+// ===== AUTO-PLAY / AUTO-PAUSE - SÓ O QUE TÁ NA TELA TOCA, PAUSADO NA MÃO FICA EM PAUSE =====
+function initAutoVideo(video, card, pauseBtn){
+  if(!video || video.dataset.autoInit) return;
+  video.dataset.autoInit = '1';
+  video.dataset.manualPause = '0';
+  if(pauseBtn){
+    pauseBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(video.paused){ video.dataset.manualPause='0'; video.play().catch(()=>{}); }
+      else { video.dataset.manualPause='1'; video.pause(); }
+    });
+    video.addEventListener('click', ()=>{
+      if(video.paused){ video.dataset.manualPause='0'; video.play().catch(()=>{}); }
+      else { video.dataset.manualPause='1'; video.pause(); }
+    });
+    video.addEventListener('play', ()=>{ if(video.dataset.manualPause!=='1'){ pauseBtn.innerHTML = SVG.pause; pauseBtn.style.opacity='0'; } });
+    video.addEventListener('pause', ()=>{ pauseBtn.innerHTML = SVG.play; pauseBtn.style.opacity='1'; });
+  }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting && en.intersectionRatio >= 0.6){
+        // Chegou na tela - vem aberto, tocando, se não foi pausado na mão
+        if(video.dataset.manualPause!=='1'){ video.play().catch(()=>{}); }
+      } else {
+        // Subiu / saiu da tela - ganha pause automático
+        video.pause();
+      }
+    });
+  }, { threshold: [0, 0.6] });
+  if(card) io.observe(card); else io.observe(video);
+}
 
 // ===== PASSO 2 - VIRAIS - 6 ÍCONES VERTICAL À DIREITA - SÓ SVG =====
 async function initPasso2(){
@@ -399,9 +430,9 @@ async function initPasso2(){
     const liked = isReaction('like', item.id), reposted = isReaction('repost', item.id), saved = isReaction('save', item.id), followed = isReaction('follow', item.id);
     return `<article class="reel-card" data-video-id="${item.id}" style="position:relative;">
       <video class="reel-video-element" src="${midia}" autoplay loop muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;background:#000;"></video>
-      <button type="button" class="btn-toggle-sound" aria-label="Som" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,.45);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#fff;">${SVG.soundOff}</button>
-      <button type="button" class="btn-toggle-pause" aria-label="Pausar" style="position:absolute;top:14px;left:14px;background:rgba(0,0,0,.45);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .2s;">${SVG.pause}</button>
-      <div class="video-progress-bar-container" style="bottom:40px;"><div class="video-progress-bar-fill"></div></div>
+      <button type="button" class="btn-toggle-sound" aria-label="Som" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,.45);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:5;">${SVG.soundOff}</button>
+      <button type="button" class="btn-toggle-pause" aria-label="Pausar" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.45);border:none;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .2s;z-index:5;pointer-events:none;">${SVG.pause}</button>
+      <div class="video-progress-bar-container" style="position:absolute;left:12px;right:12px;bottom:40px;height:3px;background:rgba(255,255,255,.35);border-radius:99px;overflow:hidden;z-index:4;"><div class="video-progress-bar-fill" style="height:100%;width:0%;background:#fff;border-radius:99px;"></div></div>
       <div class="video-footer-info"><div class="creator-row">
         <div class="creator-avatar-circle">${(item.author||'K').charAt(0).toUpperCase()}</div>
         <span class="creator-name">@${item.author||'koneat_user'}</span>
@@ -411,25 +442,18 @@ async function initPasso2(){
         <button type="button" class="action-item btn-like ${liked?'is-on':''}" data-reaction="like" data-id="${item.id}" aria-label="Curtir" style="background:none;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;">${SVG.heart}<span style="font-size:11px;color:#fff;display:block;">${c.like||''}</span></button>
         <button type="button" class="action-item btn-comment" data-id="${item.id}" aria-label="Comentar" style="background:none;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;">${SVG.comment}<span style="font-size:11px;color:#fff;display:block;" data-count-comment="${item.id}">${c.comment||''}</span></button>
         <button type="button" class="action-item btn-repost ${reposted?'is-on':''}" data-reaction="repost" data-id="${item.id}" aria-label="Repostar" style="background:none;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;">${SVG.repost}<span style="font-size:11px;color:#fff;display:block;">${c.repost||''}</span></button>
-        <button type="button" class="action-item btn-share" data-id="${item.id}" aria-label="Encaminhar" style="background:none;border:none;color:#fff;">${SVG.send}</button>
         <button type="button" class="action-item btn-save ${saved?'is-on':''}" data-reaction="save" data-id="${item.id}" aria-label="Marcar" style="background:none;border:none;color:#fff;">${SVG.save}</button>
+        <button type="button" class="action-item btn-share" data-id="${item.id}" aria-label="Encaminhar" style="background:none;border:none;color:#fff;">${SVG.send}</button>
         <button type="button" class="action-item btn-more" data-id="${item.id}" aria-label="Mais" style="margin-top:10px;background:none;border:none;color:#fff;">${SVG.dots}</button>
       </div>
     </article>`;
   }).join('');
   container.querySelectorAll('.reel-card').forEach(card=>{
     const video = card.querySelector('.reel-video-element'); const fill = card.querySelector('.video-progress-bar-fill'); const soundBtn = card.querySelector('.btn-toggle-sound'); const pauseBtn = card.querySelector('.btn-toggle-pause');
-    setupSmoothVideo(video, card);
+    if(typeof setupSmoothVideo === 'function') setupSmoothVideo(video, card);
+    initAutoVideo(video, card, pauseBtn);
     if(video && fill) video.addEventListener('timeupdate', ()=>{ if(video.duration) fill.style.width = (video.currentTime/video.duration*100)+'%'; });
     if(soundBtn && video) soundBtn.addEventListener('click', e=>{ e.stopPropagation(); video.muted = !video.muted; soundBtn.innerHTML = video.muted ? SVG.soundOff : SVG.soundOn; });
-    if(pauseBtn && video){
-      // ÚNICO controle de pause aqui - sem duplicar no setupSmoothVideo
-      const togglePause = (e)=>{ if(e) e.stopPropagation(); if(video.paused){ video.play().catch(()=>{}); pauseBtn.innerHTML = SVG.pause; pauseBtn.style.opacity='0'; } else { video.pause(); pauseBtn.innerHTML = SVG.play; pauseBtn.style.opacity='1'; } };
-      pauseBtn.addEventListener('click', togglePause);
-      video.addEventListener('click', togglePause);
-      video.addEventListener('play', ()=>{ pauseBtn.innerHTML = SVG.pause; pauseBtn.style.opacity='0'; });
-      video.addEventListener('pause', ()=>{ pauseBtn.innerHTML = SVG.play; pauseBtn.style.opacity='1'; });
-    }
   });
   container.querySelectorAll('.btn-like').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleReaction('like', b.dataset.id); bumpCount(b.dataset.id,'like', on?1:-1); b.classList.toggle('is-on', on); }));
   container.querySelectorAll('.btn-repost').forEach(b=> b.addEventListener('click', ()=>{ doRepost(b.dataset.id); b.classList.toggle('is-on', isReaction('repost', b.dataset.id)); }));
@@ -481,7 +505,7 @@ function initPasso3(){
   if(advanceBtn) advanceBtn.addEventListener('click', async ()=>{ if(!selectedFile){ galleryInput.click(); return; } if(currentTipo==='VIRAL' && selectedFile.size > 50*1024*1024){ showToast('Vídeo viral muito grande. Use até 50MB.'); return; } if(currentTipo==='FEED' && selectedFile.size > 100*1024*1024){ showToast('Arquivo muito grande. Use até 100MB.'); return; } const mediaId = 'media_'+Date.now(); try{ await saveMedia(mediaId, selectedFile); }catch(e){} const posts = getPosts(); posts.unshift({ id: 'post_'+Date.now(), mediaId: mediaId, url: '', midia: '', mediaType: selectedFile.type.startsWith('video/') ? 'video' : 'image', tipo: currentTipo, author: getUser(), caption: '', createdAt: Date.now(), expiresAt: currentTipo==='STORY' ? Date.now()+24*60*60*1000 : null }); savePosts(posts); window.location.href = currentTipo==='VIRAL' ? './passo2.html' : './passo4.html'; });
 }
 
-// ===== STORY VIEWER - AGRUPADO: 1 BOLHA = VÁRIOS STORIES =====
+// ===== STORY VIEWER - AGRUPADO: 1 BOLHA = VÁRIOS STORIES, BARRA 3s =====
 async function openStoryViewerGrouped(lista, startIndex, isMine){
   let idx = startIndex || 0;
   let v = document.getElementById('koneatStoryViewer'); if(v) v.remove();
@@ -517,14 +541,10 @@ async function openStoryViewerGrouped(lista, startIndex, isMine){
     const bottom = v.querySelector('#koneatStoryBottom');
     const progress = v.querySelector('#koneatBar_'+idx);
     start = Date.now();
-    timer = setInterval(()=>{ const p = Math.min(100, (Date.now()-start)/30000*100); if(progress) progress.style.width = p+'%'; if(p>=100) mostrar(idx+1); }, 100);
+    timer = setInterval(()=>{ const p = Math.min(100, (Date.now()-start)/3000*100); if(progress) progress.style.width = p+'%'; if(p>=100) mostrar(idx+1); }, 50);
     videoEl = v.querySelector('#koneatStoryVideo');
     if(videoEl){
       videoEl.addEventListener('click', (e)=>{ e.stopPropagation(); videoEl.paused ? videoEl.play() : videoEl.pause(); });
-      videoEl.addEventListener('loadedmetadata', ()=>{
-        if(timer) clearInterval(timer);
-        timer = setInterval(()=>{ if(!videoEl.duration) return; const p = Math.min(100, videoEl.currentTime/videoEl.duration*100); if(progress) progress.style.width = p+'%'; if(p>=100) mostrar(idx+1); }, 100);
-      });
     }
     if(isMine){
       bottom.innerHTML = `<button id="koneatStoryDelete" style="margin-left:auto;background:#fff;border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#111;">${SVG.trash}</button>`;
@@ -547,7 +567,7 @@ async function openStoryViewerGrouped(lista, startIndex, isMine){
 }
 function openStoryViewer(post, midia, isMine){ openStoryViewerGrouped([post], 0, isMine); }
 
-// ===== PASSO 4 - HOME - 5 ÍCONES + STORY COM + NO CANTINHO =====
+// ===== PASSO 4 - HOME - 5 ÍCONES + STORY COM + EM CIMA DO CÍRCULO =====
 async function initPasso4(){
   const feed = document.getElementById('postsDynamicFeed'); if(!feed) return;
   const tabs = document.querySelectorAll('.subnav-tab'); const ind = document.getElementById('subnavIndicator');
@@ -563,30 +583,48 @@ async function initPasso4(){
     const mine = porAutor[getUser()] || [];
     const outrosAutores = Object.keys(porAutor).filter(a=> a !== getUser());
     storiesBar.querySelectorAll('.js-story-item').forEach(el=>el.remove());
-    // MEU - + NO CANTINHO EM CIMA DO CÍRCULO, FORA DELE, SEMPRE VISÍVEL
     let meuEl = storiesBar.querySelector('.story-item');
     if(meuEl){
       meuEl.style.cursor='pointer';
       meuEl.style.position='relative';
-      // Remove + antigo de dentro, se existir
+      meuEl.style.overflow='visible';
       meuEl.querySelectorAll('.story-plus, .plus, [class*="plus"]').forEach(p=> p.remove());
-      // Cria + novo no cantinho
-      let plusBtn = document.createElement('button');
-      plusBtn.type='button'; plusBtn.className='story-plus-fixed';
-      plusBtn.setAttribute('aria-label','Adicionar story');
-      plusBtn.style.cssText='position:absolute;top:-2px;right:2px;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;border:2px solid #000;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;line-height:1;z-index:3;cursor:pointer;';
-      plusBtn.textContent='+';
-      plusBtn.onclick = (e)=>{ e.stopPropagation(); openStoryComposer(); };
-      meuEl.appendChild(plusBtn);
+      meuEl.querySelectorAll('*').forEach(el=>{
+        if(el.children.length===0 && el.textContent.trim()==='+' && !el.classList.contains('story-plus-fixed')) el.remove();
+      });
+      const abrirGaleriaStory = ()=>{
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*,video/*';
+        input.onchange = async ()=>{
+          const file = input.files[0]; if(!file) return;
+          const mediaId = 'media_'+Date.now();
+          try{ await saveMedia(mediaId, file); }catch(e){}
+          const posts = getPosts();
+          posts.unshift({ id:'post_'+Date.now(), mediaId: mediaId, url:'', midia:'', mediaType: file.type.startsWith('video/') ? 'video' : 'image', tipo:'STORY', author:getUser(), caption:'', createdAt:Date.now(), expiresAt: Date.now()+24*60*60*1000 });
+          savePosts(posts);
+          showToast('Story publicado');
+          location.reload();
+        };
+        input.click();
+      };
+      let plusBtn = meuEl.querySelector('.story-plus-fixed');
+      if(!plusBtn){
+        plusBtn = document.createElement('button');
+        plusBtn.type='button'; plusBtn.className='story-plus-fixed';
+        plusBtn.setAttribute('aria-label','Adicionar story');
+        plusBtn.style.cssText='position:absolute;bottom:18px;right:0px;width:26px;height:26px;border-radius:50%;background:#000;color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;line-height:1;z-index:3;cursor:pointer;';
+        plusBtn.textContent='+';
+        meuEl.appendChild(plusBtn);
+      }
+      plusBtn.onclick = (e)=>{ e.stopPropagation(); abrirGaleriaStory(); };
       if(mine.length){
         const midiaMine = await resolveMidia(mine[0]);
         const avatar = meuEl.querySelector('.story-avatar');
         if(avatar) avatar.innerHTML = `<img src="${midiaMine}" style="width:100%;height:100%;object-fit:cover;">`;
-        // Clicar na BOLHA abre viewer, clicar no + abre composer - separados
         meuEl.onclick = (e)=>{ if(e.target.closest('.story-plus-fixed')) return; openStoryViewerGrouped(mine, 0, true); };
       } else {
-        // Sem story: clicar na bolha também abre composer, mas o + continua no cantinho
-        meuEl.onclick = (e)=>{ if(e.target.closest('.story-plus-fixed')) return; openStoryComposer(); };
+        meuEl.onclick = (e)=>{ if(e.target.closest('.story-plus-fixed')) return; abrirGaleriaStory(); };
       }
     }
     for(const autor of outrosAutores){
@@ -622,11 +660,12 @@ async function initPasso4(){
             <div class="author-avatar">${(item.author||'K').charAt(0).toUpperCase()}</div>
             <span class="author-name">@${item.author||'koneat_user'}</span>
             <button type="button" class="btn-follow-home" data-reaction="follow" data-id="${item.id}">${followed?'Seguindo':'Seguir'}</button>
+            <button type="button" class="btn-more-home" data-id="${item.id}" style="background:none;border:none;color:#111;display:flex;">${SVG.dots}</button>
           </div>
-          <button type="button" class="btn-more-home" data-id="${item.id}" style="background:none;border:none;color:#111;display:flex;">${SVG.dots}</button>
+          <span style="width:24px;"></span>
         </div>
-        <div class="post-media-wrapper" style="width:100%;aspect-ratio:4/5;background:#000;overflow:hidden;border-radius:12px;">
-          ${isVideo ? `<video src="${midia}" autoplay loop muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>` : `<img src="${midia}" alt="Publicação" style="width:100%;height:100%;object-fit:cover;display:block;">`}
+        <div class="post-media-wrapper" style="width:100%;aspect-ratio:4/5;background:#000;overflow:hidden;border-radius:12px;position:relative;">
+          ${isVideo ? `<video src="${midia}" autoplay loop muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video><button type="button" class="btn-toggle-sound-home" aria-label="Som" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:5;">${SVG.soundOff}</button><button type="button" class="btn-toggle-pause-home" aria-label="Pausar" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.45);border:none;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .2s;z-index:5;pointer-events:none;">${SVG.pause}</button>` : `<img src="${midia}" alt="Publicação" style="width:100%;height:100%;object-fit:cover;display:block;">`}
         </div>
         <div class="post-actions-bar" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;color:#111;">
           <div class="post-actions-left" style="display:flex;gap:16px;color:#111;">
@@ -640,7 +679,16 @@ async function initPasso4(){
       </article>`;
     }).join('');
 
-    feed.querySelectorAll('.post-media-wrapper video').forEach(v=> setupSmoothVideo(v, v.closest('.post-card')));
+    feed.querySelectorAll('.post-card').forEach(card=>{
+      const video = card.querySelector('.post-media-wrapper video');
+      if(video){
+        const soundBtn = card.querySelector('.btn-toggle-sound-home');
+        const pauseBtn = card.querySelector('.btn-toggle-pause-home');
+        if(typeof setupSmoothVideo === 'function') setupSmoothVideo(video, card);
+        initAutoVideo(video, card, pauseBtn);
+        if(soundBtn) soundBtn.addEventListener('click', e=>{ e.stopPropagation(); video.muted = !video.muted; soundBtn.innerHTML = video.muted ? SVG.soundOff : SVG.soundOn; });
+      }
+    });
     feed.querySelectorAll('.btn-like-home').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleReaction('like', b.dataset.id); bumpCount(b.dataset.id,'like', on?1:-1); b.classList.toggle('is-on', on); }));
     feed.querySelectorAll('.btn-save-home').forEach(b=> b.addEventListener('click', ()=>{ const on = toggleReaction('save', b.dataset.id); b.classList.toggle('is-on', on); }));
     feed.querySelectorAll('.btn-repost-home').forEach(b=> b.addEventListener('click', ()=>{ doRepost(b.dataset.id); b.classList.toggle('is-on', isReaction('repost', b.dataset.id)); }));
@@ -656,3 +704,8 @@ async function initPasso4(){
 document.addEventListener('DOMContentLoaded', ()=>{
   initOlho(); initLogin(); initCadastro(); initRecuperar(); initMensagens(); initChat(); initPasso1(); initPasso2(); initPasso3(); initPasso4();
 });
+
+
+
+
+  
